@@ -7,7 +7,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<CompTable />} />
+        <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
@@ -15,7 +15,7 @@ function App() {
   );
 }
 
-function CompTable() {
+function Home() {
   return <div>home</div>;
 }
 function About() {

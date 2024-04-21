@@ -26,14 +26,21 @@ const Navbar = () => {
           id="nav-menu">
           <ul className="nav__list">
             <li className="nav__item">
-              <NavLink to="/" className="nav__link" onClick={closeMenuOnMobile}>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  [isActive ? "active" : "", "nav__link"].join(" ")
+                }
+                onClick={closeMenuOnMobile}>
                 Home
               </NavLink>
             </li>
             <li className="nav__item">
               <NavLink
                 to="/about"
-                className="nav__link"
+                className={({ isActive }) =>
+                  [isActive ? "active" : "", "nav__link"].join(" ")
+                }
                 onClick={closeMenuOnMobile}>
                 About
               </NavLink>
@@ -41,7 +48,9 @@ const Navbar = () => {
             <li className="nav__item">
               <NavLink
                 to="/contact"
-                className="nav__link"
+                className={({ isActive }) =>
+                  [isActive ? "active" : "", "nav__link"].join(" ")
+                }
                 onClick={closeMenuOnMobile}>
                 Contact
               </NavLink>
@@ -49,7 +58,9 @@ const Navbar = () => {
             <li className="nav__item">
               <NavLink
                 to="/signup"
-                className="nav__link"
+                className={({ isActive }) =>
+                  [isActive ? "active" : "", "nav__link"].join(" ")
+                }
                 onClick={closeMenuOnMobile}>
                 Sign up
               </NavLink>
@@ -57,7 +68,9 @@ const Navbar = () => {
             <li className="nav__item">
               <NavLink
                 to="/login"
-                className="nav__link"
+                className={({ isActive }) =>
+                  [isActive ? "active" : "", "nav__link"].join(" ")
+                }
                 onClick={closeMenuOnMobile}>
                 Log in
               </NavLink>
