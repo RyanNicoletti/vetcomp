@@ -1,6 +1,8 @@
+import knex from "../db/connection";
+
 const salariesService = {
   getAll() {
-    return "yeet";
+    return knex("");
   },
 };
 

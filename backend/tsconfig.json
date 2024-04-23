@@ -1,17 +1,16 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "knexfile.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist",
-    "lib": ["es2023"],
-    "module": "node16",
-    "target": "es2022",
-
+    "lib": ["esnext"],
+    "module": "nodenext",
+    "target": "esnext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node16"
+    "moduleResolution": "nodenext"
   }
 }
