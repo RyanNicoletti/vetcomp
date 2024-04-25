@@ -5,6 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     table.increments("user_id").primary();
     table.text("email").unique();
     table.text("password");
+    table.boolean("is_admin").defaultTo(false);
     table.timestamps(true, true);
   });
 }
