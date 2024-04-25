@@ -2,7 +2,7 @@ import knex from "../db/connection";
 
 const salariesService = {
   getAll() {
-    return knex("");
+    return knex("salaries").select("*");
   },
 };
 

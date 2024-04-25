@@ -6,21 +6,22 @@ export async function up(knex: Knex): Promise<void> {
     table.text("company");
     table.text("title");
     table.text("type_of_practice");
-    table.boolean("new_grad");
+    table.boolean("is_new_grad");
     table.integer("years_of_experience");
     table.text("location");
     table.decimal("base_salary", 12, 2);
     table.decimal("hourly_rate", 12, 2);
-    table.enu("type", ["annually", "hourly"]);
+    table.enu("payment_frequency", ["annually", "hourly"]);
     table.decimal("average_annual_bonus", 12, 2);
     table.decimal("sign_on_bonus", 12, 2);
     table.decimal("average_annual_production", 12, 2);
     table.integer("percent_production");
     table.decimal("total_compensation", 12, 2);
     table.enu("gender", ["male", "female", "non-binary"]);
+    table.integer("user_id");
     table
-      .foreign("email")
-      .references("email")
+      .foreign("user_id")
+      .references("user_id")
       .inTable("users")
       .onDelete("cascade");
     table.boolean("is_verified");
