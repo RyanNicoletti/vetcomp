@@ -2,7 +2,7 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("salaries", (table) => {
-    table.increments("salaries_id").primary();
+    table.increments("salary_id").primary();
     table.text("company");
     table.text("title");
     table.text("type_of_practice");
