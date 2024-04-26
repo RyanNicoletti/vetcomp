@@ -7,6 +7,9 @@ interface KnexConfig {
     migrations: {
       directory: string;
     };
+    seeds: {
+      directory: string;
+    };
   };
 }
 
@@ -16,6 +19,9 @@ const config: KnexConfig = {
     connection: process.env.DB_CONNECTION_URL,
     migrations: {
       directory: "./src/db/migrations",
+    },
+    seeds: {
+      directory: "./src/db/seeds",
     },
   },
 };
