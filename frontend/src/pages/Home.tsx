@@ -1,4 +1,6 @@
-import Comptable from "../components/Comptable";
+import SalaryTable from "../components/salarytable/SalaryTable";
 const Home = () => {
-  return <Comptable />;
+  return <SalaryTable />;
 };
+
+export default Home;
