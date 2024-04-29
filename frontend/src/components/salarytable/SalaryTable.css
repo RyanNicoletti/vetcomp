@@ -1,0 +1,11 @@
+.table-header {
+  background-color: #919191;
+}
+
+.table-rows:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.table-rows:nth-child(odd) {
+  background-color: #ebebeb;
+}
