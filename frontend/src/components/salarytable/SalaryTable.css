@@ -1,3 +1,32 @@
+.salary-table-container {
+  max-width: 1200px;
+  margin: 100px auto;
+  border: 1px solid lightgrey;
+}
+.salary-table {
+  white-space: nowrap;
+}
+
+.table-header .MuiTableCell-head {
+  color: white;
+  font-weight: var(--font-semi-bold);
+}
+
+.table-header p {
+  font-weight: var(--font-semi-bold);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.table-header span {
+  font-weight: normal;
+  font-size: 0.7rem;
+}
+
+.empty-span {
+  display: inline-block;
+}
+
 .table-header {
   background-color: #919191;
 }

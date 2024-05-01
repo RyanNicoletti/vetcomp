@@ -11,7 +11,7 @@ import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
 import { Salary } from "./types";
 import "./SalaryTable.css";
-import { Box } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
 
 export default function SalaryTable() {
   const {
@@ -33,16 +33,8 @@ export default function SalaryTable() {
   }
 
   return (
-    <TableContainer>
-      <Table
-        sx={{
-          width: "50%",
-          mt: "100px",
-          mb: "100px",
-          mr: "auto",
-          ml: "auto",
-        }}
-        aria-labelledby="tableTitle">
+    <Paper className="salary-table-container" elevation={2}>
+      <Table className="salary-table" aria-labelledby="tableTitle">
         <TableHead className="table-header">
           <TableRow>
             <TableCell key="company-location" align={"left"}>
@@ -57,8 +49,16 @@ export default function SalaryTable() {
                 <span>Practice Type</span>
               </div>
             </TableCell>
-            <TableCell key="years-of-experience" align={"right"}>
-              <TableSortLabel>Years of Experience</TableSortLabel>
+            <TableCell
+              key="years-of-experience"
+              align={"left"}
+              className="years-of-experience-header">
+              <TableSortLabel>
+                <div>
+                  <p>Years of Experience</p>
+                  <span className="empty-span"></span>
+                </div>
+              </TableSortLabel>
             </TableCell>
             <TableCell key="total-compensation" align={"right"}>
               <TableSortLabel>
@@ -78,7 +78,7 @@ export default function SalaryTable() {
                   <TableCell
                     id={index}
                     scope="row"
-                    padding="none"
+                    padding="normal"
                     component="th">
                     <div>
                       <p>{row.company}</p>
@@ -87,13 +87,13 @@ export default function SalaryTable() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="left">
                     <div>
                       <p>{row.title}</p>
                       <span>{row.type_of_practice}</span>
                     </div>
                   </TableCell>
-                  <TableCell align="right">{row.years_of_experience}</TableCell>
+                  <TableCell align="left">{row.years_of_experience}</TableCell>
                   <TableCell align="right">
                     <div>
                       <p>{row.total_compensation}</p>
@@ -107,6 +107,6 @@ export default function SalaryTable() {
             })}
         </TableBody>
       </Table>
-    </TableContainer>
+    </Paper>
   );
 }
