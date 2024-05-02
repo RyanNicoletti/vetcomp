@@ -11,9 +11,34 @@ import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
 import { Salary } from "./types";
 import "./SalaryTable.css";
-import { Box, Container, Grid } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  TableFooter,
+  TablePagination,
+} from "@mui/material";
+import { useState } from "react";
+import TablePaginationActions from "./TablePagination";
 
 export default function SalaryTable() {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const {
     data: salaryData,
     isError: salaryIsError,
@@ -33,7 +58,7 @@ export default function SalaryTable() {
   }
 
   return (
-    <Paper className="salary-table-container" elevation={2}>
+    <TableContainer className="table-container">
       <Table className="salary-table" aria-labelledby="tableTitle">
         <TableHead className="table-header">
           <TableRow>
@@ -72,7 +97,13 @@ export default function SalaryTable() {
         </TableHead>
         <TableBody>
           {salaryData &&
-            salaryData.map((row: Salary, index: string | undefined) => {
+            (rowsPerPage > 0
+              ? salaryData.slice(
+                  page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage
+                )
+              : salaryData
+            ).map((row: Salary, index: string | undefined) => {
               return (
                 <TableRow className="table-rows">
                   <TableCell
@@ -106,7 +137,29 @@ export default function SalaryTable() {
               );
             })}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 30, { label: "All", value: -1 }]}
+              colSpan={3}
+              count={salaryData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              slotProps={{
+                select: {
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                },
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
-    </Paper>
+    </TableContainer>
   );
 }

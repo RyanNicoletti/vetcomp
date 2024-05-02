@@ -1,10 +1,13 @@
-.salary-table-container {
-  max-width: 1200px;
-  margin: 100px auto;
+.table-container {
+  max-width: 60%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 100px;
   border: 1px solid lightgrey;
+  overflow-x: auto;
 }
 .salary-table {
-  white-space: nowrap;
+  width: 100%;
 }
 
 .table-header .MuiTableCell-head {
