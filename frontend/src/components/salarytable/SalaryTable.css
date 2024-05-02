@@ -1,13 +1,10 @@
 .table-container {
-  max-width: 60%;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 100px;
-  border: 1px solid lightgrey;
-  overflow-x: auto;
+  max-width: 1200px;
+  margin: 100px auto;
 }
+
 .salary-table {
-  width: 100%;
+  table-layout: fixed;
 }
 
 .table-header .MuiTableCell-head {
@@ -18,7 +15,6 @@
 .table-header p {
   font-weight: var(--font-semi-bold);
   font-size: 0.85rem;
-  white-space: nowrap;
 }
 
 .table-header span {
@@ -40,4 +36,34 @@
 
 .table-rows:nth-child(odd) {
   background-color: #ebebeb;
+}
+
+@media (max-width: 1300px) {
+  .table-container {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .years-of-experience-header {
+    display: none;
+  }
+
+  .salary-table td:nth-child(3),
+  .salary-table th:nth-child(3) {
+    display: none;
+  }
+  .table-header p {
+    font-size: 0.8rem;
+  }
+
+  .table-header span {
+    font-size: 0.6rem;
+  }
+
+  .table-rows div p,
+  .table-rows div span {
+    font-size: 0.7rem;
+  }
 }
