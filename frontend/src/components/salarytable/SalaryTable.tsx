@@ -5,38 +5,36 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
-import { Salary } from "./types";
+import { Salary, SortParams } from "./types";
 import "./SalaryTable.css";
-import {
-  Box,
-  Container,
-  Grid,
-  TableFooter,
-  TablePagination,
-} from "@mui/material";
-import { useState } from "react";
-import TablePaginationActions from "./TablePagination";
+import { TableFooter } from "@mui/material";
+import { useMemo, useState } from "react";
+import Pagination from "./Pagination";
 
 export default function SalaryTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sortParams, setSortParams] = useState<SortParams>({
+    sortDirection: "asc",
+    sortBy: "",
+  });
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
+  const handleSortRequest = (column: string) => {
+    const newSortDirection =
+      sortParams.sortDirection === "asc" ? "desc" : "asc";
+    setSortParams({ sortDirection: newSortDirection, sortBy: column });
+  };
+
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleChangeRowsPerPage = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage);
+    setPage(1);
   };
 
   const {
@@ -45,9 +43,17 @@ export default function SalaryTable() {
     error: salaryError,
     isPending: salaryIsPending,
   } = useQuery({
-    queryKey: ["salaries"],
-    queryFn: getAllSalaries,
+    queryKey: ["salaries", page, rowsPerPage, sortParams],
+    queryFn: () => getAllSalaries(page, rowsPerPage, sortParams),
+    placeholderData: keepPreviousData,
   });
+
+  const totalPages = useMemo(() => {
+    if (salaryData) {
+      return Math.ceil(salaryData.length / rowsPerPage);
+    }
+    return 0;
+  }, [salaryData, rowsPerPage]);
 
   if (salaryIsError) {
     return <ErrorBlock title="Error: " message={salaryError.message} />;
@@ -78,7 +84,9 @@ export default function SalaryTable() {
               key="years-of-experience"
               align={"left"}
               className="years-of-experience-header">
-              <TableSortLabel>
+              <TableSortLabel
+                direction={sortParams.sortDirection}
+                onClick={() => handleSortRequest("years_of_experience")}>
                 <div>
                   <p>Years of Experience</p>
                   <span className="empty-span"></span>
@@ -86,7 +94,9 @@ export default function SalaryTable() {
               </TableSortLabel>
             </TableCell>
             <TableCell key="total-compensation" align={"right"}>
-              <TableSortLabel>
+              <TableSortLabel
+                direction={sortParams.sortDirection}
+                onClick={() => handleSortRequest("total_compensation")}>
                 <div>
                   <p>Total Compensation (USD)</p>
                   <span>Base | Production (yr)</span>
@@ -96,7 +106,7 @@ export default function SalaryTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {salaryData &&
+          {salaryData.length > 0 &&
             (rowsPerPage > 0
               ? salaryData.slice(
                   page * rowsPerPage,
@@ -114,22 +124,22 @@ export default function SalaryTable() {
                     <div>
                       <p>{row.company}</p>
                       <span>
-                        {row.location} | {row.created_at}
+                        {row.location} | {row.createdAt}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell align="left">
                     <div>
                       <p>{row.title}</p>
-                      <span>{row.type_of_practice}</span>
+                      <span>{row.typeOfPractice}</span>
                     </div>
                   </TableCell>
-                  <TableCell align="left">{row.years_of_experience}</TableCell>
+                  <TableCell align="left">{row.yearsOfExperience}</TableCell>
                   <TableCell align="right">
                     <div>
-                      <p>{row.total_compensation}</p>
+                      <p>{row.totalCompensation}</p>
                       <span>
-                        {row.base_salary} | {row.average_annual_production}
+                        {row.baseSalary} | {row.averageAnnualProduction}
                       </span>
                     </div>
                   </TableCell>
@@ -139,23 +149,12 @@ export default function SalaryTable() {
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[10, 20, 30, { label: "All", value: -1 }]}
-              colSpan={3}
-              count={salaryData.length}
-              rowsPerPage={rowsPerPage}
+            <Pagination
               page={page}
-              slotProps={{
-                select: {
-                  inputProps: {
-                    "aria-label": "rows per page",
-                  },
-                  native: true,
-                },
-              }}
+              totalPages={totalPages}
               onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
             />
           </TableRow>
         </TableFooter>

@@ -1,22 +1,27 @@
 export interface Salary {
-  salary_id: number;
+  salaryId: number;
   company: string;
   title: string;
-  type_of_practice: string;
-  is_new_grad: boolean;
-  years_of_experience: number;
+  typeOfPractice: string;
+  isNewGrad: boolean;
+  yearsOfExperience: number;
   location: string;
-  base_salary: number | null;
-  hourly_rate: number | null;
-  payment_frequency: "annually" | "hourly";
-  average_annual_bonus: number | null;
-  sign_on_bonus: number | null;
-  average_annual_production: number | null;
-  percent_production: number | null;
-  total_compensation: number | null;
+  baseSalary: number | null;
+  hourlyRate: number | null;
+  paymentFrequency: "annually" | "hourly";
+  averageAnnualBonus: number | null;
+  signOnBonus: number | null;
+  averageAnnualProduction: number | null;
+  percentProduction: number | null;
+  totalCompensation: number;
   gender: "male" | "female" | "non-binary" | null;
-  user_id: number | null;
-  is_verified: boolean;
-  is_approved: boolean;
-  created_at: number;
+  userId: number | null;
+  isVerified: boolean;
+  isApproved: boolean;
+  createdAt: number;
+}
+
+export interface SortParams {
+  sortDirection: "asc" | "desc";
+  sortBy: string;
 }

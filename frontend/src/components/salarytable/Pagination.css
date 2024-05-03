@@ -1,0 +1,39 @@
+.pagination {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.pagination ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  margin-right: 4px;
+}
+
+.pagination li.active {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.pagination li.ellipsis {
+  cursor: default;
+}
+
+.pagination li.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rows-per-page {
+  margin-right: 20px;
+}
