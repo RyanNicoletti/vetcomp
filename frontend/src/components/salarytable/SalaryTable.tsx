@@ -8,10 +8,11 @@ import TableRow from "@mui/material/TableRow";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
-import { Salary, SortParams } from "./types";
+import { SortParams } from "./types";
+import { Salary } from "../../../../shared-types/types";
 import "./SalaryTable.css";
 import { TableFooter } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Pagination from "./Pagination";
 
 export default function SalaryTable() {
@@ -99,35 +100,35 @@ export default function SalaryTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {salaryData?.salaryData.salaries?.length &&
-            salaryData.salaryData.salaries.map((row: Salary) => {
+          {salaryData?.salaries?.length &&
+            salaryData?.salaries.map((row: Salary) => {
               return (
-                <TableRow className="table-rows">
+                <TableRow className="table-rows" key={row.salary_id}>
                   <TableCell
-                    id={String(row.salaryId)}
+                    id={String(row.salary_id)}
                     scope="row"
                     padding="normal"
                     component="th">
                     <div>
                       <p>{row.company}</p>
                       <span>
-                        {row.location} | {row.createdAt}
+                        {row.location} | {row.created_at}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell align="left">
                     <div>
                       <p>{row.title}</p>
-                      <span>{row.typeOfPractice}</span>
+                      <span>{row.type_of_practice}</span>
                     </div>
                   </TableCell>
-                  <TableCell align="left">{row.yearsOfExperience}</TableCell>
+                  <TableCell align="left">{row.years_of_experience}</TableCell>
                   <TableCell align="right">
                     <div>
                       <p>{row.total_compensation?.toLocaleString()}</p>
                       <span>
-                        {row.baseSalary?.toLocaleString()} |
-                        {row.averageAnnualProduction?.toLocaleString()}
+                        {row.base_salary?.toLocaleString()} |
+                        {row.average_annual_production?.toLocaleString()}
                       </span>
                     </div>
                   </TableCell>
@@ -139,7 +140,7 @@ export default function SalaryTable() {
           <TableRow>
             <Pagination
               page={page}
-              totalPages={salaryData.salaryData.pages}
+              totalPages={salaryData.pages}
               onPageChange={handleChangePage}
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
