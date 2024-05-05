@@ -1,6 +1,6 @@
-export interface SalaryQueryParams {
-  page: string;
-  rowsPerPage: string;
+export interface SalaryFilter {
+  page: number;
+  rowsPerPage: number;
   sortDirection: "asc" | "desc";
-  sortBy: string;
+  sortBy?: string;
 }

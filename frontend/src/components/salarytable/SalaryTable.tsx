@@ -48,13 +48,6 @@ export default function SalaryTable() {
     placeholderData: keepPreviousData,
   });
 
-  const totalPages = useMemo(() => {
-    if (salaryData) {
-      return Math.ceil(salaryData.length / rowsPerPage);
-    }
-    return 0;
-  }, [salaryData, rowsPerPage]);
-
   if (salaryIsError) {
     return <ErrorBlock title="Error: " message={salaryError.message} />;
   }
@@ -106,18 +99,12 @@ export default function SalaryTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {salaryData.length > 0 &&
-            (rowsPerPage > 0
-              ? salaryData.slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                )
-              : salaryData
-            ).map((row: Salary, index: string | undefined) => {
+          {salaryData?.salaryData.salaries?.length &&
+            salaryData.salaryData.salaries.map((row: Salary) => {
               return (
                 <TableRow className="table-rows">
                   <TableCell
-                    id={index}
+                    id={String(row.salaryId)}
                     scope="row"
                     padding="normal"
                     component="th">
@@ -137,9 +124,10 @@ export default function SalaryTable() {
                   <TableCell align="left">{row.yearsOfExperience}</TableCell>
                   <TableCell align="right">
                     <div>
-                      <p>{row.totalCompensation}</p>
+                      <p>{row.total_compensation?.toLocaleString()}</p>
                       <span>
-                        {row.baseSalary} | {row.averageAnnualProduction}
+                        {row.baseSalary?.toLocaleString()} |
+                        {row.averageAnnualProduction?.toLocaleString()}
                       </span>
                     </div>
                   </TableCell>
@@ -151,7 +139,7 @@ export default function SalaryTable() {
           <TableRow>
             <Pagination
               page={page}
-              totalPages={totalPages}
+              totalPages={salaryData.salaryData.pages}
               onPageChange={handleChangePage}
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}

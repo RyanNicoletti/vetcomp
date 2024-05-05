@@ -13,12 +13,19 @@ export interface Salary {
   signOnBonus: number | null;
   averageAnnualProduction: number | null;
   percentProduction: number | null;
-  totalCompensation: number;
+  total_compensation: string;
   gender: "male" | "female" | "non-binary" | null;
   userId: number | null;
   isVerified: boolean;
   isApproved: boolean;
   createdAt: number;
+}
+
+export interface SalaryData {
+  salaryData: {
+    salaries: Salary[];
+    pages: number;
+  };
 }
 
 export interface SortParams {

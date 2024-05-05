@@ -47,7 +47,7 @@ const Pagination = ({
   };
 
   return (
-    <div className="pagination">
+    <td className="pagination">
       <div className="rows-per-page">
         <label htmlFor="rows-per-page">Rows per page:</label>
         <select
@@ -83,7 +83,7 @@ const Pagination = ({
           {">>"}
         </li>
       </ul>
-    </div>
+    </td>
   );
 };
 

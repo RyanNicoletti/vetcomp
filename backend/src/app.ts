@@ -1,4 +1,6 @@
 import express, { Express, Request, Response } from "express";
+import helmet from "helmet";
+import morgan from "morgan";
 import cors from "cors";
 import salariesRouter from "./salaries/salaries.router";
 import "dotenv/config";
@@ -9,6 +11,8 @@ const corsOptions = {
   origin: ["http://localhost:5173", "https://veterinarycomp.com"],
 };
 
+app.use(helmet());
+app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
 
