@@ -113,7 +113,12 @@ export default function SalaryTable() {
                     <div>
                       <p>{row.company}</p>
                       <span>
-                        {row.location} | {row.created_at}
+                        {row.location} |{" "}
+                        {new Date(row.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
                       </span>
                     </div>
                   </TableCell>
@@ -126,10 +131,23 @@ export default function SalaryTable() {
                   <TableCell align="left">{row.years_of_experience}</TableCell>
                   <TableCell align="right">
                     <div>
-                      <p>{moneyFormatter.format(row.total_compensation)}</p>
+                      <p>
+                        {row.total_compensation
+                          ? moneyFormatter.format(row.total_compensation)
+                          : moneyFormatter.format(row.hourly_rate!) + "/hr"}
+                      </p>
                       <span>
-                        {row.base_salary?.toLocaleString()} |
-                        {row.average_annual_production?.toLocaleString()}
+                        {row.base_salary ? (
+                          moneyFormatter.format(row.base_salary)
+                        ) : (
+                          <del>0</del>
+                        )}{" "}
+                        |{" "}
+                        {row.average_annual_production ? (
+                          moneyFormatter.format(row.average_annual_production)
+                        ) : (
+                          <del>0</del>
+                        )}
                       </span>
                     </div>
                   </TableCell>
