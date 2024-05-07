@@ -14,6 +14,7 @@ import "./SalaryTable.css";
 import { TableFooter } from "@mui/material";
 import { useState } from "react";
 import Pagination from "./Pagination";
+import { moneyFormatter } from "../../utils/moneyFormatter";
 
 export default function SalaryTable() {
   const [page, setPage] = useState(0);
@@ -125,7 +126,7 @@ export default function SalaryTable() {
                   <TableCell align="left">{row.years_of_experience}</TableCell>
                   <TableCell align="right">
                     <div>
-                      <p>{row.total_compensation?.toLocaleString()}</p>
+                      <p>{moneyFormatter.format(row.total_compensation)}</p>
                       <span>
                         {row.base_salary?.toLocaleString()} |
                         {row.average_annual_production?.toLocaleString()}

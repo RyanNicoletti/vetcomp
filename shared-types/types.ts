@@ -13,7 +13,7 @@ export interface Salary {
   sign_on_bonus: number | null;
   average_annual_production: number | null;
   percent_production: number | null;
-  total_compensation: string;
+  total_compensation: number;
   gender: "male" | "female" | "non-binary" | null;
   user_id: number | null;
   is_verified: boolean | null;
