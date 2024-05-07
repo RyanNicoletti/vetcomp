@@ -137,17 +137,13 @@ export default function SalaryTable() {
                           : moneyFormatter.format(row.hourly_rate!) + "/hr"}
                       </p>
                       <span>
-                        {row.base_salary ? (
-                          moneyFormatter.format(row.base_salary)
-                        ) : (
-                          <del>0</del>
-                        )}{" "}
+                        {row.base_salary
+                          ? moneyFormatter.format(row.base_salary)
+                          : "n/a"}{" "}
                         |{" "}
-                        {row.average_annual_production ? (
-                          moneyFormatter.format(row.average_annual_production)
-                        ) : (
-                          <del>0</del>
-                        )}
+                        {row.average_annual_production
+                          ? moneyFormatter.format(row.average_annual_production)
+                          : "n/a"}
                       </span>
                     </div>
                   </TableCell>

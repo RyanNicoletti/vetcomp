@@ -28,7 +28,6 @@ const getAllSalaries = async (req: Request, res: Response) => {
   }
 
   const salaryData = await salariesService.getAll(salaryFilter);
-  console.log(salaryData);
   return res.json(salaryData);
 };
 
