@@ -13,7 +13,7 @@ import { Salary } from "../../../../shared-types/types";
 import "./SalaryTable.css";
 import { TableFooter } from "@mui/material";
 import { useState } from "react";
-import Pagination from "./Pagination";
+import Pagination from "../pagination/Pagination";
 import { moneyFormatter } from "../../utils/moneyFormatter";
 
 export default function SalaryTable() {
