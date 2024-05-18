@@ -3,11 +3,14 @@ import "./App.css";
 import NavBar from "./components/navbar/NavBar";
 import Home from "./pages/Home";
 import AddCompForm from "./pages/AddCompForm";
+import { Box } from "@mui/material";
 
 function App() {
   return (
     <Router>
-      <NavBar />
+      <Box className="nav-container">
+        <NavBar />
+      </Box>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

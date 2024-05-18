@@ -163,28 +163,6 @@ export const CompForm = () => {
         />
       </FormGroup>
 
-      {/* <Controller
-        name="location"
-        control={control}
-        rules={{ required: "Location is required" }}
-        render={({ field, fieldState }) => (
-          <Autocomplete
-            {...field}
-            options={cities.map((city) => `${city.name}, ${city.state}`)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Location"
-                fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            )}
-            onChange={(_, data) => field.onChange(data)}
-          />
-        )}
-      /> */}
-
       <Controller
         name="paymentFrequency"
         control={control}
