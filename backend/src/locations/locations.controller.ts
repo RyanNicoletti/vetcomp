@@ -4,6 +4,7 @@ import locationService from "./locations.service";
 const getLocations = async (req: Request, res: Response) => {
   try {
     if (typeof req.query.q === "string") {
+      console.log("got to controller: ", req);
       const query = req.query.q;
       const locations = await locationService.getLocation(query);
       res.json(locations);

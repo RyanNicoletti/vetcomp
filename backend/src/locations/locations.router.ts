@@ -3,6 +3,6 @@ import locationsController from "./locations.controller";
 
 const locationsRouter = Router();
 
-locationsRouter.get("/locations", locationsController.getLocations);
+locationsRouter.route("/").get(locationsController.getLocations);
 
 export default locationsRouter;

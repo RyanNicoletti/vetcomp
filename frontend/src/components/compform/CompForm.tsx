@@ -96,9 +96,17 @@ export const CompForm = () => {
   };
 
   const handleInputChange: any = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement> | null,
+    value: string
   ) => {
-    setQuery(event.target.value);
+    if (event) {
+      console.log("event", event);
+      setQuery("deeznuts");
+      setQuery(event.target.value);
+    } else {
+      console.log("value: ", value);
+      setQuery(value);
+    }
   };
 
   const paymentFrequency = watch("paymentFrequency");
