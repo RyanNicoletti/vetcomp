@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "react-hook-form": "^7.51.4",
-    "react-number-format": "^5.3.4"
+    "react-number-format": "^5.3.4",
+    "react-places-autocomplete": "^7.3.0"
   }
 }

@@ -3,10 +3,10 @@ import {
   Autocomplete,
   Button,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormGroup,
-  Input,
   InputLabel,
   MenuItem,
   Select,
@@ -15,7 +15,9 @@ import {
 } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import "./CompForm.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getLocationSuggestions } from "../../queries/locationQueries";
+import { useQuery } from "@tanstack/react-query";
 
 interface ICompFormInput {
   company: string;
@@ -65,6 +67,39 @@ export const CompForm = () => {
       verificationDocumentName: "",
     },
   });
+  const [query, setQuery] = useState("");
+  const [options, setOptions] = useState<string[]>([]);
+  const {
+    data: locations,
+    isLoading: locationIsLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["locations", query],
+    queryFn: () => getLocationSuggestions(query),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (query.length > 2) {
+      refetch();
+    }
+  }, [query, refetch]);
+
+  useEffect(() => {
+    if (locations) {
+      setOptions(locations);
+    }
+  }, [locations]);
+
+  const handleLocationChange = (event: any, value: any) => {
+    setValue("location", value || "");
+  };
+
+  const handleInputChange: any = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setQuery(event.target.value);
+  };
 
   const paymentFrequency = watch("paymentFrequency");
   const isNewGrad = watch("isNewGrad");
@@ -97,6 +132,44 @@ export const CompForm = () => {
             fullWidth
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
+          />
+        )}
+      />
+
+      <Controller
+        name="location"
+        control={control}
+        rules={{
+          required: "Location is required",
+          validate: (value) => options.includes(value) || "Invalid location",
+        }}
+        render={({ field, fieldState }) => (
+          <Autocomplete
+            {...field}
+            value={field.value || ""}
+            onChange={handleLocationChange}
+            inputValue={query}
+            onInputChange={handleInputChange}
+            options={options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Location"
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {locationIsLoading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
           />
         )}
       />
