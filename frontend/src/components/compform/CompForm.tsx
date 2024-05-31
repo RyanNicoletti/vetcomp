@@ -67,23 +67,23 @@ export const CompForm = () => {
       verificationDocumentName: "",
     },
   });
-  const [query, setQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
   const {
     data: locations,
     isLoading: locationIsLoading,
     refetch,
   } = useQuery({
-    queryKey: ["locations", query],
-    queryFn: () => getLocationSuggestions(query),
+    queryKey: ["locations", locationQuery],
+    queryFn: () => getLocationSuggestions(locationQuery),
     enabled: false,
   });
 
   useEffect(() => {
-    if (query.length > 2) {
+    if (locationQuery.length > 2) {
       refetch();
     }
-  }, [query, refetch]);
+  }, [locationQuery, refetch]);
 
   useEffect(() => {
     if (locations) {
@@ -95,18 +95,8 @@ export const CompForm = () => {
     setValue("location", value || "");
   };
 
-  const handleInputChange: any = (
-    event: React.ChangeEvent<HTMLInputElement> | null,
-    value: string
-  ) => {
-    if (event) {
-      console.log("event", event);
-      setQuery("deeznuts");
-      setQuery(event.target.value);
-    } else {
-      console.log("value: ", value);
-      setQuery(value);
-    }
+  const handleInputChange: any = (event: any, value: string) => {
+    setLocationQuery(event?.target.value || value);
   };
 
   const paymentFrequency = watch("paymentFrequency");
@@ -156,7 +146,7 @@ export const CompForm = () => {
             {...field}
             value={field.value || ""}
             onChange={handleLocationChange}
-            inputValue={query}
+            inputValue={locationQuery}
             onInputChange={handleInputChange}
             options={options}
             renderInput={(params) => (

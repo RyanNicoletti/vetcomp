@@ -4,16 +4,17 @@ import locationService from "./locations.service";
 const getLocations = async (req: Request, res: Response) => {
   try {
     if (typeof req.query.q === "string") {
-      console.log("got to controller: ", req);
-      const query = req.query.q;
-      const locations = await locationService.getLocation(query);
-      res.json(locations);
+      const query: string = req.query.q;
+      const locationSuggestions: string[] = await locationService.getLocation(
+        query
+      );
+      res.json(locationSuggestions);
     } else {
-      console.log("req.query.q is not a string error");
+      res.status(400).send("Invalid location, please enter a valid city.");
     }
   } catch (error) {
     console.error("Error fetching locations:", error);
-    res.status(500).send("Server error");
+    res.status(500).send("Server error, please try again later.");
   }
 };
 

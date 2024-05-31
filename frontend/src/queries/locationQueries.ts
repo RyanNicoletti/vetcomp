@@ -7,6 +7,6 @@ export const getLocationSuggestions = async (
   if (!response.ok) {
     throw new Error("Failed to fetch locations.");
   }
-  const suggestions = await response.json();
+  const suggestions: string[] = await response.json();
   return suggestions;
 };
