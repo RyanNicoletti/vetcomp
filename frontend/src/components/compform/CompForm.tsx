@@ -1,4 +1,9 @@
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  SubmitHandler,
+  useController,
+} from "react-hook-form";
 import {
   Autocomplete,
   Button,
@@ -7,6 +12,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -95,7 +101,7 @@ export const CompForm = () => {
     setValue("location", value || "");
   };
 
-  const handleInputChange: any = (event: any, value: string) => {
+  const handleLocationInputChange: any = (event: any, value: string) => {
     setLocationQuery(event?.target.value || value);
   };
 
@@ -103,17 +109,11 @@ export const CompForm = () => {
   const isNewGrad = watch("isNewGrad");
 
   const typeOfPracticeOptions = ["General Practice", "Specialty", "Consulting"];
-  const paymentFrequencyOptions = ["Annual", "Hourly"];
+  const paymentFrequencyOptions: string[] = ["Annual", "Hourly"];
 
   const onSubmit: SubmitHandler<ICompFormInput> = (data: ICompFormInput) => {
     console.log(data);
   };
-
-  useEffect(() => {
-    if (isNewGrad) {
-      setValue("yearsOfExperience", 0);
-    }
-  }, [isNewGrad]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
@@ -147,7 +147,7 @@ export const CompForm = () => {
             value={field.value || ""}
             onChange={handleLocationChange}
             inputValue={locationQuery}
-            onInputChange={handleInputChange}
+            onInputChange={handleLocationInputChange}
             options={options}
             renderInput={(params) => (
               <TextField
@@ -224,6 +224,8 @@ export const CompForm = () => {
               {...field}
               label="Years of Experience"
               customInput={TextField}
+              value={isNewGrad ? 0 : field.value}
+              disabled={isNewGrad}
               thousandSeparator={false}
               isNumericString
               fullWidth
@@ -238,20 +240,23 @@ export const CompForm = () => {
         name="paymentFrequency"
         control={control}
         render={({ field }) => (
-          <FormGroup row>
-            {paymentFrequencyOptions.map((option) => (
-              <FormControlLabel
-                key={option}
-                control={
-                  <Checkbox
-                    checked={field.value === option}
-                    onChange={() => field.onChange(option)}
-                  />
-                }
-                label={option}
-              />
-            ))}
-          </FormGroup>
+          <>
+            <FormLabel>Payment Frequency</FormLabel>
+            <FormGroup row>
+              {paymentFrequencyOptions.map((option) => (
+                <FormControlLabel
+                  key={option}
+                  control={
+                    <Checkbox
+                      checked={field.value === option}
+                      onChange={() => field.onChange(option)}
+                    />
+                  }
+                  label={option}
+                />
+              ))}
+            </FormGroup>
+          </>
         )}
       />
 
