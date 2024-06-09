@@ -6,6 +6,7 @@ import {
 } from "react-hook-form";
 import {
   Autocomplete,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -19,6 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { NumericFormat } from "react-number-format";
 import "./CompForm.css";
 import { useEffect, useState } from "react";
@@ -75,6 +77,11 @@ export const CompForm = () => {
   });
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
+  const [showSignOnBonus, setShowSignOnBonus] = useState(false);
+  const [showPercentProduction, setShowPercentProduction] = useState(false);
+  const [showAverageAnnualProduction, setShowAverageAnnualProduction] =
+    useState(false);
+
   const {
     data: locations,
     isLoading: locationIsLoading,
@@ -96,6 +103,8 @@ export const CompForm = () => {
       setOptions(locations);
     }
   }, [locations]);
+
+  const calculateTotalCompensation = () => {};
 
   const handleLocationChange = (event: any, value: any) => {
     setValue("location", value || "");
@@ -297,6 +306,100 @@ export const CompForm = () => {
               prefix={"$"}
               decimalScale={2}
               fixedDecimalScale={true}
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+      )}
+      <Box className="additional-comp-btns">
+        <Button
+          type="button"
+          variant="outlined"
+          size="small"
+          onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
+          {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
+        </Button>
+        <Button
+          type="button"
+          variant="outlined"
+          size="small"
+          onClick={() => setShowPercentProduction(!showPercentProduction)}>
+          {showPercentProduction ? "Hide Production (%)" : "Add Production (%)"}
+        </Button>
+        <Button
+          type="button"
+          variant="outlined"
+          size="small"
+          onClick={() =>
+            setShowAverageAnnualProduction(!showAverageAnnualProduction)
+          }>
+          {showAverageAnnualProduction
+            ? "Hide Average Annual Production"
+            : "Add Average Annual Production"}
+        </Button>
+      </Box>
+
+      {showSignOnBonus && (
+        <Controller
+          name="signOnBonus"
+          control={control}
+          render={({ field, fieldState }) => (
+            <NumericFormat
+              className="sign-on-bonus"
+              {...field}
+              label="Sign On Bonus"
+              fullWidth
+              customInput={TextField}
+              thousandSeparator={true}
+              prefix={"$"}
+              decimalScale={2}
+              fixedDecimalScale={true}
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+      )}
+
+      {showPercentProduction && (
+        <Controller
+          name="percentProduction"
+          control={control}
+          render={({ field, fieldState }) => (
+            <>
+              <NumericFormat
+                {...field}
+                label="% of Production That Goes Towards Your Salary"
+                fullWidth
+                customInput={TextField}
+                thousandSeparator={true}
+                suffix={"%"}
+                decimalScale={2}
+                fixedDecimalScale={true}
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </>
+          )}
+        />
+      )}
+
+      {showAverageAnnualProduction && (
+        <Controller
+          name="averageAnnualProduction"
+          control={control}
+          render={({ field, fieldState }) => (
+            <NumericFormat
+              {...field}
+              label="Average Annual Production"
+              fullWidth
+              customInput={TextField}
+              thousandSeparator={true}
+              prefix={"$"}
+              decimalScale={2}
+              fixedDecimalScale={true}
+              onValueChange={calculateTotalCompensation}
               error={!!fieldState.error}
               helperText={fieldState.error?.message}
             />

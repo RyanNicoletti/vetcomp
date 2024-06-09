@@ -27,3 +27,14 @@
   margin-bottom: 20px;
   text-align: center;
 }
+
+.additional-comp-btns {
+  display: flex;
+}
+.additional-comp-btns button {
+  flex: 1;
+  margin: 0px 4px 15px 4px;
+  font-weight: bold;
+  padding: 4px 8px;
+  text-transform: none;
+}
