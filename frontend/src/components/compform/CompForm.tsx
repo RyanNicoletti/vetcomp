@@ -1,9 +1,4 @@
-import {
-  useForm,
-  Controller,
-  SubmitHandler,
-  useController,
-} from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import {
   Autocomplete,
   Box,
@@ -15,72 +10,60 @@ import {
   FormGroup,
   FormLabel,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AttachmentIcon from "@mui/icons-material/Attachment";
 import { NumericFormat } from "react-number-format";
 import "./CompForm.css";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { getLocationSuggestions } from "../../queries/locationQueries";
 import { useQuery } from "@tanstack/react-query";
-
-interface ICompFormInput {
-  company: string;
-  title: string;
-  typeOfPractice: string;
-  isNewGrad: boolean;
-  yearsOfExperience: number;
-  location: string;
-  baseSalary: number;
-  hourlyRate: number;
-  paymentFrequency: string;
-  averageAnnualBonus: number;
-  signOnBonus: number;
-  averageAnnualProduction: number;
-  percentProduction: number;
-  totalCompensation: number;
-  gender: string;
-  userId: number;
-  isVerified: boolean;
-  isApproved: boolean;
-  verificationDocument: Blob[];
-  verificationDocumentName: string;
-}
+import { ICompFormInput } from "./types";
 
 export const CompForm = () => {
-  const { control, handleSubmit, watch, setValue } = useForm<ICompFormInput>({
-    defaultValues: {
-      company: "",
-      title: "",
-      typeOfPractice: "",
-      isNewGrad: false,
-      yearsOfExperience: undefined,
-      location: "",
-      baseSalary: 0,
-      hourlyRate: 0,
-      paymentFrequency: "",
-      averageAnnualBonus: 0,
-      signOnBonus: 0,
-      averageAnnualProduction: 0,
-      percentProduction: 0,
-      totalCompensation: 0,
-      gender: "",
-      userId: 0,
-      isVerified: false,
-      isApproved: false,
-      verificationDocument: [],
-      verificationDocumentName: "",
-    },
-  });
+  const { control, handleSubmit, watch, setValue, formState } =
+    useForm<ICompFormInput>({
+      defaultValues: {
+        company: "",
+        title: "",
+        typeOfPractice: "",
+        isNewGrad: false,
+        yearsOfExperience: undefined,
+        location: "",
+        baseSalary: 0,
+        hourlyRate: 0,
+        paymentFrequency: "",
+        averageAnnualBonus: 0,
+        signOnBonus: 0,
+        averageAnnualProduction: 0,
+        percentProduction: 0,
+        totalCompensation: 0,
+        gender: "",
+        numberOfVeterinarians: 0,
+        userId: 0,
+        isVerified: false,
+        isApproved: false,
+        verificationDocument: [],
+        verificationDocumentName: "",
+      },
+    });
+
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
   const [showSignOnBonus, setShowSignOnBonus] = useState(false);
   const [showPercentProduction, setShowPercentProduction] = useState(false);
   const [showAverageAnnualProduction, setShowAverageAnnualProduction] =
     useState(false);
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [uploadFile, setUploadFile] = useState(false);
+  const [selectManual, setSelectManual] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const {
     data: locations,
@@ -104,9 +87,31 @@ export const CompForm = () => {
     }
   }, [locations]);
 
+  const handleManualSalaryInfo = () => {
+    setUploadFile(false);
+    setSelectManual(true);
+    setUploadedFileName(null);
+    setUploadedFile(null);
+    setIsFileUploaded(false);
+  };
+  const handleUploadFile = () => {
+    setUploadFile(true);
+    setSelectManual(false);
+  };
+
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log("Uploaded file:", file);
+      setIsFileUploaded(true);
+      setUploadedFileName(file.name);
+      setUploadedFile(file);
+    }
+  };
+
   const calculateTotalCompensation = () => {};
 
-  const handleLocationChange = (event: any, value: any) => {
+  const handleLocationChange = (_event: any, value: any) => {
     setValue("location", value || "");
   };
 
@@ -199,6 +204,7 @@ export const CompForm = () => {
       <Controller
         name="typeOfPractice"
         control={control}
+        rules={{ required: "This field is required" }}
         render={({ field }) => (
           <FormControl fullWidth>
             <InputLabel>Type of Practice</InputLabel>
@@ -245,167 +251,258 @@ export const CompForm = () => {
         />
       </FormGroup>
 
-      <Controller
-        name="paymentFrequency"
-        control={control}
-        render={({ field }) => (
-          <>
-            <FormLabel>Payment Frequency</FormLabel>
-            <FormGroup row>
-              {paymentFrequencyOptions.map((option) => (
-                <FormControlLabel
-                  key={option}
-                  control={
-                    <Checkbox
-                      checked={field.value === option}
-                      onChange={() => field.onChange(option)}
-                    />
-                  }
-                  label={option}
-                />
-              ))}
-            </FormGroup>
-          </>
-        )}
-      />
+      <Typography variant="h6" className="section-title">
+        Salary Information
+      </Typography>
 
-      {paymentFrequency === "Annual" && (
-        <Controller
-          name="baseSalary"
-          control={control}
-          rules={{ required: "Base Salary is required" }}
-          render={({ field, fieldState }) => (
-            <NumericFormat
-              {...field}
-              label="Base Salary"
-              fullWidth
-              customInput={TextField}
-              thousandSeparator={true}
-              prefix={"$"}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          )}
-        />
-      )}
-
-      {paymentFrequency === "Hourly" && (
-        <Controller
-          name="hourlyRate"
-          control={control}
-          rules={{ required: "Hourly Rate is required" }}
-          render={({ field, fieldState }) => (
-            <NumericFormat
-              {...field}
-              label="Hourly Rate"
-              fullWidth
-              customInput={TextField}
-              thousandSeparator={true}
-              prefix={"$"}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          )}
-        />
-      )}
-      <Box className="additional-comp-btns">
+      <Box className="salary-info-container">
         <Button
-          type="button"
-          variant="outlined"
-          size="small"
-          onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
-          {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
+          className="salary-info-btn"
+          onClick={() => handleManualSalaryInfo()}
+          variant="contained"
+          color="primary"
+          fullWidth>
+          Fill out manually
         </Button>
         <Button
-          type="button"
-          variant="outlined"
-          size="small"
-          onClick={() => setShowPercentProduction(!showPercentProduction)}>
-          {showPercentProduction ? "Hide Production (%)" : "Add Production (%)"}
-        </Button>
-        <Button
-          type="button"
-          variant="outlined"
-          size="small"
-          onClick={() =>
-            setShowAverageAnnualProduction(!showAverageAnnualProduction)
-          }>
-          {showAverageAnnualProduction
-            ? "Hide Average Annual Production"
-            : "Add Average Annual Production"}
+          className="salary-info-btn"
+          onClick={() => handleUploadFile()}
+          variant="contained"
+          color="primary"
+          fullWidth>
+          Upload verification
         </Button>
       </Box>
 
-      {showSignOnBonus && (
-        <Controller
-          name="signOnBonus"
-          control={control}
-          render={({ field, fieldState }) => (
-            <NumericFormat
-              className="sign-on-bonus"
-              {...field}
-              label="Sign On Bonus"
-              fullWidth
-              customInput={TextField}
-              thousandSeparator={true}
-              prefix={"$"}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
+      {selectManual && (
+        <>
+          <Controller
+            name="paymentFrequency"
+            control={control}
+            rules={{ required: "Please select a payment frequency" }}
+            render={({ field }) => (
+              <>
+                <FormLabel>Payment Frequency</FormLabel>
+                <FormGroup row>
+                  {paymentFrequencyOptions.map((option) => (
+                    <FormControlLabel
+                      key={option}
+                      control={
+                        <Checkbox
+                          checked={field.value === option}
+                          onChange={() => field.onChange(option)}
+                        />
+                      }
+                      label={option}
+                      disabled={isFileUploaded}
+                    />
+                  ))}
+                </FormGroup>
+              </>
+            )}
+          />
+
+          {paymentFrequency === "Annual" && (
+            <Controller
+              name="baseSalary"
+              control={control}
+              rules={{ required: "Base Salary is required" }}
+              render={({ field, fieldState }) => (
+                <NumericFormat
+                  {...field}
+                  label="Base Salary"
+                  fullWidth
+                  customInput={TextField}
+                  thousandSeparator={true}
+                  prefix={"$"}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  disabled={isFileUploaded}
+                />
+              )}
             />
           )}
-        />
-      )}
 
-      {showPercentProduction && (
-        <Controller
-          name="percentProduction"
-          control={control}
-          render={({ field, fieldState }) => (
-            <>
-              <NumericFormat
-                {...field}
-                label="% of Production That Goes Towards Your Salary"
-                fullWidth
-                customInput={TextField}
-                thousandSeparator={true}
-                suffix={"%"}
-                decimalScale={2}
-                fixedDecimalScale={true}
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </>
-          )}
-        />
-      )}
-
-      {showAverageAnnualProduction && (
-        <Controller
-          name="averageAnnualProduction"
-          control={control}
-          render={({ field, fieldState }) => (
-            <NumericFormat
-              {...field}
-              label="Average Annual Production"
-              fullWidth
-              customInput={TextField}
-              thousandSeparator={true}
-              prefix={"$"}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              onValueChange={calculateTotalCompensation}
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
+          {paymentFrequency === "Hourly" && (
+            <Controller
+              name="hourlyRate"
+              control={control}
+              rules={{ required: "Hourly Rate is required" }}
+              render={({ field, fieldState }) => (
+                <NumericFormat
+                  {...field}
+                  label="Hourly Rate"
+                  fullWidth
+                  customInput={TextField}
+                  thousandSeparator={true}
+                  prefix={"$"}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  disabled={isFileUploaded}
+                />
+              )}
             />
           )}
-        />
+
+          <Box className="additional-comp-btns">
+            <Button
+              type="button"
+              variant="contained"
+              size="small"
+              onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
+              {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              size="small"
+              onClick={() => setShowPercentProduction(!showPercentProduction)}>
+              {showPercentProduction
+                ? "Hide % of Production"
+                : "Add % of Production"}
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              size="small"
+              onClick={() =>
+                setShowAverageAnnualProduction(!showAverageAnnualProduction)
+              }>
+              {showAverageAnnualProduction
+                ? "Hide Average Annual Production"
+                : "Add Average Annual Production"}
+            </Button>
+          </Box>
+
+          {showSignOnBonus && (
+            <Controller
+              name="signOnBonus"
+              control={control}
+              render={({ field, fieldState }) => (
+                <NumericFormat
+                  className="sign-on-bonus"
+                  {...field}
+                  label="Sign On Bonus"
+                  fullWidth
+                  customInput={TextField}
+                  thousandSeparator={true}
+                  prefix={"$"}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              )}
+            />
+          )}
+
+          {showPercentProduction && (
+            <Controller
+              name="percentProduction"
+              control={control}
+              render={({ field, fieldState }) => (
+                <NumericFormat
+                  {...field}
+                  label="% of Production That Goes Towards Your Salary"
+                  fullWidth
+                  customInput={TextField}
+                  thousandSeparator={true}
+                  suffix={"%"}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              )}
+            />
+          )}
+
+          {showAverageAnnualProduction && (
+            <Controller
+              name="averageAnnualProduction"
+              control={control}
+              render={({ field, fieldState }) => (
+                <NumericFormat
+                  {...field}
+                  label="Average Annual Production"
+                  fullWidth
+                  customInput={TextField}
+                  thousandSeparator={true}
+                  prefix={"$"}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  onValueChange={calculateTotalCompensation}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              )}
+            />
+          )}
+        </>
       )}
+      {uploadFile && (
+        <Box className="file-upload-container">
+          <input
+            accept=".pdf,.doc,.docx"
+            style={{ display: "none" }}
+            id="verification-file-upload"
+            type="file"
+            onChange={handleFileUpload}
+          />
+          <label htmlFor="verification-file-upload">
+            <Button
+              variant="contained"
+              component="span"
+              startIcon={<CloudUploadIcon />}
+              className="file-upload-btn">
+              Upload
+            </Button>
+          </label>
+          {uploadedFileName && (
+            <Box className="uploaded-file-info">
+              <AttachmentIcon />
+              <Link
+                href={uploadedFile ? URL.createObjectURL(uploadedFile) : "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="uploaded-file-link">
+                {uploadedFileName}
+              </Link>
+            </Box>
+          )}
+        </Box>
+      )}
+
+      <Typography variant="h6">Optional Values</Typography>
+
+      <Controller
+        name="gender"
+        control={control}
+        render={({ field }) => (
+          <TextField {...field} label="Gender" fullWidth />
+        )}
+      />
+
+      <Controller
+        name="numberOfVeterinarians"
+        control={control}
+        render={({ field, fieldState }) => (
+          <NumericFormat
+            {...field}
+            label="Number of Veterinarians in Practice"
+            fullWidth
+            customInput={TextField}
+            thousandSeparator={true}
+            isNumericString
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
+          />
+        )}
+      />
 
       <Button type="submit" variant="contained" color="primary">
         Submit

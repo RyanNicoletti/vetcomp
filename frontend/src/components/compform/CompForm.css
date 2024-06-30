@@ -1,40 +1,61 @@
 .form-container {
   max-width: 600px;
-  margin: 100px auto 0px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 40px auto;
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #fff;
 }
 
 .form-container .MuiFormControl-root {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .form-container .MuiFormGroup-root {
-  margin-bottom: 16px;
-}
-
-.form-container .MuiButton-root {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-}
-
-.form-container .MuiTypography-root {
   margin-bottom: 20px;
-  text-align: center;
+}
+
+.form-container .section-title {
+  margin-bottom: 16px;
+  text-align: left;
+  font-weight: bold;
 }
 
 .additional-comp-btns {
   display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
 }
+
 .additional-comp-btns button {
   flex: 1;
-  margin: 0px 4px 15px 4px;
   font-weight: bold;
-  padding: 4px 8px;
+  padding: 8px 16px;
   text-transform: none;
+}
+
+.salary-info-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.salary-info-btn {
+  flex: 1;
+}
+
+.file-upload-btn {
+  text-transform: none !important;
+}
+
+.file-upload-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.uploaded-file-info {
+  display: flex;
+  gap: 5px;
 }
