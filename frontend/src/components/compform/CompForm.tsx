@@ -9,13 +9,14 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  InputLabel,
   Link,
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import { NumericFormat } from "react-number-format";
@@ -64,6 +65,7 @@ export const CompForm = () => {
   const [selectManual, setSelectManual] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isSpecialist, setIsSpecialist] = useState(false);
 
   const {
     data: locations,
@@ -122,7 +124,41 @@ export const CompForm = () => {
   const paymentFrequency = watch("paymentFrequency");
   const isNewGrad = watch("isNewGrad");
 
-  const typeOfPracticeOptions = ["General Practice", "Specialty", "Consulting"];
+  const generalPracticeOptions: string[] = [
+    "Small animal",
+    "Equine",
+    "Mixed animal",
+    "Dairy",
+    "Exotics",
+    "Research: industry",
+    "Research: government",
+    "Other",
+  ];
+
+  const specialistOptions: string[] = [
+    "Anesthesia and Analgesia",
+    "Behavior",
+    "Dentistry",
+    "Dermatology",
+    "Emergency and Critical Care",
+    "Internal Medicine, small animal",
+    "Internal Medicine, large animal",
+    "Laboratory Animal Medicine",
+    "Microbiology",
+    "Nutrition",
+    "Ophthalmology",
+    "Pathology",
+    "Pharmacology",
+    "Preventive Medicine",
+    "Radiology",
+    "Sports Medicine and Rehabilitation",
+    "Surgery, small animal",
+    "Surgery, large animal",
+    "Theriogenology",
+    "Toxicology",
+    "Veterinary Practitioners",
+    "Zoological Medicine",
+  ];
   const paymentFrequencyOptions: string[] = ["Annual", "Hourly"];
 
   const onSubmit: SubmitHandler<ICompFormInput> = (data: ICompFormInput) => {
@@ -131,20 +167,27 @@ export const CompForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-      <Typography variant="h6">Company Information</Typography>
+      <Typography className="section-title" variant="h6">
+        Company Information
+      </Typography>
 
       <Controller
         name="company"
         control={control}
         rules={{ required: "Company is required" }}
         render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Company"
-            fullWidth
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Company or Hospital Name
+            </Typography>
+            <TextField
+              {...field}
+              placeholder="Banfield Pet Hospital"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          </Box>
         )}
       />
 
@@ -156,33 +199,59 @@ export const CompForm = () => {
           validate: (value) => options.includes(value) || "Invalid location",
         }}
         render={({ field, fieldState }) => (
-          <Autocomplete
-            {...field}
-            value={field.value || ""}
-            onChange={handleLocationChange}
-            inputValue={locationQuery}
-            onInputChange={handleLocationInputChange}
-            options={options}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Location"
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {locationIsLoading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
-          />
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Location
+              <Tooltip
+                title="If you prefer not to disclose your exact location, please enter the closest metropolitan area."
+                placement="top">
+                <InfoIcon
+                  fontSize="small"
+                  style={{
+                    marginLeft: "8px",
+                    verticalAlign: "middle",
+                    cursor: "pointer",
+                  }}
+                />
+              </Tooltip>
+            </Typography>
+            <Autocomplete
+              {...field}
+              value={field.value || ""}
+              onChange={handleLocationChange}
+              inputValue={locationQuery}
+              onInputChange={handleLocationInputChange}
+              options={options}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Enter city, state (e.g., Boston, MA or Dublin, IE)"
+                  error={!!fieldState.error}
+                  helperText={
+                    fieldState.error?.message ||
+                    "Format: City, State/Country Code"
+                  }
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {locationIsLoading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <Typography variant="body2">{option}</Typography>
+                </li>
+              )}
+              noOptionsText="No locations found. Please ensure format is 'City, State' or 'City, Country Code'"
+            />
+          </Box>
         )}
       />
 
@@ -191,13 +260,18 @@ export const CompForm = () => {
         control={control}
         rules={{ required: "Title is required" }}
         render={({ field, fieldState }) => (
-          <TextField
-            {...field}
-            label="Title"
-            fullWidth
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Job Title
+            </Typography>
+            <TextField
+              {...field}
+              placeholder="Associate Veterinarian"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          </Box>
         )}
       />
 
@@ -206,20 +280,89 @@ export const CompForm = () => {
         control={control}
         rules={{ required: "This field is required" }}
         render={({ field }) => (
-          <FormControl fullWidth>
-            <InputLabel>Type of Practice</InputLabel>
-            <Select {...field} label="Type of Practice">
-              {typeOfPracticeOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Type of Practice
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isSpecialist}
+                    onChange={(e) => setIsSpecialist(e.target.checked)}
+                  />
+                }
+                label="Specialist"
+                style={{ marginLeft: "10px" }}
+              />
+            </Typography>
+            <Controller
+              name="typeOfPractice"
+              control={control}
+              rules={{ required: "This field is required" }}
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <Select
+                    {...field}
+                    displayEmpty
+                    onChange={(e) => {
+                      field.onChange(e);
+                      // Reset the value when switching between general and specialist
+                      if (
+                        isSpecialist &&
+                        generalPracticeOptions.includes(
+                          e.target.value as string
+                        )
+                      ) {
+                        setIsSpecialist(false);
+                      } else if (
+                        !isSpecialist &&
+                        specialistOptions.includes(e.target.value as string)
+                      ) {
+                        setIsSpecialist(true);
+                      }
+                    }}>
+                    <MenuItem value="" disabled>
+                      Select type of practice
+                    </MenuItem>
+                    {(isSpecialist
+                      ? specialistOptions
+                      : generalPracticeOptions
+                    ).map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Box>
         )}
       />
 
       <FormGroup row>
+        <Controller
+          name="yearsOfExperience"
+          control={control}
+          rules={{ required: "Years of Experience is required" }}
+          render={({ field, fieldState }) => (
+            <Box className="yoe-input">
+              <Typography variant="body2" align="left" gutterBottom>
+                Years of Experience
+              </Typography>
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                value={isNewGrad ? 0 : field.value}
+                disabled={isNewGrad}
+                thousandSeparator={false}
+                isNumericString
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </Box>
+          )}
+        />
         <Controller
           name="isNewGrad"
           control={control}
@@ -227,25 +370,6 @@ export const CompForm = () => {
             <FormControlLabel
               control={<Checkbox {...field} />}
               label="New Graduate"
-            />
-          )}
-        />
-        <Controller
-          name="yearsOfExperience"
-          control={control}
-          rules={{ required: "Years of Experience is required" }}
-          render={({ field, fieldState }) => (
-            <NumericFormat
-              {...field}
-              label="Years of Experience"
-              customInput={TextField}
-              value={isNewGrad ? 0 : field.value}
-              disabled={isNewGrad}
-              thousandSeparator={false}
-              isNumericString
-              fullWidth
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
             />
           )}
         />
@@ -477,7 +601,9 @@ export const CompForm = () => {
         </Box>
       )}
 
-      <Typography variant="h6">Optional Values</Typography>
+      <Typography className="section-title" variant="h6">
+        Optional Fields
+      </Typography>
 
       <Controller
         name="gender"

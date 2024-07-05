@@ -18,7 +18,7 @@
 
 .form-container .section-title {
   margin-bottom: 16px;
-  text-align: left;
+  text-align: center;
   font-weight: bold;
 }
 
@@ -58,4 +58,7 @@
 .uploaded-file-info {
   display: flex;
   gap: 5px;
+}
+.yoe-input {
+  margin-right: 10px;
 }
