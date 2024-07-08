@@ -249,7 +249,7 @@ export const CompForm = () => {
                   <Typography variant="body2">{option}</Typography>
                 </li>
               )}
-              noOptionsText="No locations found. Please ensure format is 'City, State' or 'City, Country Code'"
+              noOptionsText="Please ensure format is 'City, two letter state code' or 'City, Country Code'"
             />
           </Box>
         )}
@@ -339,13 +339,13 @@ export const CompForm = () => {
         )}
       />
 
-      <FormGroup row>
+      <Box className="yoe-container">
         <Controller
           name="yearsOfExperience"
           control={control}
           rules={{ required: "Years of Experience is required" }}
           render={({ field, fieldState }) => (
-            <Box className="yoe-input">
+            <Box className="yoe-input-container">
               <Typography variant="body2" align="left" gutterBottom>
                 Years of Experience
               </Typography>
@@ -356,13 +356,13 @@ export const CompForm = () => {
                 disabled={isNewGrad}
                 thousandSeparator={false}
                 isNumericString
-                fullWidth
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
               />
             </Box>
           )}
         />
+
         <Controller
           name="isNewGrad"
           control={control}
@@ -373,7 +373,7 @@ export const CompForm = () => {
             />
           )}
         />
-      </FormGroup>
+      </Box>
 
       <Typography variant="h6" className="section-title">
         Salary Information
@@ -472,8 +472,9 @@ export const CompForm = () => {
             />
           )}
 
-          <Box className="additional-comp-btns">
+          <Box className="additional-comp-btns-container">
             <Button
+              className="additional-comp-btn"
               type="button"
               variant="contained"
               size="small"
@@ -481,6 +482,7 @@ export const CompForm = () => {
               {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
             </Button>
             <Button
+              className="additional-comp-btn"
               type="button"
               variant="contained"
               size="small"
@@ -490,6 +492,7 @@ export const CompForm = () => {
                 : "Add % of Production"}
             </Button>
             <Button
+              className="additional-comp-btn"
               type="button"
               variant="contained"
               size="small"
@@ -609,7 +612,21 @@ export const CompForm = () => {
         name="gender"
         control={control}
         render={({ field }) => (
-          <TextField {...field} label="Gender" fullWidth />
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Gender
+            </Typography>
+            <FormControl fullWidth>
+              <Select {...field} displayEmpty>
+                <MenuItem value="" disabled>
+                  Select gender
+                </MenuItem>
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+                <MenuItem value="non-binary">Non-binary</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         )}
       />
 
@@ -617,16 +634,20 @@ export const CompForm = () => {
         name="numberOfVeterinarians"
         control={control}
         render={({ field, fieldState }) => (
-          <NumericFormat
-            {...field}
-            label="Number of Veterinarians in Practice"
-            fullWidth
-            customInput={TextField}
-            thousandSeparator={true}
-            isNumericString
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-          />
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Number of Veterinarians in Practice
+            </Typography>
+            <NumericFormat
+              {...field}
+              customInput={TextField}
+              thousandSeparator={true}
+              isNumericString
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          </Box>
         )}
       />
 
