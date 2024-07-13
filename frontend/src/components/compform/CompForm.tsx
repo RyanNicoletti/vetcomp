@@ -33,6 +33,8 @@ export const CompForm = () => {
         company: "",
         title: "",
         typeOfPractice: "",
+        isSpecialist: false,
+        specialization: "",
         isNewGrad: false,
         yearsOfExperience: undefined,
         location: "",
@@ -104,10 +106,11 @@ export const CompForm = () => {
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("Uploaded file:", file);
       setIsFileUploaded(true);
       setUploadedFileName(file.name);
       setUploadedFile(file);
+      setValue("verificationDocument", [file]);
+      setValue("verificationDocumentName", file.name);
     }
   };
 
@@ -121,11 +124,12 @@ export const CompForm = () => {
     setLocationQuery(event?.target.value || value);
   };
 
-  const paymentFrequency = watch("paymentFrequency");
-  const isNewGrad = watch("isNewGrad");
+  const paymentFrequency: string = watch("paymentFrequency");
+  const isNewGrad: boolean = watch("isNewGrad");
 
   const generalPracticeOptions: string[] = [
     "Small animal",
+    "Large animal",
     "Equine",
     "Mixed animal",
     "Dairy",
@@ -225,11 +229,11 @@ export const CompForm = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder="Enter city, state (e.g., Boston, MA or Dublin, IE)"
+                  placeholder="e.g. Boston, MA - Dublin, IE - New York, NY"
                   error={!!fieldState.error}
                   helperText={
                     fieldState.error?.message ||
-                    "Format: City, State/Country Code"
+                    "Format: `City, two letter state/country code`"
                   }
                   InputProps={{
                     ...params.InputProps,
@@ -276,66 +280,44 @@ export const CompForm = () => {
       />
 
       <Controller
-        name="typeOfPractice"
+        name="isSpecialist"
+        control={control}
+        render={({ field }) => (
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...field}
+                checked={field.value}
+                onChange={(e) => {
+                  field.onChange(e.target.checked);
+                  setIsSpecialist(!isSpecialist);
+                }}
+              />
+            }
+            label="Specialist"
+          />
+        )}
+      />
+
+      <Controller
+        name={isSpecialist ? "specialization" : "typeOfPractice"}
         control={control}
         rules={{ required: "This field is required" }}
         render={({ field }) => (
-          <Box>
-            <Typography variant="body2" align="left" gutterBottom>
-              Type of Practice
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isSpecialist}
-                    onChange={(e) => setIsSpecialist(e.target.checked)}
-                  />
-                }
-                label="Specialist"
-                style={{ marginLeft: "10px" }}
-              />
-            </Typography>
-            <Controller
-              name="typeOfPractice"
-              control={control}
-              rules={{ required: "This field is required" }}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <Select
-                    {...field}
-                    displayEmpty
-                    onChange={(e) => {
-                      field.onChange(e);
-                      // Reset the value when switching between general and specialist
-                      if (
-                        isSpecialist &&
-                        generalPracticeOptions.includes(
-                          e.target.value as string
-                        )
-                      ) {
-                        setIsSpecialist(false);
-                      } else if (
-                        !isSpecialist &&
-                        specialistOptions.includes(e.target.value as string)
-                      ) {
-                        setIsSpecialist(true);
-                      }
-                    }}>
-                    <MenuItem value="" disabled>
-                      Select type of practice
-                    </MenuItem>
-                    {(isSpecialist
-                      ? specialistOptions
-                      : generalPracticeOptions
-                    ).map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+          <FormControl fullWidth>
+            <Select {...field} displayEmpty>
+              <MenuItem value="" disabled>
+                Select {isSpecialist ? "specialization" : "type of practice"}
+              </MenuItem>
+              {(isSpecialist ? specialistOptions : generalPracticeOptions).map(
+                (option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                )
               )}
-            />
-          </Box>
+            </Select>
+          </FormControl>
         )}
       />
 
@@ -574,11 +556,17 @@ export const CompForm = () => {
       {uploadFile && (
         <Box className="file-upload-container">
           <input
+            name="verificationDocument"
             accept=".pdf,.doc,.docx"
             style={{ display: "none" }}
             id="verification-file-upload"
             type="file"
             onChange={handleFileUpload}
+          />
+          <Controller
+            name="verificationDocumentName"
+            control={control}
+            render={({ field }) => <input {...field} type="hidden" />}
           />
           <label htmlFor="verification-file-upload">
             <Button

@@ -2,6 +2,8 @@ export interface ICompFormInput {
   company: string;
   title: string;
   typeOfPractice: string;
+  isSpecialist: boolean;
+  specialization: string;
   isNewGrad: boolean;
   yearsOfExperience: number;
   location: string;
