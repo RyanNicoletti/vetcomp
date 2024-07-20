@@ -1,4 +1,4 @@
-export interface Salary {
+export interface CompensationDetails {
   salary_id: number;
   company: string;
   title: string;
@@ -18,5 +18,7 @@ export interface Salary {
   user_id: number | null;
   is_verified: boolean | null;
   is_approved: boolean;
+  days_worked_per_week: number;
+  email: string;
   created_at: string;
 }

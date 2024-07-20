@@ -1,10 +1,11 @@
 import knex from "../db/connection";
 import { SalaryFilter } from "./types";
-import { Salary } from "../../../shared-types/types";
+import { CompensationDetails } from "../../../shared-types/types";
 
 const salariesService = {
   getAll: async (salaryFilter: SalaryFilter) => {
-    let salariesQueryBuilder = knex<Salary>("salaries").select("*");
+    let salariesQueryBuilder =
+      knex<CompensationDetails>("salaries").select("*");
     if (salaryFilter.sortBy !== "") {
       salariesQueryBuilder = salariesQueryBuilder.orderBy(
         salaryFilter.sortBy!,

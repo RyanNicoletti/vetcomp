@@ -1,7 +1,7 @@
-import { Salary } from "../../../../shared-types/types";
+import { CompensationDetails } from "../../../../shared-types/types";
 
 export interface SalaryData {
-  salaries: Salary[];
+  salaries: CompensationDetails[];
   pages: number;
 }
 

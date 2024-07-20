@@ -38,21 +38,23 @@ export const CompForm = () => {
         isNewGrad: false,
         yearsOfExperience: undefined,
         location: "",
-        baseSalary: 0,
-        hourlyRate: 0,
+        baseSalary: undefined,
+        hourlyRate: undefined,
         paymentFrequency: "",
-        averageAnnualBonus: 0,
-        signOnBonus: 0,
-        averageAnnualProduction: 0,
+        averageAnnualBonus: undefined,
+        signOnBonus: undefined,
+        averageAnnualProduction: undefined,
         percentProduction: 0,
         totalCompensation: 0,
-        gender: "",
-        numberOfVeterinarians: 0,
+        gender: null,
+        numberOfVeterinarians: undefined,
         userId: 0,
         isVerified: false,
         isApproved: false,
-        verificationDocument: [],
+        verificationDocument: undefined,
         verificationDocumentName: "",
+        daysWorkedPerWeek: undefined,
+        email: undefined,
       },
     });
 
@@ -334,6 +336,7 @@ export const CompForm = () => {
               <NumericFormat
                 {...field}
                 customInput={TextField}
+                placeholder="0"
                 value={isNewGrad ? 0 : field.value}
                 disabled={isNewGrad}
                 thousandSeparator={false}
@@ -414,19 +417,24 @@ export const CompForm = () => {
               control={control}
               rules={{ required: "Base Salary is required" }}
               render={({ field, fieldState }) => (
-                <NumericFormat
-                  {...field}
-                  label="Base Salary"
-                  fullWidth
-                  customInput={TextField}
-                  thousandSeparator={true}
-                  prefix={"$"}
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  disabled={isFileUploaded}
-                />
+                <Box>
+                  <Typography variant="body2" align="left" gutterBottom>
+                    Base Salary
+                  </Typography>
+                  <NumericFormat
+                    {...field}
+                    fullWidth
+                    placeholder="$0.00"
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    disabled={isFileUploaded}
+                  />
+                </Box>
               )}
             />
           )}
@@ -437,19 +445,24 @@ export const CompForm = () => {
               control={control}
               rules={{ required: "Hourly Rate is required" }}
               render={({ field, fieldState }) => (
-                <NumericFormat
-                  {...field}
-                  label="Hourly Rate"
-                  fullWidth
-                  customInput={TextField}
-                  thousandSeparator={true}
-                  prefix={"$"}
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  disabled={isFileUploaded}
-                />
+                <Box>
+                  <Typography variant="body2" align="left" gutterBottom>
+                    Hourly Rate
+                  </Typography>
+                  <NumericFormat
+                    {...field}
+                    fullWidth
+                    placeholder="$0"
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    disabled={isFileUploaded}
+                  />
+                </Box>
               )}
             />
           )}
@@ -597,6 +610,26 @@ export const CompForm = () => {
       </Typography>
 
       <Controller
+        name="daysWorkedPerWeek"
+        control={control}
+        render={({ field, fieldState }) => (
+          <Box>
+            <Typography variant="body2" align="left" gutterBottom>
+              Average days worked per week
+            </Typography>
+            <NumericFormat
+              customInput={TextField}
+              {...field}
+              isNumericString
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          </Box>
+        )}
+      />
+
+      <Controller
         name="gender"
         control={control}
         render={({ field }) => (
@@ -629,7 +662,6 @@ export const CompForm = () => {
             <NumericFormat
               {...field}
               customInput={TextField}
-              thousandSeparator={true}
               isNumericString
               fullWidth
               error={!!fieldState.error}

@@ -15,11 +15,13 @@ export interface ICompFormInput {
   averageAnnualProduction: number;
   percentProduction: number;
   totalCompensation: number;
-  gender: string;
+  gender: "male" | "female" | "non-binary" | null;
   numberOfVeterinarians: number;
   userId: number;
   isVerified: boolean;
   isApproved: boolean;
-  verificationDocument: Blob[];
+  verificationDocument?: Blob[];
   verificationDocumentName: string;
+  daysWorkedPerWeek: number;
+  email?: string;
 }
