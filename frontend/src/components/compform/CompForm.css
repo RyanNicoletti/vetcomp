@@ -62,3 +62,13 @@
 .yoe-container {
   display: flex;
 }
+
+.payment-frequency-container {
+  display: flex;
+  align-items: center;
+}
+
+.payment-frequency-checkboxes {
+  margin-top: 20px;
+  margin-left: 20px;
+}
