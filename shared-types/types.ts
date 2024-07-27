@@ -1,4 +1,4 @@
-export interface CompensationDetails {
+export interface CompensationDetail {
   salary_id: number;
   company: string;
   title: string;
@@ -21,4 +21,9 @@ export interface CompensationDetails {
   days_worked_per_week: number;
   email: string;
   created_at: string;
+}
+
+export interface CompensationDetailsWithPages {
+  compensations: CompensationDetail[];
+  pages: number;
 }

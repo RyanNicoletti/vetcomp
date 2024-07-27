@@ -9,7 +9,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
-import { Salary } from "../../../../shared-types/types";
+import { CompensationDetail } from "../../../../shared-types/types";
 import "./SalaryTable.css";
 import { Button, TableFooter } from "@mui/material";
 import { useState } from "react";
@@ -25,23 +25,23 @@ export default function SalaryTable() {
     sortBy: "",
   });
 
-  const handleSortRequest = (column: string) => {
+  const handleSortRequest = (column: string): void => {
     const newSortDirection =
       sortParams.sortDirection === "asc" ? "desc" : "asc";
     setSortParams({ sortDirection: newSortDirection, sortBy: column });
   };
 
-  const handleChangePage = (newPage: number) => {
+  const handleChangePage = (newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (newRowsPerPage: number) => {
+  const handleChangeRowsPerPage = (newRowsPerPage: number): void => {
     setRowsPerPage(newRowsPerPage);
     setPage(1);
   };
 
   const {
-    data: salaryData,
+    data: compensationData,
     isError: salaryIsError,
     error: salaryError,
     isPending: salaryIsPending,
@@ -63,7 +63,9 @@ export default function SalaryTable() {
     <>
       <TableContainer className="table-container">
         <NavLink to="/addcomp" className="btn-link">
-          <Button className="add-comp-btn">Add Compensation</Button>
+          <Button className="add-comp-btn" color="primary" variant="contained">
+            Add Compensation
+          </Button>
         </NavLink>
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
@@ -106,8 +108,8 @@ export default function SalaryTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {salaryData?.salaries?.length &&
-              salaryData?.salaries.map((row: Salary) => {
+            {compensationData?.compensations?.length &&
+              compensationData?.compensations.map((row: CompensationDetail) => {
                 return (
                   <TableRow className="table-rows" key={row.salary_id}>
                     <TableCell
@@ -167,7 +169,7 @@ export default function SalaryTable() {
             <TableRow>
               <Pagination
                 page={page}
-                totalPages={salaryData.pages}
+                totalPages={compensationData.pages}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}

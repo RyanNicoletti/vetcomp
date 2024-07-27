@@ -253,7 +253,7 @@ export const CompForm = () => {
                   <Typography variant="body2">{option}</Typography>
                 </li>
               )}
-              noOptionsText="Please ensure format is 'City, two letter state code' or 'City, Country Code'"
+              noOptionsText="Format: 'City, two letter state code' or 'City, Country Code'"
             />
           </Box>
         )}
@@ -562,7 +562,7 @@ export const CompForm = () => {
                   <Typography gutterBottom>
                     Average Annual Production
                     <Tooltip
-                      title="On average, how much money do you make each year from production?"
+                      title="On average, how much money do you make each year from production alone?"
                       placement="top">
                       <InfoIcon
                         fontSize="small"
@@ -689,6 +689,31 @@ export const CompForm = () => {
               fullWidth
               error={!!fieldState.error}
               helperText={fieldState.error?.message}
+            />
+          </Box>
+        )}
+      />
+
+      <Controller
+        name="email"
+        control={control}
+        rules={{
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "Invalid email address",
+          },
+        }}
+        render={({ field, fieldState }) => (
+          <Box>
+            <Typography gutterBottom>Email</Typography>
+            <TextField
+              {...field}
+              fullWidth
+              error={!!fieldState.error}
+              helperText={
+                fieldState.error?.message ||
+                "Your email will not be shared. Required if you wish to have your compensation details associated with an account."
+              }
             />
           </Box>
         )}
