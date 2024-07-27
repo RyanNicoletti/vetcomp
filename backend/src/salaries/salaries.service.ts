@@ -22,9 +22,9 @@ const salariesService = {
     const total: number = totalSalaryCount as number;
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
-    const salaries = await salariesQueryBuilder;
+    const compensations: CompensationDetail[] = await salariesQueryBuilder;
 
-    return { salaries, pages };
+    return { compensations, pages };
   },
 };
 

@@ -27,8 +27,8 @@ const getAllSalaries = async (req: Request, res: Response) => {
     salaryFilter.sortBy = req.query.sortBy;
   }
 
-  const salaryData = await salariesService.getAll(salaryFilter);
-  return res.json(salaryData);
+  const compensationsWithPages = await salariesService.getAll(salaryFilter);
+  return res.json(compensationsWithPages);
 };
 
 export default { getAllSalaries };

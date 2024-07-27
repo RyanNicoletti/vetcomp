@@ -11,7 +11,16 @@ import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { CompensationDetail } from "../../../../shared-types/types";
 import "./SalaryTable.css";
-import { Button, TableFooter } from "@mui/material";
+import {
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+  TableFooter,
+  Typography,
+} from "@mui/material";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useState } from "react";
 import Pagination from "../pagination/Pagination";
 import { moneyFormatter } from "../../utils/moneyFormatter";
@@ -24,6 +33,7 @@ export default function SalaryTable() {
     sortDirection: "asc",
     sortBy: "",
   });
+  const [rowIsOpen, setRowIsOpen] = useState<boolean>(false);
 
   const handleSortRequest = (column: string): void => {
     const newSortDirection =
@@ -70,6 +80,7 @@ export default function SalaryTable() {
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
             <TableRow>
+              <TableCell />
               <TableCell key="company-location" align={"left"}>
                 <div>
                   <p>Company</p>
@@ -111,57 +122,87 @@ export default function SalaryTable() {
             {compensationData?.compensations?.length &&
               compensationData?.compensations.map((row: CompensationDetail) => {
                 return (
-                  <TableRow className="table-rows" key={row.salary_id}>
-                    <TableCell
-                      id={String(row.salary_id)}
-                      scope="row"
-                      padding="normal"
-                      component="th">
-                      <div>
-                        <p>{row.company}</p>
-                        <span>
-                          {row.location} |{" "}
-                          {new Date(row.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                            }
+                  <>
+                    <TableRow className="table-rows" key={row.salary_id}>
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setRowIsOpen(!rowIsOpen)}>
+                          {rowIsOpen ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
                           )}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell align="left">
-                      <div>
-                        <p>{row.title}</p>
-                        <span>{row.type_of_practice}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell align="left">
-                      {row.years_of_experience}
-                    </TableCell>
-                    <TableCell align="right">
-                      <div>
-                        <p>
-                          {row.total_compensation
-                            ? moneyFormatter.format(row.total_compensation)
-                            : moneyFormatter.format(row.hourly_rate!) + "/hr"}
-                        </p>
-                        <span>
-                          {row.base_salary
-                            ? moneyFormatter.format(row.base_salary)
-                            : "n/a"}{" "}
-                          |{" "}
-                          {row.average_annual_production
-                            ? moneyFormatter.format(
-                                row.average_annual_production
-                              )
-                            : "n/a"}
-                        </span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                        </IconButton>
+                      </TableCell>
+                      <TableCell
+                        id={String(row.salary_id)}
+                        scope="row"
+                        padding="normal"
+                        component="th">
+                        <div>
+                          <p>{row.company}</p>
+                          <span>
+                            {row.location} |{" "}
+                            {new Date(row.created_at).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }
+                            )}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell align="left">
+                        <div>
+                          <p>{row.title}</p>
+                          <span>{row.type_of_practice}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell align="left">
+                        {row.years_of_experience}
+                      </TableCell>
+                      <TableCell align="right">
+                        <div>
+                          <p>
+                            {row.total_compensation
+                              ? moneyFormatter.format(row.total_compensation)
+                              : moneyFormatter.format(row.hourly_rate!) + "/hr"}
+                          </p>
+                          <span>
+                            {row.base_salary
+                              ? moneyFormatter.format(row.base_salary)
+                              : "n/a"}{" "}
+                            |{" "}
+                            {row.average_annual_production
+                              ? moneyFormatter.format(
+                                  row.average_annual_production
+                                )
+                              : "n/a"}
+                          </span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={5}>
+                        <Collapse in={rowIsOpen} timeout="auto" unmountOnExit>
+                          <Box>
+                            <Typography
+                              variant="h6"
+                              gutterBottom
+                              component="div">
+                              Compensation Details:
+                            </Typography>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </>
                 );
               })}
           </TableBody>
