@@ -19,6 +19,7 @@ export interface CompensationDetail {
   is_verified: boolean | null;
   is_approved: boolean;
   days_worked_per_week: number;
+  number_of_veterinarians: number;
   email: string;
   created_at: string;
 }
