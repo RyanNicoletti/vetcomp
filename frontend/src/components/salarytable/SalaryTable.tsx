@@ -16,8 +16,10 @@ import {
   Button,
   IconButton,
   TableFooter,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import { useState } from "react";
 import Pagination from "../pagination/Pagination";
 import { moneyFormatter } from "../../utils/moneyFormatter";
@@ -109,7 +111,7 @@ export default function SalaryTable() {
                   onClick={() => handleSortRequest("total_compensation")}>
                   <div>
                     <p>Total Compensation (USD)</p>
-                    <span>Base | Production (yr)</span>
+                    <span>Base salary | Production/year</span>
                   </div>
                 </TableSortLabel>
               </TableCell>

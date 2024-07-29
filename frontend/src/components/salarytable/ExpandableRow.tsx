@@ -7,11 +7,16 @@ import {
   Box,
   Grid,
   Typography,
+  Tooltip,
 } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CompensationDetail } from "../../../../shared-types/types";
-import { moneyFormatter } from "../../utils/moneyFormatter";
+import {
+  formatNullableMoneyValue,
+  moneyFormatter,
+} from "../../utils/moneyFormatter";
 import "./ExpandableRow.css";
 
 interface ExpandableRowProps {
@@ -80,10 +85,24 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
                   </Grid>
                   <Grid item xs={3}>
                     <Typography>
-                      Sign on bonus: {row.sign_on_bonus ?? "--"}
+                      Sign on bonus:{" "}
+                      {formatNullableMoneyValue(row.sign_on_bonus) ?? "--"}
                     </Typography>
                     <Typography>
-                      Percent production: {row.percent_production ?? "--"}
+                      Percent production:
+                      <Tooltip title="Percent of total production that goes towards salary">
+                        <IconButton
+                          size="small"
+                          style={{
+                            padding: 0,
+                            marginLeft: "0px",
+                            marginRight: "2px",
+                            marginBottom: "10px",
+                          }}>
+                          <InfoOutlinedIcon style={{ fontSize: "0.8rem" }} />
+                        </IconButton>
+                      </Tooltip>
+                      {row.percent_production ?? "--"}
                     </Typography>
                   </Grid>
                   <Grid item xs={3}>

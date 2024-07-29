@@ -3,3 +3,7 @@ export const moneyFormatter = new Intl.NumberFormat("default", {
   currency: "USD",
   minimumFractionDigits: 0,
 });
+
+export const formatNullableMoneyValue = (value: number | null | undefined) => {
+  return value != null ? moneyFormatter.format(value) : "--";
+};
