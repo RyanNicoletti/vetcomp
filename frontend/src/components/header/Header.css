@@ -1,0 +1,40 @@
+.desktop_logo {
+  margin-left: 100px;
+  height: 50px;
+}
+
+.desktop_nav_items {
+  margin-right: 100px;
+}
+
+.desktop_nav_item {
+  color: black;
+  padding: 10px 20px;
+}
+
+.nav_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#burger_menu {
+  display: none;
+}
+
+@media (width <= 600px) {
+  #burger_menu {
+    display: block;
+  }
+  .desktop_logo {
+    display: none;
+  }
+  .desktop_nav_logo {
+    display: none;
+  }
+  .desktop_nav_items {
+    display: none;
+  }
+}
