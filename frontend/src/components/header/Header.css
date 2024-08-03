@@ -12,12 +12,15 @@
   padding: 10px 20px;
 }
 
+.desktop_nav_item.active {
+  color: var(--teal-blue);
+  font-weight: 700;
+}
+
 .nav_container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: auto;
-  margin-bottom: auto;
 }
 
 #burger_menu {

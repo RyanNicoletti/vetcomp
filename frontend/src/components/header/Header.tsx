@@ -87,7 +87,7 @@ const Header = () => {
   );
 
   return (
-    <Box className="header_container">
+    <Box className="header_container" component="header">
       <AppBar
         component="nav"
         className="appbar"

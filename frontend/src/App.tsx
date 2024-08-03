@@ -4,19 +4,23 @@ import Header from "./components/header/Header";
 import Home from "./pages/Home";
 import AddCompForm from "./pages/AddCompForm";
 import { Box } from "@mui/material";
+import Footer from "./components/footer/Footer";
 
 function App() {
   return (
     <Router>
-      <Box className="nav-container">
-        <Header />
+      <Box className="app_container">
+        <Box className="nav_container">
+          <Header />
+        </Box>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/addcomp" element={<AddCompForm />} />
+        </Routes>
+        <Footer />
       </Box>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/addcomp" element={<AddCompForm />} />
-      </Routes>
     </Router>
   );
 }
