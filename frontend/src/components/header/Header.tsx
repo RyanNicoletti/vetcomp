@@ -36,28 +36,6 @@ const Header = () => {
         flexDirection: "column",
         alignItems: "center",
       }}>
-      <NavLink
-        to="/"
-        className="mobile_logo_link"
-        style={{
-          borderBottom: "solid black 2px",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          padding: "20px 0",
-          marginBottom: "20px",
-        }}>
-        <img
-          src={logo_abrev}
-          alt="Logo"
-          className="mobile_logo"
-          style={{
-            maxWidth: "120px",
-            height: "auto",
-          }}
-        />
-      </NavLink>
-      <Divider />
       <List style={{ padding: 0 }}>
         {navItems.map((item) => (
           <ListItem key={item} disablePadding>
@@ -97,8 +75,12 @@ const Header = () => {
           background: "#d3d3d3",
           fontWeight: "500",
           display: "flex",
+          justifyContent: "center",
         }}>
         <Toolbar className="nav_container">
+          <NavLink to="/" className="logo_link">
+            <img src={logo_expanded} alt="Logo" className="logo" />
+          </NavLink>
           <IconButton
             id="burger_menu"
             aria-label="open drawer"
@@ -106,9 +88,6 @@ const Header = () => {
             onClick={toggleDrawer}>
             <MenuIcon />
           </IconButton>
-          <NavLink to="/" className="desktop_logo_link">
-            <img src={logo_expanded} alt="Logo" className="desktop_logo" />
-          </NavLink>
           <Box className="desktop_nav_items">
             {navItems.map((item) => (
               <NavLink

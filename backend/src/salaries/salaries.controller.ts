@@ -4,13 +4,15 @@ import { SalaryFilter } from "./types";
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
-    page: 0,
+    page: 1,
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
   };
   if (typeof req.query.page === "string") {
-    salaryFilter.page = parseInt(req.query.page, 10);
+    const pageNumber: number = parseInt(req.query.page, 10);
+    const oneIndexedPageNumber: number = pageNumber - 1;
+    salaryFilter.page = oneIndexedPageNumber;
   }
   if (typeof req.query.rowsPerPage === "string") {
     salaryFilter.rowsPerPage = parseInt(req.query.rowsPerPage, 10);

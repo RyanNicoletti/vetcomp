@@ -1,4 +1,4 @@
-.desktop_logo {
+.logo {
   margin-left: 100px;
   height: 50px;
 }
@@ -19,7 +19,6 @@
 
 .nav_container {
   display: flex;
-  align-items: center;
   justify-content: space-between;
 }
 
@@ -30,13 +29,13 @@
 @media (width <= 600px) {
   #burger_menu {
     display: block;
+    margin-top: 10px;
   }
-  .desktop_logo {
-    display: none;
+
+  .logo {
+    margin-left: 0;
   }
-  .desktop_nav_logo {
-    display: none;
-  }
+
   .desktop_nav_items {
     display: none;
   }

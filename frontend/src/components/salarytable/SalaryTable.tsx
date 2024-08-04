@@ -27,7 +27,7 @@ import { NavLink } from "react-router-dom";
 import { ExpandableRow } from "./ExpandableRow";
 
 export default function SalaryTable() {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortParams, setSortParams] = useState<SortParams>({
     sortDirection: "asc",

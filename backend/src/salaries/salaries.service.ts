@@ -8,10 +8,12 @@ const salariesService = {
     if (salaryFilter.sortBy !== "") {
       salariesQueryBuilder = salariesQueryBuilder.orderBy(
         salaryFilter.sortBy!,
-        salaryFilter.sortDirection
+        salaryFilter.sortDirection,
+        "last"
       );
     }
-    const offset = salaryFilter.page * salaryFilter.rowsPerPage;
+
+    const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
     salariesQueryBuilder = salariesQueryBuilder
       .offset(offset)
       .limit(salaryFilter.rowsPerPage);
@@ -23,7 +25,6 @@ const salariesService = {
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
     const compensations: CompensationDetail[] = await salariesQueryBuilder;
-
     return { compensations, pages };
   },
 };
