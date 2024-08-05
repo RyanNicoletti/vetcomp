@@ -4,11 +4,13 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("salaries", (table) => {
     table.increments("salary_id").primary();
     table.text("company");
+    table.text("location");
     table.text("title");
+    table.boolean("is_specialist").notNullable();
+    table.text("specialization");
     table.text("type_of_practice");
     table.boolean("is_new_grad");
     table.integer("years_of_experience");
-    table.text("location");
     table.decimal("base_salary", 12, 2);
     table.decimal("hourly_rate", 12, 2);
     table.enu("payment_frequency", ["annually", "hourly"]);
@@ -18,14 +20,16 @@ export async function up(knex: Knex): Promise<void> {
     table.integer("percent_production");
     table.decimal("total_compensation", 12, 2);
     table.enu("gender", ["male", "female", "non-binary"]);
-    table.integer("user_id");
+    table.integer("number_of_vets_in_practice");
+    table.integer("days_per_week");
+    table.text("email");
     table
-      .foreign("user_id")
-      .references("user_id")
+      .foreign("email")
+      .references("email")
       .inTable("users")
-      .onDelete("cascade");
-    table.boolean("is_verified");
-    table.boolean("is_approved");
+      .onDelete("CASCADE");
+    table.boolean("is_verified").defaultTo(false);
+    table.boolean("is_approved").defaultTo(false);
     table.binary("verification_document");
     table.text("verification_document_name");
     table.timestamps(true, true);

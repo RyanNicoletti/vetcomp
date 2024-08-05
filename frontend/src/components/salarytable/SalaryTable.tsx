@@ -11,18 +11,9 @@ import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { CompensationDetail } from "../../../../shared-types/types";
 import "./SalaryTable.css";
-import {
-  Box,
-  Button,
-  IconButton,
-  TableFooter,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import { Button, TableFooter } from "@mui/material";
 import { useState } from "react";
 import Pagination from "../pagination/Pagination";
-import { moneyFormatter } from "../../utils/moneyFormatter";
 import { NavLink } from "react-router-dom";
 import { ExpandableRow } from "./ExpandableRow";
 

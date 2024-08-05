@@ -62,24 +62,44 @@ const Pagination = ({
       </div>
       <ul>
         <li
-          className={page === 1 ? "disabled" : ""}
-          onClick={() => onPageChange(1)}>
+          className={page <= 1 ? "disabled" : ""}
+          onClick={() => {
+            if (page <= 1) {
+              return;
+            }
+            onPageChange(1);
+          }}>
           {"<<"}
         </li>
         <li
-          className={page === 1 ? "disabled" : ""}
-          onClick={() => onPageChange(page - 1)}>
+          className={page <= 1 ? "disabled" : ""}
+          onClick={() => {
+            if (page <= 1) {
+              return;
+            }
+            onPageChange(page - 1);
+          }}>
           {"<"}
         </li>
         {renderPageNumbers()}
         <li
           className={page === totalPages ? "disabled" : ""}
-          onClick={() => onPageChange(page + 1)}>
+          onClick={() => {
+            if (page >= totalPages) {
+              return;
+            }
+            onPageChange(page + 1);
+          }}>
           {">"}
         </li>
         <li
           className={page === totalPages ? "disabled" : ""}
-          onClick={() => onPageChange(totalPages)}>
+          onClick={() => {
+            if (page >= totalPages) {
+              return;
+            }
+            onPageChange(totalPages);
+          }}>
           {">>"}
         </li>
       </ul>
