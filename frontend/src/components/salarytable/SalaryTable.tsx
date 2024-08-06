@@ -9,7 +9,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAllSalaries } from "../../queries/salaryQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
-import { CompensationDetail } from "../../../../shared-types/types";
+import { ICompensation } from "../../../../shared-types/types";
 import "./SalaryTable.css";
 import { Button, TableFooter } from "@mui/material";
 import { useState } from "react";
@@ -109,7 +109,7 @@ export default function SalaryTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {compensationData?.compensations?.map((row: CompensationDetail) => (
+            {compensationData?.compensations?.map((row: ICompensation) => (
               <ExpandableRow key={row.salary_id} row={row} />
             ))}
           </TableBody>

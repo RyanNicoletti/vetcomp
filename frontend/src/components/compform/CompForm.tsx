@@ -23,8 +23,13 @@ import { NumericFormat } from "react-number-format";
 import "./CompForm.css";
 import { ChangeEvent, useEffect, useState } from "react";
 import { getLocationSuggestions } from "../../queries/locationQueries";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ICompFormInput } from "./types";
+import {
+  generalPracticeOptions,
+  paymentFrequencyOptions,
+  specialistOptions,
+} from "./CompFormData";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, formState } =
@@ -46,7 +51,7 @@ export const CompForm = () => {
         averageAnnualProduction: undefined,
         percentProduction: undefined,
         totalCompensation: 0,
-        gender: null,
+        gender: "",
         numberOfVeterinarians: undefined,
         userId: 0,
         isVerified: false,
@@ -81,6 +86,26 @@ export const CompForm = () => {
     enabled: false,
   });
 
+  const addCompensationMutation = useMutation({
+    mutationFn: async (data: ICompFormInput) => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/salaries`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const addCompResponse = await response.json();
+      return addCompResponse;
+    },
+    onSuccess: async () => {
+      console.log("success");
+    },
+  });
+
   useEffect(() => {
     if (locationQuery.length > 2) {
       refetch();
@@ -100,6 +125,7 @@ export const CompForm = () => {
     setUploadedFile(null);
     setIsFileUploaded(false);
   };
+
   const handleUploadFile = () => {
     setUploadFile(true);
     setSelectManual(false);
@@ -129,46 +155,10 @@ export const CompForm = () => {
   const paymentFrequency: string = watch("paymentFrequency");
   const isNewGrad: boolean = watch("isNewGrad");
 
-  const generalPracticeOptions: string[] = [
-    "Small animal",
-    "Large animal",
-    "Equine",
-    "Mixed animal",
-    "Dairy",
-    "Exotics",
-    "Research: industry",
-    "Research: government",
-    "Other",
-  ];
-
-  const specialistOptions: string[] = [
-    "Anesthesia and Analgesia",
-    "Behavior",
-    "Dentistry",
-    "Dermatology",
-    "Emergency and Critical Care",
-    "Internal Medicine, small animal",
-    "Internal Medicine, large animal",
-    "Laboratory Animal Medicine",
-    "Microbiology",
-    "Nutrition",
-    "Ophthalmology",
-    "Pathology",
-    "Pharmacology",
-    "Preventive Medicine",
-    "Radiology",
-    "Sports Medicine and Rehabilitation",
-    "Surgery, small animal",
-    "Surgery, large animal",
-    "Theriogenology",
-    "Toxicology",
-    "Veterinary Practitioners",
-    "Zoological Medicine",
-  ];
-  const paymentFrequencyOptions: string[] = ["Annual", "Hourly"];
-
-  const onSubmit: SubmitHandler<ICompFormInput> = (data: ICompFormInput) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<ICompFormInput> = async (
+    data: ICompFormInput
+  ) => {
+    addCompensationMutation.mutate(data);
   };
 
   return (
@@ -387,7 +377,7 @@ export const CompForm = () => {
               <Box className="payment-frequency-container">
                 <Typography>Payment Frequency: </Typography>
                 <FormGroup row className="payment-frequency-checkboxes">
-                  {paymentFrequencyOptions.map((option) => (
+                  {paymentFrequencyOptions.map((option: string) => (
                     <FormControlLabel
                       key={option}
                       control={

@@ -1,10 +1,10 @@
 import knex from "../db/connection";
 import { SalaryFilter } from "./types";
-import { CompensationDetail } from "../../../shared-types/types";
+import { ICompensation } from "../../../shared-types/types";
 
 const salariesService = {
   getAll: async (salaryFilter: SalaryFilter) => {
-    let salariesQueryBuilder = knex<CompensationDetail>("salaries").select("*");
+    let salariesQueryBuilder = knex<ICompensation>("salaries").select("*");
     if (salaryFilter.sortBy !== "") {
       salariesQueryBuilder = salariesQueryBuilder.orderBy(
         salaryFilter.sortBy!,
@@ -24,7 +24,7 @@ const salariesService = {
     const total: number = totalSalaryCount as number;
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
-    const compensations: CompensationDetail[] = await salariesQueryBuilder;
+    const compensations: ICompensation[] = await salariesQueryBuilder;
     return { compensations, pages };
   },
 };

@@ -12,7 +12,7 @@ import {
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { CompensationDetail } from "../../../../shared-types/types";
+import { ICompensation } from "../../../../shared-types/types";
 import {
   formatNullableMoneyValue,
   moneyFormatter,
@@ -20,7 +20,7 @@ import {
 import "./ExpandableRow.css";
 
 interface ExpandableRowProps {
-  row: CompensationDetail;
+  row: ICompensation;
 }
 
 export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {

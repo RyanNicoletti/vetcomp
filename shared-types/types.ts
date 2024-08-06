@@ -1,4 +1,4 @@
-export interface CompensationDetail {
+export interface ICompensation {
   salary_id: number;
   company: string;
   title: string;
@@ -25,6 +25,6 @@ export interface CompensationDetail {
 }
 
 export interface CompensationDetailsWithPages {
-  compensations: CompensationDetail[];
+  compensations: ICompensation[];
   pages: number;
 }
