@@ -2,8 +2,8 @@ import express, { Express, Request, Response } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
-import salariesRouter from "./salaries/salaries.router";
-import locationsRouter from "./locations/locations.router";
+import compensationRouter from "./routes/compensationRouter";
+import locationsRouter from "./routes/locationsRouter";
 import "dotenv/config";
 
 const app: Express = express();
@@ -17,7 +17,7 @@ app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use("/salaries", salariesRouter);
+app.use("/salaries", compensationRouter);
 app.use("/locations", locationsRouter);
 
 export default app;

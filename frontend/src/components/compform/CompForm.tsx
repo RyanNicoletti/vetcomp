@@ -31,35 +31,32 @@ import {
 } from "./CompFormData";
 
 export const CompForm = () => {
-  const { control, handleSubmit, watch, setValue, formState } =
-    useForm<ICompFormInput>({
-      defaultValues: {
-        company: "",
-        title: "",
-        typeOfPractice: "",
-        isSpecialist: false,
-        specialization: "",
-        isNewGrad: false,
-        yearsOfExperience: undefined,
-        location: "",
-        baseSalary: undefined,
-        hourlyRate: undefined,
-        paymentFrequency: "",
-        averageAnnualBonus: undefined,
-        signOnBonus: undefined,
-        averageAnnualProduction: undefined,
-        percentProduction: undefined,
-        totalCompensation: 0,
-        gender: "",
-        numberOfVeterinarians: undefined,
-        isVerified: false,
-        isApproved: false,
-        verificationDocument: undefined,
-        verificationDocumentName: "",
-        daysWorkedPerWeek: undefined,
-        email: undefined,
-      },
-    });
+  const { control, handleSubmit, watch, setValue } = useForm<ICompFormInput>({
+    defaultValues: {
+      company: "",
+      title: "",
+      typeOfPractice: "",
+      isSpecialist: false,
+      specialization: "",
+      isNewGrad: false,
+      yearsOfExperience: "",
+      location: "",
+      baseSalary: "",
+      hourlyRate: "",
+      paymentFrequency: "",
+      signOnBonus: "",
+      averageAnnualProduction: "",
+      percentProduction: "",
+      gender: "",
+      numberOfVeterinarians: "",
+      isVerified: false,
+      isApproved: false,
+      verificationDocument: null,
+      verificationDocumentName: "",
+      daysWorkedPerWeek: "",
+      email: "",
+    },
+  });
 
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
@@ -153,7 +150,7 @@ export const CompForm = () => {
   const handleIsNewGrad = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setValue("isNewGrad", true);
-      setValue("yearsOfExperience", 0);
+      setValue("yearsOfExperience", "0");
     } else {
       setValue("isNewGrad", false);
     }

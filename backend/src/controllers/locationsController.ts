@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import locationService from "./locations.service";
+import locationService from "../services/locationsService";
 
 const getLocations = async (req: Request, res: Response) => {
   try {

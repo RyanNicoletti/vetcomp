@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
-import salariesService from "./salaries.service";
-import { SalaryFilter } from "./types";
+import compensationService from "../services/compensationService";
+
+interface SalaryFilter {
+  page: number;
+  rowsPerPage: number;
+  sortDirection: "asc" | "desc";
+  sortBy?: string;
+}
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
@@ -29,8 +35,12 @@ const getAllSalaries = async (req: Request, res: Response) => {
     salaryFilter.sortBy = req.query.sortBy;
   }
 
-  const compensationsWithPages = await salariesService.getAll(salaryFilter);
+  const compensationsWithPages = await compensationService.getAll(salaryFilter);
   return res.json(compensationsWithPages);
 };
 
-export default { getAllSalaries };
+const addCompensation = async (req: Request, res: Response) => {
+  console.log(req.body);
+};
+
+export default { getAllSalaries, addCompensation };

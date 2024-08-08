@@ -1,26 +1,24 @@
 export interface ICompFormInput {
   company: string;
   title: string;
-  typeOfPractice: string;
+  typeOfPractice?: string;
   isSpecialist: boolean;
-  specialization: string;
+  specialization?: string;
   isNewGrad: boolean;
-  yearsOfExperience: number;
+  yearsOfExperience: string;
   location: string;
-  baseSalary: number;
-  hourlyRate: number;
+  baseSalary?: string;
+  hourlyRate?: string;
   paymentFrequency: string;
-  averageAnnualBonus: number;
-  signOnBonus: number;
-  averageAnnualProduction: number;
-  percentProduction: number;
-  totalCompensation: number;
+  signOnBonus?: string;
+  averageAnnualProduction?: string;
+  percentProduction?: string;
   gender: "male" | "female" | "non-binary" | "";
-  numberOfVeterinarians: number;
+  numberOfVeterinarians: string;
   isVerified: boolean;
   isApproved: boolean;
   verificationDocument: Blob[] | null;
-  verificationDocumentName: string | undefined;
-  daysWorkedPerWeek: number;
-  email: string | null;
+  verificationDocumentName?: string;
+  daysWorkedPerWeek?: string;
+  email?: string;
 }

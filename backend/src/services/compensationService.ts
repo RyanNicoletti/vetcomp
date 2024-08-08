@@ -1,6 +1,12 @@
 import knex from "../db/connection";
-import { SalaryFilter } from "./types";
 import { ICompensation } from "../../../shared-types/types";
+
+interface SalaryFilter {
+  page: number;
+  rowsPerPage: number;
+  sortDirection: "asc" | "desc";
+  sortBy?: string;
+}
 
 const salariesService = {
   getAll: async (salaryFilter: SalaryFilter) => {
