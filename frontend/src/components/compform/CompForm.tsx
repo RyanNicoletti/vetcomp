@@ -30,6 +30,7 @@ import {
   paymentFrequencyOptions,
   specialistOptions,
 } from "./CompFormData";
+import { RestaurantMenuSharp } from "@mui/icons-material";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, formState } =
@@ -314,22 +315,25 @@ export const CompForm = () => {
           name="yearsOfExperience"
           control={control}
           rules={{ required: "Years of Experience is required" }}
-          render={({ field, fieldState }) => (
-            <Box className="yoe-input-container">
-              <Typography gutterBottom>Years of Experience</Typography>
-              <NumericFormat
-                {...field}
-                customInput={TextField}
-                placeholder="0"
-                value={isNewGrad ? 0 : field.value}
-                disabled={isNewGrad}
-                thousandSeparator={false}
-                isNumericString
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </Box>
-          )}
+          render={({ field, fieldState }) => {
+            const { ref, ...rest } = field;
+            return (
+              <Box className="yoe-input-container">
+                <Typography gutterBottom>Years of Experience</Typography>
+                <NumericFormat
+                  {...rest}
+                  customInput={TextField}
+                  getInputRef={ref}
+                  placeholder="0"
+                  value={isNewGrad ? 0 : rest.value}
+                  disabled={isNewGrad}
+                  thousandSeparator={false}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            );
+          }}
         />
 
         <Controller
@@ -400,24 +404,28 @@ export const CompForm = () => {
               name="baseSalary"
               control={control}
               rules={{ required: "Base Salary is required" }}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <Typography gutterBottom>Base Salary</Typography>
-                  <NumericFormat
-                    {...field}
-                    fullWidth
-                    placeholder="$0.00"
-                    customInput={TextField}
-                    thousandSeparator={true}
-                    prefix={"$"}
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                    disabled={isFileUploaded}
-                  />
-                </Box>
-              )}
+              render={({ field, fieldState }) => {
+                const { ref, ...rest } = field;
+                return (
+                  <Box>
+                    <Typography gutterBottom>Base Salary</Typography>
+                    <NumericFormat
+                      {...rest}
+                      getInputRef={ref}
+                      fullWidth
+                      placeholder="$0.00"
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      prefix={"$"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      disabled={isFileUploaded}
+                    />
+                  </Box>
+                );
+              }}
             />
           )}
 
@@ -426,24 +434,28 @@ export const CompForm = () => {
               name="hourlyRate"
               control={control}
               rules={{ required: "Hourly Rate is required" }}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <Typography gutterBottom>Hourly Rate</Typography>
-                  <NumericFormat
-                    {...field}
-                    fullWidth
-                    placeholder="$0"
-                    customInput={TextField}
-                    thousandSeparator={true}
-                    prefix={"$"}
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                    disabled={isFileUploaded}
-                  />
-                </Box>
-              )}
+              render={({ field, fieldState }) => {
+                const { ref, ...rest } = field;
+                return (
+                  <Box>
+                    <Typography gutterBottom>Hourly Rate</Typography>
+                    <NumericFormat
+                      {...rest}
+                      getInputRef={ref}
+                      fullWidth
+                      placeholder="$0"
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      prefix={"$"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      disabled={isFileUploaded}
+                    />
+                  </Box>
+                );
+              }}
             />
           )}
 
@@ -484,24 +496,28 @@ export const CompForm = () => {
             <Controller
               name="signOnBonus"
               control={control}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <Typography gutterBottom>Sign On Bonus</Typography>
-                  <NumericFormat
-                    className="sign-on-bonus"
-                    {...field}
-                    placeholder="$0"
-                    fullWidth
-                    customInput={TextField}
-                    thousandSeparator={true}
-                    prefix={"$"}
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
-                </Box>
-              )}
+              render={({ field, fieldState }) => {
+                const { ref, ...rest } = field;
+                return (
+                  <Box>
+                    <Typography gutterBottom>Sign On Bonus</Typography>
+                    <NumericFormat
+                      className="sign-on-bonus"
+                      {...rest}
+                      getInputRef={ref}
+                      placeholder="$0"
+                      fullWidth
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      prefix={"$"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                    />
+                  </Box>
+                );
+              }}
             />
           )}
 
@@ -509,37 +525,41 @@ export const CompForm = () => {
             <Controller
               name="percentProduction"
               control={control}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <Typography gutterBottom>
-                    % Production
-                    <Tooltip
-                      title="What percentage of your total production goes towards your salary?"
-                      placement="top">
-                      <InfoIcon
-                        fontSize="small"
-                        style={{
-                          marginLeft: "8px",
-                          verticalAlign: "middle",
-                          cursor: "pointer",
-                        }}
-                      />
-                    </Tooltip>
-                  </Typography>
-                  <NumericFormat
-                    {...field}
-                    placeholder="20%"
-                    fullWidth
-                    customInput={TextField}
-                    thousandSeparator={true}
-                    suffix={"%"}
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
-                </Box>
-              )}
+              render={({ field, fieldState }) => {
+                const { ref, ...rest } = field;
+                return (
+                  <Box>
+                    <Typography gutterBottom>
+                      % Production
+                      <Tooltip
+                        title="What percentage of your total production goes towards your salary?"
+                        placement="top">
+                        <InfoIcon
+                          fontSize="small"
+                          style={{
+                            marginLeft: "8px",
+                            verticalAlign: "middle",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </Tooltip>
+                    </Typography>
+                    <NumericFormat
+                      {...rest}
+                      getInputRef={ref}
+                      placeholder="20%"
+                      fullWidth
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      suffix={"%"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                    />
+                  </Box>
+                );
+              }}
             />
           )}
 
@@ -547,38 +567,42 @@ export const CompForm = () => {
             <Controller
               name="averageAnnualProduction"
               control={control}
-              render={({ field, fieldState }) => (
-                <Box>
-                  <Typography gutterBottom>
-                    Average Annual Production
-                    <Tooltip
-                      title="On average, how much money do you make each year from production alone?"
-                      placement="top">
-                      <InfoIcon
-                        fontSize="small"
-                        style={{
-                          marginLeft: "8px",
-                          verticalAlign: "middle",
-                          cursor: "pointer",
-                        }}
-                      />
-                    </Tooltip>
-                  </Typography>
-                  <NumericFormat
-                    {...field}
-                    placeholder="$20,000"
-                    fullWidth
-                    customInput={TextField}
-                    thousandSeparator={true}
-                    prefix={"$"}
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                    onValueChange={calculateTotalCompensation}
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
-                </Box>
-              )}
+              render={({ field, fieldState }) => {
+                const { ref, ...rest } = field;
+                return (
+                  <Box>
+                    <Typography gutterBottom>
+                      Average Annual Production
+                      <Tooltip
+                        title="On average, how much money do you make each year from production alone?"
+                        placement="top">
+                        <InfoIcon
+                          fontSize="small"
+                          style={{
+                            marginLeft: "8px",
+                            verticalAlign: "middle",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </Tooltip>
+                    </Typography>
+                    <NumericFormat
+                      {...rest}
+                      getInputRef={ref}
+                      placeholder="$20,000"
+                      fullWidth
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      prefix={"$"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      onValueChange={calculateTotalCompensation}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                    />
+                  </Box>
+                );
+              }}
             />
           )}
         </>
@@ -629,19 +653,22 @@ export const CompForm = () => {
       <Controller
         name="daysWorkedPerWeek"
         control={control}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>Average days worked per week</Typography>
-            <NumericFormat
-              customInput={TextField}
-              {...field}
-              isNumericString
-              fullWidth
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          </Box>
-        )}
+        render={({ field, fieldState }) => {
+          const { ref, ...rest } = field;
+          return (
+            <Box>
+              <Typography gutterBottom>Average days worked per week</Typography>
+              <NumericFormat
+                customInput={TextField}
+                {...rest}
+                getInputRef={ref}
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </Box>
+          );
+        }}
       />
 
       <Controller
@@ -667,21 +694,24 @@ export const CompForm = () => {
       <Controller
         name="numberOfVeterinarians"
         control={control}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>
-              Number of Veterinarians in Practice
-            </Typography>
-            <NumericFormat
-              {...field}
-              customInput={TextField}
-              isNumericString
-              fullWidth
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          </Box>
-        )}
+        render={({ field, fieldState }) => {
+          const { ref, ...rest } = field;
+          return (
+            <Box>
+              <Typography gutterBottom>
+                Number of Veterinarians in Practice
+              </Typography>
+              <NumericFormat
+                {...rest}
+                getInputRef={ref}
+                customInput={TextField}
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </Box>
+          );
+        }}
       />
 
       <Controller
