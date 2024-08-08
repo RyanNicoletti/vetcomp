@@ -17,7 +17,6 @@ export interface ICompFormInput {
   totalCompensation: number;
   gender: "male" | "female" | "non-binary" | "";
   numberOfVeterinarians: number;
-  userId: number;
   isVerified: boolean;
   isApproved: boolean;
   verificationDocument: Blob[] | null;

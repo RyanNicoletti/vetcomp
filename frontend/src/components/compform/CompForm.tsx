@@ -8,7 +8,6 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   Link,
   MenuItem,
   Select,
@@ -30,7 +29,6 @@ import {
   paymentFrequencyOptions,
   specialistOptions,
 } from "./CompFormData";
-import { RestaurantMenuSharp } from "@mui/icons-material";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, formState } =
@@ -54,7 +52,6 @@ export const CompForm = () => {
         totalCompensation: 0,
         gender: "",
         numberOfVeterinarians: undefined,
-        userId: 0,
         isVerified: false,
         isApproved: false,
         verificationDocument: undefined,
@@ -151,6 +148,15 @@ export const CompForm = () => {
 
   const handleLocationInputChange: any = (event: any, value: string) => {
     setLocationQuery(event?.target.value || value);
+  };
+
+  const handleIsNewGrad = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setValue("isNewGrad", true);
+      setValue("yearsOfExperience", 0);
+    } else {
+      setValue("isNewGrad", false);
+    }
   };
 
   const paymentFrequency: string = watch("paymentFrequency");
@@ -341,7 +347,15 @@ export const CompForm = () => {
           control={control}
           render={({ field }) => (
             <FormControlLabel
-              control={<Checkbox {...field} />}
+              control={
+                <Checkbox
+                  {...field}
+                  onChange={(e) => {
+                    // field.onChange(e);
+                    handleIsNewGrad(e);
+                  }}
+                />
+              }
               label="New Graduate"
             />
           )}
