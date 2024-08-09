@@ -23,12 +23,12 @@ import "./CompForm.css";
 import { ChangeEvent, useEffect, useState } from "react";
 import { getLocationSuggestions } from "../../queries/locationQueries";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ICompFormInput } from "./types";
 import {
   generalPracticeOptions,
   paymentFrequencyOptions,
   specialistOptions,
 } from "./CompFormData";
+import { ICompFormInput } from "../../../../shared-types/types";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue } = useForm<ICompFormInput>({
