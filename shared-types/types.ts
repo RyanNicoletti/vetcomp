@@ -48,8 +48,6 @@ export interface ICompFormInput {
   percentProduction?: string;
   gender: "male" | "female" | "non-binary" | "";
   numberOfVeterinarians: string;
-  isVerified: boolean;
-  isApproved: boolean;
   verificationDocument: Blob[] | null;
   verificationDocumentName?: string;
   daysWorkedPerWeek?: string;

@@ -49,8 +49,6 @@ export const CompForm = () => {
       percentProduction: "",
       gender: "",
       numberOfVeterinarians: "",
-      isVerified: false,
-      isApproved: false,
       verificationDocument: null,
       verificationDocumentName: "",
       daysWorkedPerWeek: "",

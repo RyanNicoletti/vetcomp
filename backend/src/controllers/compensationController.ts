@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import compensationService from "../services/compensationService";
+import { ICompensation, ICompFormInput } from "../../../shared-types/types";
+import { validateCompensationFormData } from "../validateCompForm/validateComp";
 
 interface SalaryFilter {
   page: number;
@@ -40,7 +42,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
 };
 
 const addCompensation = async (req: Request, res: Response) => {
-  console.log(req.body);
+  const newCompensation: ICompensation = validateCompensationFormData(req.body);
 };
 
 export default { getAllSalaries, addCompensation };
