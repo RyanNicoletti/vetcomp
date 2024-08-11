@@ -408,7 +408,7 @@ export const CompForm = () => {
             )}
           />
 
-          {paymentFrequency === "Annual" && (
+          {paymentFrequency === "Annually" && (
             <Controller
               name="baseSalary"
               control={control}

@@ -35,4 +35,4 @@ export const specialistOptions: string[] = [
   "Zoological Medicine",
 ];
 
-export const paymentFrequencyOptions: string[] = ["Annual", "Hourly"];
+export const paymentFrequencyOptions: string[] = ["Annually", "Hourly"];

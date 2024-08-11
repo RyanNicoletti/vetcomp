@@ -42,7 +42,18 @@ const getAllSalaries = async (req: Request, res: Response) => {
 };
 
 const addCompensation = async (req: Request, res: Response) => {
-  const newCompensation: ICompensation = validateCompensationFormData(req.body);
+  const { data, errors } = validateCompensationFormData(
+    req.body as ICompFormInput
+  );
+
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+  if (!data) {
+    return res.status(500).json({
+      message: "An unexpected error occurred, please try again later.",
+    });
+  }
 };
 
 export default { getAllSalaries, addCompensation };

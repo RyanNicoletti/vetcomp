@@ -2,15 +2,15 @@ export interface ICompensation {
   salary_id: number;
   company: string;
   title: string;
-  type_of_practice?: string;
+  type_of_practice: string | null;
   is_specialist: boolean;
-  specialization?: string;
+  specialization: string | null;
   is_new_grad: boolean;
   years_of_experience: number;
   location: string;
   base_salary: number | null;
   hourly_rate: number | null;
-  payment_frequency: "annually" | "hourly";
+  payment_frequency: "annually" | "hourly" | null;
   average_annual_bonus: number | null;
   sign_on_bonus: number | null;
   average_annual_production: number | null;
@@ -20,9 +20,11 @@ export interface ICompensation {
   user_id: number | null;
   is_verified: boolean | null;
   is_approved: boolean;
-  days_worked_per_week: number;
-  number_of_veterinarians: number;
-  email: string;
+  verification_document: Uint8Array | null;
+  verification_document_name: string | null;
+  days_worked_per_week: number | null;
+  number_of_veterinarians: number | null;
+  email: string | null;
   created_at: string;
 }
 
@@ -42,12 +44,12 @@ export interface ICompFormInput {
   location: string;
   baseSalary?: string;
   hourlyRate?: string;
-  paymentFrequency: string;
+  paymentFrequency: "annually" | "hourly" | "";
   signOnBonus?: string;
   averageAnnualProduction?: string;
   percentProduction?: string;
   gender: "male" | "female" | "non-binary" | "";
-  numberOfVeterinarians: string;
+  numberOfVeterinarians?: string;
   verificationDocument: Blob[] | null;
   verificationDocumentName?: string;
   daysWorkedPerWeek?: string;
