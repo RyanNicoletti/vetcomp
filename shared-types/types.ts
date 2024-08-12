@@ -11,7 +11,6 @@ export interface ICompensation {
   base_salary: number | null;
   hourly_rate: number | null;
   payment_frequency: "annually" | "hourly" | null;
-  average_annual_bonus: number | null;
   sign_on_bonus: number | null;
   average_annual_production: number | null;
   percent_production: number | null;

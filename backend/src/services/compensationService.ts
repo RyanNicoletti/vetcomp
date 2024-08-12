@@ -33,6 +33,39 @@ const salariesService = {
     const compensations: ICompensation[] = await salariesQueryBuilder;
     return { compensations, pages };
   },
+  create: async (newCompensation: ICompensation) => {
+    try {
+      let totalCompensation;
+      if (
+        newCompensation.base_salary &&
+        !newCompensation.average_annual_production
+      ) {
+        totalCompensation = newCompensation.base_salary;
+      }
+      if (
+        newCompensation.base_salary &&
+        newCompensation.average_annual_production
+      ) {
+        totalCompensation =
+          newCompensation.base_salary +
+          newCompensation.average_annual_production;
+      }
+
+      const compensationWithTotal = {
+        ...newCompensation,
+        total_compensation: totalCompensation,
+      };
+
+      const [insertedCompensation] = await knex<ICompensation>("salaries")
+        .insert(compensationWithTotal)
+        .returning("*");
+
+      return insertedCompensation;
+    } catch (error) {
+      console.error("Error creating compensation:", error);
+      throw error;
+    }
+  },
 };
 
 export default salariesService;

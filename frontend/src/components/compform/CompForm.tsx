@@ -31,30 +31,31 @@ import {
 import { ICompFormInput } from "../../../../shared-types/types";
 
 export const CompForm = () => {
-  const { control, handleSubmit, watch, setValue } = useForm<ICompFormInput>({
-    defaultValues: {
-      company: "",
-      title: "",
-      typeOfPractice: "",
-      isSpecialist: false,
-      specialization: "",
-      isNewGrad: false,
-      yearsOfExperience: "",
-      location: "",
-      baseSalary: "",
-      hourlyRate: "",
-      paymentFrequency: "",
-      signOnBonus: "",
-      averageAnnualProduction: "",
-      percentProduction: "",
-      gender: "",
-      numberOfVeterinarians: "",
-      verificationDocument: null,
-      verificationDocumentName: "",
-      daysWorkedPerWeek: "",
-      email: "",
-    },
-  });
+  const { control, handleSubmit, watch, setValue, setError } =
+    useForm<ICompFormInput>({
+      defaultValues: {
+        company: "",
+        title: "",
+        typeOfPractice: "",
+        isSpecialist: false,
+        specialization: "",
+        isNewGrad: false,
+        yearsOfExperience: "",
+        location: "",
+        baseSalary: "",
+        hourlyRate: "",
+        paymentFrequency: "",
+        signOnBonus: "",
+        averageAnnualProduction: "",
+        percentProduction: "",
+        gender: "",
+        numberOfVeterinarians: "",
+        verificationDocument: null,
+        verificationDocumentName: "",
+        daysWorkedPerWeek: "",
+        email: "",
+      },
+    });
 
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
@@ -91,8 +92,25 @@ export const CompForm = () => {
           body: JSON.stringify(data),
         }
       );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw errorData;
+      }
       const addCompResponse = await response.json();
       return addCompResponse;
+    },
+    onError: (error: any) => {
+      if (error.errors) {
+        error.errors.forEach((err: { field: string; message: string }) => {
+          setError(err.field as keyof ICompFormInput, {
+            type: "manual",
+            message: err.message,
+          });
+        });
+      } else {
+        // Handle general error
+        console.error("An unexpected error occurred:", error);
+      }
     },
     onSuccess: async () => {
       console.log("success");
@@ -726,12 +744,6 @@ export const CompForm = () => {
       <Controller
         name="email"
         control={control}
-        rules={{
-          pattern: {
-            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Invalid email address",
-          },
-        }}
         render={({ field, fieldState }) => (
           <Box>
             <Typography gutterBottom>Email</Typography>
