@@ -1,30 +1,31 @@
 export interface ICompensation {
-  id: string;
+  id?: string;
+  user_id?: string | null;
   company: string;
+  location: string;
   title: string;
-  type_of_practice: string | null;
   is_specialist: boolean;
   specialization: string | null;
+  type_of_practice: string | null;
   is_new_grad: boolean;
   years_of_experience: number;
-  location: string;
   base_salary: number | null;
   hourly_rate: number | null;
-  payment_frequency: "annually" | "hourly" | null;
+  payment_frequency: "annually" | "hourly";
   sign_on_bonus: number | null;
   average_annual_production: number | null;
   percent_production: number | null;
   total_compensation: number | null;
   gender: "male" | "female" | "non-binary" | null;
-  user_id: number | null;
-  is_verified: boolean | null;
+  number_of_veterinarians: number | null;
+  days_worked_per_week: number | null;
+  email: string | null;
+  is_verified: boolean;
   is_approved: boolean;
   verification_document: Uint8Array | null;
   verification_document_name: string | null;
-  days_worked_per_week: number | null;
-  number_of_veterinarians: number | null;
-  email: string | null;
-  created_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface CompensationDetailsWithPages {
