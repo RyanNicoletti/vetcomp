@@ -1,5 +1,5 @@
 export interface ICompensation {
-  salary_id: number;
+  id: string;
   company: string;
   title: string;
   type_of_practice: string | null;

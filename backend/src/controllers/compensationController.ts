@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import compensationService from "../services/compensationService";
 import { ICompensation, ICompFormInput } from "../../../shared-types/types";
-import { validateCompensationFormData } from "../validateCompForm/validateComp";
-import { compFormSchema } from "../zodSchemas/compensationSchema";
+import { validateCompensationFormData } from "../compFormValidation/validateCompForm";
 
 interface SalaryFilter {
   page: number;
@@ -43,67 +42,31 @@ const getAllSalaries = async (req: Request, res: Response) => {
 };
 
 const addCompensation = async (req: Request, res: Response) => {
-  const result = compFormSchema.safeParse(req.body);
+  const { data, errors } = validateCompensationFormData(
+    req.body as ICompFormInput
+  );
 
-  if (!result.success) {
-    return res.status(400).json({
-      errors: result.error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        message: issue.message,
-      })),
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+  if (!data) {
+    return res.status(500).json({
+      message: "An unexpected error occurred, please try again later.",
     });
   }
-
-  const data = result.data;
-
-  // Check if user is authenticated
-  // const userId = (req as any).user?.id;
-
-  // If user is not authenticated but provided an email, check if the email exists
-  //   let userIdToUse = userId;
-  //   if (!userId && data.email) {
-  //     const existingUser = await userService.findByEmail(data.email);
-  //     if (existingUser) {
-  //       userIdToUse = existingUser.id;
-  //     }
-  //   }
-
-  const compensationData: ICompensation = {
-    salary_id: 0, // This will be set by the database
-    company: data.company,
-    title: data.title,
-    type_of_practice: data.isSpecialist ? null : data.typeOfPractice!,
-    is_specialist: data.isSpecialist,
-    specialization: data.isSpecialist ? data.specialization! : null,
-    is_new_grad: data.isNewGrad,
-    years_of_experience: data.yearsOfExperience,
-    location: data.location,
-    base_salary: data.baseSalary,
-    hourly_rate: data.hourlyRate,
-    payment_frequency:
-      data.paymentFrequency === "" ? null : data.paymentFrequency,
-    sign_on_bonus: data.signOnBonus,
-    average_annual_production: data.averageAnnualProduction,
-    percent_production: data.percentProduction,
-    total_compensation: null,
-    gender: data.gender === "" ? null : data.gender,
-    user_id: 1 || null,
-    is_verified: false,
-    is_approved: false,
-    verification_document: null,
-    verification_document_name: data.verificationDocumentName || null,
-    days_worked_per_week: data.daysWorkedPerWeek,
-    number_of_veterinarians: data.numberOfVeterinarians,
-    email: data.email || null,
-    created_at: new Date().toISOString(),
-  };
-
   try {
-    const newCompensation = await compensationService.create(compensationData);
-    return res.status(201).json(newCompensation);
+    const insertedComp: ICompensation = await compensationService.create(data);
+    return res.status(201).json(insertedComp);
   } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: "An unexpected error occurred. Please try again later.",
+        error: error.message,
+      });
+    }
+
     return res.status(500).json({
-      message: "Unexpected server error, please try again later.",
+      message: "An unexpected error occurred. Please try again later.",
     });
   }
 };

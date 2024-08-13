@@ -2,7 +2,13 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("salaries", (table) => {
-    table.increments("salary_id").primary();
+    table.increments("id").primary().defaultTo(knex.raw("gen_random_uuid()"));
+    table
+      .uuid("user_id")
+      .nullable()
+      .references("id")
+      .inTable("users")
+      .onDelete("SET NULL");
     table.text("company");
     table.text("location");
     table.text("title");
@@ -20,14 +26,9 @@ export async function up(knex: Knex): Promise<void> {
     table.integer("percent_production");
     table.decimal("total_compensation", 12, 2);
     table.enu("gender", ["male", "female", "non-binary"]);
-    table.integer("number_of_vets_in_practice");
-    table.integer("days_per_week");
-    table.text("email");
-    table
-      .foreign("email")
-      .references("email")
-      .inTable("users")
-      .onDelete("CASCADE");
+    table.integer("number_of_veterinarians");
+    table.integer("days_worked_per_week");
+    table.text("email").nullable();
     table.boolean("is_verified").defaultTo(false);
     table.boolean("is_approved").defaultTo(false);
     table.binary("verification_document");
