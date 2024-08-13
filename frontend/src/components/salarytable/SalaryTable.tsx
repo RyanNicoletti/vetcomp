@@ -110,7 +110,7 @@ export default function SalaryTable() {
           </TableHead>
           <TableBody>
             {compensationData?.compensations?.map((row: ICompensation) => (
-              <ExpandableRow key={row.salary_id} row={row} />
+              <ExpandableRow key={row.id} row={row} />
             ))}
           </TableBody>
           <TableFooter>

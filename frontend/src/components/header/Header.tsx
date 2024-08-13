@@ -1,11 +1,9 @@
 import { useState } from "react";
 import logo_expanded from "../../assets/logo_expanded.png";
-import logo_abrev from "../../assets/logo_abrev.png";
 import { NavLink } from "react-router-dom";
 import {
   AppBar,
   Box,
-  Divider,
   Drawer,
   IconButton,
   List,

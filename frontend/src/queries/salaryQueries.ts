@@ -1,8 +1,4 @@
-import {
-  CompensationDetailsWithPages,
-  ICompensation,
-} from "../../../shared-types/types";
-import { ICompFormInput } from "../components/compform/types";
+import { CompensationDetailsWithPages } from "../../../shared-types/types";
 import { SortParams } from "../components/salarytable/types";
 
 export const getAllSalaries = async (

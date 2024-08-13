@@ -42,7 +42,7 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
             <p>{row.company}</p>
             <span>
               {row.location} |{" "}
-              {new Date(row.created_at).toLocaleDateString("en-US", {
+              {new Date(row.created_at as Date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",

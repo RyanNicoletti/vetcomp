@@ -24,8 +24,8 @@ export interface ICompensation {
   is_approved: boolean;
   verification_document: Uint8Array | null;
   verification_document_name: string | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface CompensationDetailsWithPages {

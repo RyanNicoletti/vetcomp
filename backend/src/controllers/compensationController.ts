@@ -37,6 +37,8 @@ const getAllSalaries = async (req: Request, res: Response) => {
   if (typeof req.query.sortBy === "string" && req.query.sortBy !== "") {
     salaryFilter.sortBy = req.query.sortBy;
   }
+  const compensationsWithPages = await compensationService.getAll(salaryFilter);
+  return res.json(compensationsWithPages);
 };
 
 const addCompensation = async (req: Request, res: Response) => {
