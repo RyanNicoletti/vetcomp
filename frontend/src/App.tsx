@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import AddCompForm from "./pages/AddCompForm";
 import { Box } from "@mui/material";
 import Footer from "./components/footer/Footer";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         </Box>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/addcomp" element={<AddCompForm />} />

@@ -29,6 +29,7 @@ import {
   specialistOptions,
 } from "./CompFormData";
 import { ICompFormInput } from "../../../../shared-types/types";
+import { createCompensation } from "../../queries/salaryQueries";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, setError } =
@@ -81,24 +82,7 @@ export const CompForm = () => {
   });
 
   const addCompensationMutation = useMutation({
-    mutationFn: async (data: ICompFormInput) => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/salaries`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw errorData;
-      }
-      const addCompResponse = await response.json();
-      return addCompResponse;
-    },
+    mutationFn: createCompensation,
     onError: (error: any) => {
       if (error.errors) {
         error.errors.forEach((err: { field: string; message: string }) => {
@@ -152,8 +136,6 @@ export const CompForm = () => {
       setValue("verificationDocumentName", file.name);
     }
   };
-
-  const calculateTotalCompensation = () => {};
 
   const handleLocationChange = (_event: any, value: any) => {
     setValue("location", value || "");
@@ -623,7 +605,6 @@ export const CompForm = () => {
                       prefix={"$"}
                       decimalScale={2}
                       fixedDecimalScale={true}
-                      onValueChange={calculateTotalCompensation}
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
                     />
