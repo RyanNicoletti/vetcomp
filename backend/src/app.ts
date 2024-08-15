@@ -2,11 +2,11 @@ import express, { Express, Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
-import compensationRouter from "./routes/compensationRouter";
-import locationsRouter from "./routes/locationsRouter";
 import "dotenv/config";
-import registerRouter from "./routes/registerRouter";
-import loginRouter from "./routes/loginRouter";
+import compensationController from "./controllers/compensationController";
+import locationsController from "./controllers/locationsController";
+import loginController from "./controllers/loginController";
+import usersController from "./controllers/usersController";
 
 const app: Express = express();
 
@@ -19,9 +19,18 @@ app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use("/salaries", compensationRouter);
-app.use("/locations", locationsRouter);
-app.use("/users", usersRouter);
-app.use("/login", loginRouter);
+// Routes
+// User routes
+app.post("/users", usersController.register);
+
+// Login routes
+app.post("/login", loginController.login);
+
+// Location routes
+app.get("/locations", locationsController.getLocations);
+
+// Compensation routes
+app.get("/salaries", compensationController.getAllSalaries);
+app.post("/salaries", compensationController.addCompensation);
 
 export default app;
