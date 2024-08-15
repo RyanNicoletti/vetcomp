@@ -18,7 +18,7 @@ export const registerUser = async (userData: ISignUpFormInput) => {
 };
 
 export const loginUser = async (user: ILoginFormInput) => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
