@@ -41,7 +41,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
   return res.json(compensationsWithPages);
 };
 
-const addCompensation = async (req: Request, res: Response) => {
+const createCompensation = async (req: Request, res: Response) => {
   try {
     const validatedData = CompFormSchema.parse(req.body);
 
@@ -95,4 +95,4 @@ const addCompensation = async (req: Request, res: Response) => {
   }
 };
 
-export default { getAllSalaries, addCompensation };
+export default { getAllSalaries, createCompensation };

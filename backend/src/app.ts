@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 // User routes
-app.post("/users", usersController.register);
+app.post("/users", usersController.createUser);
 
 // Login routes
 app.post("/login", loginController.login);
@@ -31,6 +31,6 @@ app.get("/locations", locationsController.getLocations);
 
 // Compensation routes
 app.get("/salaries", compensationController.getAllSalaries);
-app.post("/salaries", compensationController.addCompensation);
+app.post("/salaries", compensationController.createCompensation);
 
 export default app;

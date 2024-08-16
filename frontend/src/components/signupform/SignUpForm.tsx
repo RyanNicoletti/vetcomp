@@ -16,6 +16,8 @@ export const SignUpForm = () => {
       },
     });
 
+  const password = watch("password");
+
   const registerUserMutation = useMutation({
     mutationFn: registerUser,
     onError: (error: any) => {
@@ -60,6 +62,7 @@ export const SignUpForm = () => {
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
+                type="email"
                 label="email"
                 fullWidth
                 error={!!fieldState.error}
@@ -72,10 +75,26 @@ export const SignUpForm = () => {
           <Controller
             name="password"
             control={control}
-            rules={{ required: "password is required" }}
+            rules={{
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters long",
+              },
+              maxLength: {
+                value: 64,
+                message: "Password must not exceed 64 characters",
+              },
+              validate: (value: string) =>
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]*$/.test(
+                  value
+                ) ||
+                "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+            }}
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
+                type="password"
                 label="password"
                 fullWidth
                 error={!!fieldState.error}
@@ -88,10 +107,15 @@ export const SignUpForm = () => {
           <Controller
             name="confirmPassword"
             control={control}
-            rules={{ required: "please confirm your password" }}
+            rules={{
+              required: "Please confirm your password",
+              validate: (value: string) =>
+                value === password || "Passwords do not match",
+            }}
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
+                type="password"
                 label="confirm password"
                 fullWidth
                 error={!!fieldState.error}

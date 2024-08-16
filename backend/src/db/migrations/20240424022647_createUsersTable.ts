@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("users", (table) => {
     table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
     table.text("email").notNullable().unique();
-    table.text("password");
+    table.text("password_hash");
     table.boolean("is_admin").defaultTo(false);
     table.timestamps(true, true);
   });
