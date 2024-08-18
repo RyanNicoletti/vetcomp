@@ -1,7 +1,8 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
-import { ConnectSessionKnexStore } from "connect-session-knex";
 import knex from "./db/connection";
+import RedisStore from "connect-redis";
+import { createClient } from "redis";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
@@ -23,14 +24,18 @@ app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
 
-const sessionStore = new ConnectSessionKnexStore({
-  knex,
-  tableName: "sessions",
+let redisClient = createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+});
+redisClient.connect().catch(console.error);
+
+let redisStore = new RedisStore({
+  client: redisClient,
 });
 
 const sess = {
   secret: process.env.SESSION_SECRET as string | string[],
-  store: sessionStore,
+  store: redisStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
