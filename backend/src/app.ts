@@ -1,16 +1,15 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
-import knex from "./db/connection";
 import RedisStore from "connect-redis";
-import { createClient } from "redis";
+import { redisClient } from "../config/redisConfig";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
-import "dotenv/config";
 import compensationController from "./controllers/compensationController";
 import locationsController from "./controllers/locationsController";
 import loginController from "./controllers/loginController";
 import usersController from "./controllers/usersController";
+import "dotenv/config";
 
 const app: Express = express();
 
@@ -23,11 +22,6 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
-
-let redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
-});
-redisClient.connect().catch(console.error);
 
 let redisStore = new RedisStore({
   client: redisClient,
@@ -57,6 +51,7 @@ app.use(session(sess));
 // Routes
 // User routes
 app.post("/users", usersController.createUser);
+app.post("/verify-email", usersController.verifyEmail);
 
 // Login routes
 app.post("/login", loginController.login);

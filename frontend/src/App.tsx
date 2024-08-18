@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 import Footer from "./components/footer/Footer";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/addcomp" element={<AddCompForm />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
         </Routes>
         <Footer />
       </Box>

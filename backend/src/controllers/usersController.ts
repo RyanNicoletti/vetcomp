@@ -3,10 +3,11 @@ import userService from "../services/userService";
 import { Request, Response } from "express";
 import * as argon2 from "argon2";
 import z from "zod";
+import emailService from "../services/emailService";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { email, password, confirmPassword } = UserSchema.parse(req.body);
+    const { email, password } = UserSchema.parse(req.body);
 
     const existingUser: User | undefined = await userService.findByEmail(email);
     if (existingUser) {
@@ -21,13 +22,19 @@ const createUser = async (req: Request, res: Response) => {
       });
     }
     const hashedPw = await argon2.hash(password);
-    const userId = await userService.create(email, hashedPw);
-    return res.status(201).json({ message: "User successfully created" });
+    const userId: string = await userService.create(email, hashedPw);
+    console.log("fuckkkk", userId);
+    const verificationToken = await userService.generateVerificationCode(
+      userId
+    );
+    await emailService.sendVerificationEmail(email, verificationToken);
+    return res.status(201).json({
+      userId,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ message: "Invalid input", errors: error.errors });
     } else {
-      console.error("Error creating user:", error);
       res
         .status(500)
         .json({ message: "Something went wrong, please try again." });
@@ -35,4 +42,26 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { createUser };
+const verifyEmail = async (req: Request, res: Response) => {
+  const { userId, verificationCode } = req.body;
+
+  if (typeof userId !== "string" || typeof verificationCode !== "string") {
+    return res.status(400).json({ message: "Invalid input." });
+  }
+
+  const verified: boolean = await userService.verifyEmail(
+    userId,
+    verificationCode
+  );
+
+  if (verified) {
+    if (req.session) {
+      req.session.userId = userId;
+    }
+    return res.json({ message: "Email verified successfully" });
+  } else {
+    return res.status(400).json({ message: "Invalid or expired code" });
+  }
+};
+
+export default { createUser, verifyEmail };

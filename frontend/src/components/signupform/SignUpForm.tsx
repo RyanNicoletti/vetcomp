@@ -1,22 +1,23 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import "./SignUpForm.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ISignUpFormInput } from "./types";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "../../queries/usersQueries";
 
 export const SignUpForm = () => {
-  const { control, handleSubmit, watch, setValue, setError } =
-    useForm<ISignUpFormInput>({
-      defaultValues: {
-        email: "",
-        password: "",
-        confirmPassword: "",
-      },
-    });
+  const navigate = useNavigate();
+  const { control, handleSubmit, watch, setError } = useForm<ISignUpFormInput>({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const password = watch("password");
+  const password: string = watch("password");
+  const email: string = watch("email");
 
   const registerUserMutation = useMutation({
     mutationFn: registerUser,
@@ -29,19 +30,20 @@ export const SignUpForm = () => {
           });
         });
       } else {
-        // TODO Handle general error
-        console.error("An unexpected error occurred:", error);
+        setError("confirmPassword", {
+          type: "manual",
+          message: "An unexpected error occurred. Please try again.",
+        });
       }
     },
-    onSuccess: async () => {
-      console.log("success");
+    onSuccess: async (data: any) => {
+      navigate("/verify-email", { state: { email, userId: data.userId } });
     },
   });
 
   const onSubmit: SubmitHandler<ISignUpFormInput> = (
     newUserData: ISignUpFormInput
   ) => {
-    console.log(newUserData);
     registerUserMutation.mutate(newUserData);
   };
 

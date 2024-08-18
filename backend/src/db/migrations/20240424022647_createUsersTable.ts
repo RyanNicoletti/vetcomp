@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("email").notNullable().unique();
     table.text("password_hash");
     table.boolean("is_admin").defaultTo(false);
+    table.boolean("is_verified").defaultTo(false);
     table.timestamps(true, true);
   });
 }

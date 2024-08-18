@@ -1,4 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 interface KnexConfig {
   [key: string]: {
@@ -18,10 +21,10 @@ const config: KnexConfig = {
     client: "postgresql",
     connection: process.env.DB_CONNECTION_URL,
     migrations: {
-      directory: "./src/db/migrations",
+      directory: "../src/db/migrations",
     },
     seeds: {
-      directory: "./src/db/seeds",
+      directory: "../src/db/seeds",
     },
   },
 };
