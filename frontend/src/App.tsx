@@ -21,7 +21,6 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/addcomp" element={<AddCompForm />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
         </Routes>
