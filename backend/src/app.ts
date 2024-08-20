@@ -39,7 +39,7 @@ const sess = {
     sameSite:
       process.env.NODE_ENV === "production"
         ? ("none" as boolean | "none" | "lax" | "strict" | undefined)
-        : ("lax" as boolean | "none" | "lax" | "strict" | undefined),
+        : ("none" as boolean | "none" | "lax" | "strict" | undefined),
   },
 };
 if (app.get("env") === "production") {

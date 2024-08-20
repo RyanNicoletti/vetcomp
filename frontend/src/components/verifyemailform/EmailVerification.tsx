@@ -1,9 +1,10 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { TextField, Button, Typography, Box } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { verifyEmail } from "../../queries/usersQueries";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { getAuthStatus } from "../../queries/authQueries";
 
 interface IVerificationFormInput {
   verificationCode: string;
@@ -13,6 +14,12 @@ export const EmailVerification = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { email, userId } = location.state as { email: string; userId: string };
+  const queryClient = useQueryClient();
+
+  const { data: isAuthenticated } = useQuery({
+    queryKey: ["isAuthenticated"],
+    queryFn: () => getAuthStatus(),
+  });
 
   const {
     control,
@@ -43,6 +50,7 @@ export const EmailVerification = () => {
       userId,
       verificationCode: data.verificationCode,
     });
+    queryClient.setQueryData(["isAuthenticated"], true);
   };
 
   return (

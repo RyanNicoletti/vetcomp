@@ -69,7 +69,7 @@ export const logoutUser = async () => {
   });
   const data = await response.json();
   if (!response.ok) {
-    return data;
+    throw new Error(data.message || "An unexpected error occurred");
   }
   return data;
 };
