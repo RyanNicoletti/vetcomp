@@ -1,6 +1,6 @@
 import { useState } from "react";
 import logo_expanded from "../../assets/logo_expanded.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -8,18 +8,48 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Toolbar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import "./Header.css";
-
-const navItems: string[] = ["Home", "About", "Sign up", "Log in"];
+import { getAuthStatus } from "../../queries/authQueries";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Logout } from "@mui/icons-material";
+import { logoutUser } from "../../queries/usersQueries";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: isAuthenticated } = useQuery({
+    queryKey: ["isAuthenticated"],
+    queryFn: () => getAuthStatus(),
+  });
+
+  const navItems: string[] =
+    isAuthenticated === true
+      ? ["Home", "About", "Log out"]
+      : ["Home", "About", "Sign up", "Log in"];
+
   const toggleDrawer = () => {
     setMobileOpen((prev) => !prev);
+  };
+
+  const logoutUserMutation = useMutation({
+    mutationFn: logoutUser,
+    onError: (errorData: any) => {
+      console.log(errorData);
+    },
+    onSuccess: async (data: any) => {
+      queryClient.setQueryData(["isAuthenticated"], false);
+      navigate("/");
+    },
+  });
+
+  const handleLogout = () => {
+    logoutUserMutation.mutate();
   };
 
   const drawerContent = (
@@ -87,18 +117,31 @@ const Header = () => {
             <MenuIcon />
           </IconButton>
           <Box className="desktop_nav_items">
-            {navItems.map((item) => (
-              <NavLink
-                to={
-                  item === "Home"
-                    ? "/"
-                    : `/${item.toLocaleLowerCase().replace(" ", "")}`
-                }
-                className="desktop_nav_item"
-                key={item}>
-                {item}
-              </NavLink>
-            ))}
+            {navItems.map((item) => {
+              if (item === "Sign out") {
+                return (
+                  <ListItemButton
+                    onClick={handleLogout}
+                    className="desktop_nav_item"
+                    key={item}>
+                    {item}
+                  </ListItemButton>
+                );
+              } else {
+                return (
+                  <NavLink
+                    to={
+                      item === "Home"
+                        ? "/"
+                        : `/${item.toLocaleLowerCase().replace(" ", "")}`
+                    }
+                    className="desktop_nav_item"
+                    key={item}>
+                    {item}
+                  </NavLink>
+                );
+              }
+            })}
           </Box>
         </Toolbar>
       </AppBar>

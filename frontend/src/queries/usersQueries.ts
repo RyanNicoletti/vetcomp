@@ -61,3 +61,15 @@ export const verifyEmail = async ({
 
   return response.json();
 };
+
+export const logoutUser = async () => {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return data;
+  }
+  return data;
+};

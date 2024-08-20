@@ -64,4 +64,22 @@ const verifyEmail = async (req: Request, res: Response) => {
   }
 };
 
-export default { createUser, verifyEmail };
+const logout = async (req: Request, res: Response) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({
+          message: "Unexpected error when logging out, please try again",
+        });
+      }
+      res.clearCookie("connect.sid");
+      return res.status(200).json({ message: "Logged out successfully." });
+    });
+  } else {
+    res.end();
+  }
+};
+
+const login = async (req: Request, res: Response) => {};
+
+export default { createUser, verifyEmail, logout, login };

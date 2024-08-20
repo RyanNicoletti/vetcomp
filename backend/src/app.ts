@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express, Router } from "express";
 import session from "express-session";
 import RedisStore from "connect-redis";
 import { redisClient } from "../config/redisConfig";
@@ -7,9 +7,9 @@ import morgan from "morgan";
 import cors from "cors";
 import compensationController from "./controllers/compensationController";
 import locationsController from "./controllers/locationsController";
-import loginController from "./controllers/loginController";
 import usersController from "./controllers/usersController";
 import "dotenv/config";
+import authController from "./controllers/authController";
 
 const app: Express = express();
 
@@ -50,11 +50,15 @@ app.use(session(sess));
 
 // Routes
 // User routes
+const userRouter: Router = express.Router();
 app.post("/users", usersController.createUser);
 app.post("/verify-email", usersController.verifyEmail);
+app.post("/login", usersController.login);
+app.post("/logout", usersController.logout);
+app.use("api/users", userRouter);
 
-// Login routes
-app.post("/login", loginController.login);
+// Auth
+app.get("/authStatus", authController.getAuthStatus);
 
 // Location routes
 app.get("/locations", locationsController.getLocations);
