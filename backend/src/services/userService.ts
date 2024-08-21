@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import knex from "../db/connection";
 import { User } from "../schemas/userSchema";
 import { redisClient } from "../../config/redisConfig";
+import * as argon2 from "argon2";
 
 const userService = {
   findByEmail: async (email: string): Promise<User | undefined> => {
@@ -37,6 +38,18 @@ const userService = {
       return true;
     }
     return false;
+  },
+
+  login: async (email: string, password: string): Promise<User | null> => {
+    const user = await knex("users").where({ email }).first();
+    if (!user) {
+      return null;
+    }
+    const isValidPassword = await argon2.verify(user.password_hash, password);
+    if (!isValidPassword) {
+      return null;
+    }
+    return user;
   },
 };
 

@@ -1,13 +1,15 @@
-import { User, UserSchema } from "../schemas/userSchema";
+import { NewUserSchema } from "../schemas/newUserSchema";
 import userService from "../services/userService";
 import { Request, Response } from "express";
 import * as argon2 from "argon2";
 import z from "zod";
 import emailService from "../services/emailService";
+import { loginSchema } from "../schemas/loginSchema";
+import { User } from "../schemas/userSchema";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = UserSchema.parse(req.body);
+    const { email, password } = NewUserSchema.parse(req.body);
 
     const existingUser: User | undefined = await userService.findByEmail(email);
     if (existingUser) {
@@ -80,6 +82,45 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-const login = async (req: Request, res: Response) => {};
+const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = loginSchema.parse(req.body);
+    const user: User | null = await userService.login(email, password);
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+        errors: [
+          {
+            field: "password",
+            message: "Invalid email or password",
+          },
+        ],
+      });
+    }
+    if (!user.is_verified) {
+      return res.status(400).json({
+        message: "Please verify your email before logging in",
+        errors: [
+          {
+            field: "email",
+            message: "Please verify your email before logging in",
+          },
+        ],
+      });
+    }
+    if (req.session) {
+      req.session.userId = user.id;
+    }
+    return res
+      .status(200)
+      .json({ message: "Logged in successfully", userId: user.id });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ message: "Invalid input", errors: error.errors });
+    } else {
+      return res.status(500).json({ message: "An unexpected error occurred" });
+    }
+  }
+};
 
 export default { createUser, verifyEmail, logout, login };

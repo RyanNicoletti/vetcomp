@@ -14,7 +14,8 @@ export const getAllSalaries = async (
       import.meta.env.VITE_API_BASE_URL
     }/salaries?page=${page}&rowsPerPage=${rowsPerPage}&sortDirection=${
       sortParams.sortDirection
-    }&sortBy=${sortParams.sortBy}`
+    }&sortBy=${sortParams.sortBy}`,
+    { method: "GET", credentials: "include" }
   );
   if (!response.ok) {
     throw new Error("Failed to fetch salaries.");
@@ -32,6 +33,7 @@ export const createCompensation = async (data: ICompFormInput) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
+      credentials: "include",
     }
   );
   if (!response.ok) {

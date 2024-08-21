@@ -36,12 +36,14 @@ export const EmailVerification = () => {
     mutationFn: verifyEmail,
     onSuccess: () => {
       navigate("/");
+      queryClient.setQueryData(["isAuthenticated"], true);
     },
     onError: (error: any) => {
       setError("verificationCode", {
         type: "manual",
         message: "Invalid or expired verification code.",
       });
+      queryClient.setQueryData(["isAuthenticated"], false);
     },
   });
 
@@ -50,7 +52,6 @@ export const EmailVerification = () => {
       userId,
       verificationCode: data.verificationCode,
     });
-    queryClient.setQueryData(["isAuthenticated"], true);
   };
 
   return (
