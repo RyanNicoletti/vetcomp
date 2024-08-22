@@ -25,7 +25,6 @@ const createUser = async (req: Request, res: Response) => {
     }
     const hashedPw = await argon2.hash(password);
     const userId: string = await userService.create(email, hashedPw);
-    console.log("fuckkkk", userId);
     const verificationToken = await userService.generateVerificationCode(
       userId
     );
@@ -84,8 +83,8 @@ const logout = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = loginSchema.parse(req.body);
-    const user: User | null = await userService.login(email, password);
+    const loginInput = loginSchema.parse(req.body);
+    const user: User | null = await userService.login(loginInput);
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",

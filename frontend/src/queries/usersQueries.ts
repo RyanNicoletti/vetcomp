@@ -17,7 +17,7 @@ export const registerUser = async (userData: ISignUpFormInput) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || "An unexpeced error occured");
+    throw data;
   }
   return data;
 };
@@ -33,7 +33,7 @@ export const loginUser = async (user: ILoginFormInput) => {
   });
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || "An unexpeced error occured");
+    throw data;
   }
   return data;
 };
@@ -53,13 +53,11 @@ export const verifyEmail = async ({
       credentials: "include",
     }
   );
-
+  const data = await response.json();
   if (!response.ok) {
-    const errorData = await response.json();
-    throw errorData;
+    throw data;
   }
-
-  return response.json();
+  return data;
 };
 
 export const logoutUser = async () => {

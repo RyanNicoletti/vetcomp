@@ -1,4 +1,4 @@
-import { AlertColor, Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import "./LoginForm.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,24 +7,24 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../queries/usersQueries";
 import { getAuthStatus } from "../../queries/authQueries";
 import { useState } from "react";
-import CustomSnackbar from "../snackbar/Snackbar";
 
 export const LoginForm = () => {
-  const { control, handleSubmit, watch, setValue, setError } =
-    useForm<ILoginFormInput>({
-      defaultValues: {
-        email: "",
-        password: "",
-      },
-    });
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success" as AlertColor,
-    onClose: () => {},
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<ILoginFormInput>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
+
+  const [loginError, setLoginError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
   const { data: isAuthenticated } = useQuery({
     queryKey: ["isAuthenticated"],
     queryFn: () => getAuthStatus(),
@@ -41,16 +41,12 @@ export const LoginForm = () => {
           });
         });
       } else {
-        setSnackbar({
-          open: true,
-          message: error.message || "Error logging in, please try again.",
-          severity: "error" as AlertColor,
-          onClose: () => {},
-        });
+        setLoginError("Invalid email or password");
       }
       queryClient.setQueryData(["isAuthenticated"], false);
     },
     onSuccess: async () => {
+      setLoginError(undefined);
       queryClient.setQueryData(["isAuthenticated"], true);
       navigate("/");
     },
@@ -59,12 +55,7 @@ export const LoginForm = () => {
   const onSubmit: SubmitHandler<ILoginFormInput> = (
     userData: ILoginFormInput
   ) => {
-    console.log(userData);
     loginUserMutation.mutate(userData);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -77,14 +68,14 @@ export const LoginForm = () => {
           <Controller
             name="email"
             control={control}
-            rules={{ required: "email is required" }}
-            render={({ field, fieldState }) => (
+            rules={{ required: "Email is required" }}
+            render={({ field }) => (
               <TextField
                 {...field}
-                label="email"
+                label="Email"
                 fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
+                error={!!errors.email}
+                helperText={errors.email?.message}
               />
             )}
           />
@@ -93,18 +84,24 @@ export const LoginForm = () => {
           <Controller
             name="password"
             control={control}
-            rules={{ required: "password is required" }}
-            render={({ field, fieldState }) => (
+            rules={{ required: "Password is required" }}
+            render={({ field }) => (
               <TextField
                 {...field}
-                label="password"
+                label="Password"
+                type="password"
                 fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
+                error={!!errors.password}
+                helperText={errors.password?.message}
               />
             )}
           />
         </div>
+        {loginError && (
+          <Typography color="error" className="login-error-message">
+            {loginError}
+          </Typography>
+        )}
         <Button
           type="submit"
           variant="contained"
@@ -114,15 +111,9 @@ export const LoginForm = () => {
         </Button>
         <p className="password-reset">I forgot my password</p>
         <p>
-          Dont have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </p>
       </form>
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleCloseSnackbar}
-      />
     </div>
   );
 };

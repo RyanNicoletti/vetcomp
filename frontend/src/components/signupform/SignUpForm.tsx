@@ -22,6 +22,7 @@ export const SignUpForm = () => {
   const registerUserMutation = useMutation({
     mutationFn: registerUser,
     onError: (error: any) => {
+      console.log(error);
       if (error.errors) {
         error.errors.forEach((err: { field: string; message: string }) => {
           setError(err.field as keyof ISignUpFormInput, {
