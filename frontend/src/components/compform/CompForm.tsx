@@ -5,6 +5,7 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Container,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -30,6 +31,8 @@ import {
 } from "./CompFormData";
 import { ICompFormInput } from "../../../../shared-types/types";
 import { createCompensation } from "../../queries/salaryQueries";
+import { getAuthStatus } from "../../queries/authQueries";
+import { Link as RouterLink } from "react-router-dom";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, setError } =
@@ -70,6 +73,11 @@ export const CompForm = () => {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSpecialist, setIsSpecialist] = useState(false);
+
+  const { data: isAuthenticated } = useQuery({
+    queryKey: ["isAuthenticated"],
+    queryFn: () => getAuthStatus(),
+  });
 
   const {
     data: locations,
@@ -164,171 +172,517 @@ export const CompForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-      <Typography className="section-title" variant="h6">
-        Company Information
-      </Typography>
+    <div className="form-wrapper">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+        <Typography className="section-title" variant="h6">
+          Company Information
+        </Typography>
 
-      <Controller
-        name="company"
-        control={control}
-        rules={{ required: "Company is required" }}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>Company or Hospital Name</Typography>
-            <TextField
-              {...field}
-              placeholder="Banfield Pet Hospital"
-              fullWidth
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          </Box>
-        )}
-      />
-
-      <Controller
-        name="location"
-        control={control}
-        rules={{
-          required: "Location is required",
-          validate: (value) => options.includes(value) || "Invalid location",
-        }}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>
-              Location
-              <Tooltip
-                title="If you prefer not to disclose your exact location, please enter the closest metropolitan area."
-                placement="top">
-                <InfoIcon
-                  fontSize="small"
-                  style={{
-                    marginLeft: "8px",
-                    verticalAlign: "middle",
-                    cursor: "pointer",
-                  }}
-                />
-              </Tooltip>
-            </Typography>
-            <Autocomplete
-              {...field}
-              value={field.value || ""}
-              onChange={handleLocationChange}
-              inputValue={locationQuery}
-              onInputChange={handleLocationInputChange}
-              options={options}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="e.g. Boston, MA - Dublin, IE - New York, NY"
-                  error={!!fieldState.error}
-                  helperText={
-                    fieldState.error?.message ||
-                    "Format: `City, two letter state/country code`"
-                  }
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {locationIsLoading ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props}>
-                  <Typography variant="body2">{option}</Typography>
-                </li>
-              )}
-              noOptionsText="Format: 'City, two letter state code' or 'City, Country Code'"
-            />
-          </Box>
-        )}
-      />
-
-      <Controller
-        name="title"
-        control={control}
-        rules={{ required: "Title is required" }}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>Job Title</Typography>
-            <TextField
-              {...field}
-              placeholder="Associate Veterinarian"
-              fullWidth
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-            />
-          </Box>
-        )}
-      />
-
-      <Controller
-        name="isSpecialist"
-        control={control}
-        render={({ field }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
+        <Controller
+          name="company"
+          control={control}
+          rules={{ required: "Company is required" }}
+          render={({ field, fieldState }) => (
+            <Box>
+              <Typography>Company or Hospital Name</Typography>
+              <TextField
                 {...field}
-                checked={field.value}
-                onChange={(e) => {
-                  field.onChange(e.target.checked);
-                  setIsSpecialist(!isSpecialist);
-                }}
+                placeholder="Banfield Pet Hospital"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
               />
-            }
-            label="Specialist"
-          />
-        )}
-      />
+            </Box>
+          )}
+        />
 
-      <Controller
-        name={isSpecialist ? "specialization" : "typeOfPractice"}
-        control={control}
-        rules={{ required: "This field is required" }}
-        render={({ field }) => (
-          <FormControl fullWidth>
-            <Select {...field} displayEmpty>
-              <MenuItem value="" disabled>
-                Select {isSpecialist ? "specialization" : "type of practice"}
-              </MenuItem>
-              {(isSpecialist ? specialistOptions : generalPracticeOptions).map(
-                (option) => (
+        <Controller
+          name="location"
+          control={control}
+          rules={{
+            required: "Location is required",
+            validate: (value) => options.includes(value) || "Invalid location",
+          }}
+          render={({ field, fieldState }) => (
+            <Box>
+              <Typography>
+                Location
+                <Tooltip
+                  title="If you prefer not to disclose your exact location, please enter the closest metropolitan area."
+                  placement="top">
+                  <InfoIcon
+                    fontSize="small"
+                    style={{
+                      marginLeft: "8px",
+                      verticalAlign: "middle",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Tooltip>
+              </Typography>
+              <Autocomplete
+                {...field}
+                value={field.value || ""}
+                onChange={handleLocationChange}
+                inputValue={locationQuery}
+                onInputChange={handleLocationInputChange}
+                options={options}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="e.g. Boston, MA - Dublin, IE - New York, NY"
+                    error={!!fieldState.error}
+                    helperText={
+                      fieldState.error?.message ||
+                      "Format: `City, two letter state/country code`"
+                    }
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {locationIsLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <li {...props}>
+                    <Typography variant="body2">{option}</Typography>
+                  </li>
+                )}
+                noOptionsText="Format: 'City, two letter state code' or 'City, Country Code'"
+              />
+            </Box>
+          )}
+        />
+
+        <Controller
+          name="title"
+          control={control}
+          rules={{ required: "Title is required" }}
+          render={({ field, fieldState }) => (
+            <Box>
+              <Typography>Job Title</Typography>
+              <TextField
+                {...field}
+                placeholder="Associate Veterinarian"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </Box>
+          )}
+        />
+
+        <Controller
+          name="isSpecialist"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  {...field}
+                  checked={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.target.checked);
+                    setIsSpecialist(!isSpecialist);
+                  }}
+                />
+              }
+              label="Specialist"
+            />
+          )}
+        />
+
+        <Controller
+          name={isSpecialist ? "specialization" : "typeOfPractice"}
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field }) => (
+            <FormControl fullWidth>
+              <Select {...field} displayEmpty>
+                <MenuItem value="" disabled>
+                  Select {isSpecialist ? "specialization" : "type of practice"}
+                </MenuItem>
+                {(isSpecialist
+                  ? specialistOptions
+                  : generalPracticeOptions
+                ).map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>
-                )
-              )}
-            </Select>
-          </FormControl>
-        )}
-      />
+                ))}
+              </Select>
+            </FormControl>
+          )}
+        />
 
-      <Box className="yoe-container">
+        <Box className="yoe-container">
+          <Controller
+            name="yearsOfExperience"
+            control={control}
+            rules={{ required: "Years of Experience is required" }}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box className="yoe-input-container">
+                  <Typography>Years of Experience</Typography>
+                  <NumericFormat
+                    {...rest}
+                    customInput={TextField}
+                    getInputRef={ref}
+                    placeholder="0"
+                    value={isNewGrad ? 0 : rest.value}
+                    disabled={isNewGrad}
+                    thousandSeparator={false}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                </Box>
+              );
+            }}
+          />
+
+          <Controller
+            name="isNewGrad"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...field}
+                    onChange={(e) => {
+                      // field.onChange(e);
+                      handleIsNewGrad(e);
+                    }}
+                  />
+                }
+                label="New Graduate"
+              />
+            )}
+          />
+        </Box>
+
+        <Typography variant="h6" className="section-title">
+          Salary Information
+        </Typography>
+
+        <Box className="salary-info-container">
+          <Button
+            className="salary-info-btn"
+            onClick={() => handleManualSalaryInfo()}
+            variant="contained"
+            color="primary"
+            fullWidth>
+            Fill out manually
+          </Button>
+          <Button
+            className="salary-info-btn"
+            onClick={() => handleUploadFile()}
+            variant="contained"
+            color="primary"
+            fullWidth>
+            Upload verification
+          </Button>
+        </Box>
+
+        {selectManual && (
+          <>
+            <Controller
+              name="paymentFrequency"
+              control={control}
+              rules={{ required: "Please select a payment frequency" }}
+              render={({ field }) => (
+                <Box className="payment-frequency-container">
+                  <Typography>Payment Frequency: </Typography>
+                  <FormGroup row className="payment-frequency-checkboxes">
+                    {paymentFrequencyOptions.map((option: string) => (
+                      <FormControlLabel
+                        key={option}
+                        control={
+                          <Checkbox
+                            checked={field.value === option}
+                            onChange={() => field.onChange(option)}
+                          />
+                        }
+                        label={option}
+                        disabled={isFileUploaded}
+                      />
+                    ))}
+                  </FormGroup>
+                </Box>
+              )}
+            />
+
+            {paymentFrequency === "Annually" && (
+              <Controller
+                name="baseSalary"
+                control={control}
+                rules={{ required: "Base Salary is required" }}
+                render={({ field, fieldState }) => {
+                  const { ref, ...rest } = field;
+                  return (
+                    <Box>
+                      <Typography>Base Salary</Typography>
+                      <NumericFormat
+                        {...rest}
+                        getInputRef={ref}
+                        fullWidth
+                        placeholder="$0.00"
+                        customInput={TextField}
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        disabled={isFileUploaded}
+                      />
+                    </Box>
+                  );
+                }}
+              />
+            )}
+
+            {paymentFrequency === "Hourly" && (
+              <Controller
+                name="hourlyRate"
+                control={control}
+                rules={{ required: "Hourly Rate is required" }}
+                render={({ field, fieldState }) => {
+                  const { ref, ...rest } = field;
+                  return (
+                    <Box>
+                      <Typography>Hourly Rate</Typography>
+                      <NumericFormat
+                        {...rest}
+                        getInputRef={ref}
+                        fullWidth
+                        placeholder="$0"
+                        customInput={TextField}
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        disabled={isFileUploaded}
+                      />
+                    </Box>
+                  );
+                }}
+              />
+            )}
+
+            <Box className="additional-comp-btns-container">
+              <Button
+                className="additional-comp-btn"
+                type="button"
+                variant="contained"
+                size="small"
+                onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
+                {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
+              </Button>
+              <Button
+                className="additional-comp-btn"
+                type="button"
+                variant="contained"
+                size="small"
+                onClick={() =>
+                  setShowPercentProduction(!showPercentProduction)
+                }>
+                {showPercentProduction
+                  ? "Hide % of Production"
+                  : "Add % of Production"}
+              </Button>
+              <Button
+                className="additional-comp-btn"
+                type="button"
+                variant="contained"
+                size="small"
+                onClick={() =>
+                  setShowAverageAnnualProduction(!showAverageAnnualProduction)
+                }>
+                {showAverageAnnualProduction
+                  ? "Hide Average Annual Production"
+                  : "Add Average Annual Production"}
+              </Button>
+            </Box>
+
+            {showSignOnBonus && (
+              <Controller
+                name="signOnBonus"
+                control={control}
+                render={({ field, fieldState }) => {
+                  const { ref, ...rest } = field;
+                  return (
+                    <Box>
+                      <Typography>Sign On Bonus</Typography>
+                      <NumericFormat
+                        className="sign-on-bonus"
+                        {...rest}
+                        getInputRef={ref}
+                        placeholder="$0"
+                        fullWidth
+                        customInput={TextField}
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    </Box>
+                  );
+                }}
+              />
+            )}
+
+            {showPercentProduction && (
+              <Controller
+                name="percentProduction"
+                control={control}
+                render={({ field, fieldState }) => {
+                  const { ref, ...rest } = field;
+                  return (
+                    <Box>
+                      <Typography>
+                        % Production
+                        <Tooltip
+                          title="What percentage of your total production goes towards your salary?"
+                          placement="top">
+                          <InfoIcon
+                            fontSize="small"
+                            style={{
+                              marginLeft: "8px",
+                              verticalAlign: "middle",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                      </Typography>
+                      <NumericFormat
+                        {...rest}
+                        getInputRef={ref}
+                        placeholder="20%"
+                        fullWidth
+                        customInput={TextField}
+                        thousandSeparator={true}
+                        suffix={"%"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    </Box>
+                  );
+                }}
+              />
+            )}
+
+            {showAverageAnnualProduction && (
+              <Controller
+                name="averageAnnualProduction"
+                control={control}
+                render={({ field, fieldState }) => {
+                  const { ref, ...rest } = field;
+                  return (
+                    <Box>
+                      <Typography>
+                        Average Annual Production
+                        <Tooltip
+                          title="On average, how much money do you make each year from production alone?"
+                          placement="top">
+                          <InfoIcon
+                            fontSize="small"
+                            style={{
+                              marginLeft: "8px",
+                              verticalAlign: "middle",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                      </Typography>
+                      <NumericFormat
+                        {...rest}
+                        getInputRef={ref}
+                        placeholder="$20,000"
+                        fullWidth
+                        customInput={TextField}
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    </Box>
+                  );
+                }}
+              />
+            )}
+          </>
+        )}
+        {uploadFile && (
+          <Box className="file-upload-container">
+            <input
+              name="verificationDocument"
+              accept=".pdf,.doc,.docx"
+              style={{ display: "none" }}
+              id="verification-file-upload"
+              type="file"
+              onChange={handleFileUpload}
+            />
+            <Controller
+              name="verificationDocumentName"
+              control={control}
+              render={({ field }) => <input {...field} type="hidden" />}
+            />
+            <label htmlFor="verification-file-upload">
+              <Button
+                variant="contained"
+                component="span"
+                startIcon={<CloudUploadIcon />}
+                className="file-upload-btn">
+                Upload
+              </Button>
+            </label>
+            {uploadedFileName && (
+              <Box className="uploaded-file-info">
+                <AttachmentIcon />
+                <Link
+                  href={uploadedFile ? URL.createObjectURL(uploadedFile) : "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="uploaded-file-link">
+                  {uploadedFileName}
+                </Link>
+              </Box>
+            )}
+          </Box>
+        )}
+
+        <Typography className="section-title" variant="h6">
+          Optional Fields
+        </Typography>
+
         <Controller
-          name="yearsOfExperience"
+          name="daysWorkedPerWeek"
           control={control}
-          rules={{ required: "Years of Experience is required" }}
           render={({ field, fieldState }) => {
             const { ref, ...rest } = field;
             return (
-              <Box className="yoe-input-container">
-                <Typography gutterBottom>Years of Experience</Typography>
+              <Box>
+                <Typography>Average days worked per week</Typography>
                 <NumericFormat
-                  {...rest}
                   customInput={TextField}
+                  {...rest}
                   getInputRef={ref}
-                  placeholder="0"
-                  value={isNewGrad ? 0 : rest.value}
-                  disabled={isNewGrad}
-                  thousandSeparator={false}
+                  fullWidth
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
                 />
@@ -338,412 +692,80 @@ export const CompForm = () => {
         />
 
         <Controller
-          name="isNewGrad"
+          name="gender"
           control={control}
           render={({ field }) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  {...field}
-                  onChange={(e) => {
-                    // field.onChange(e);
-                    handleIsNewGrad(e);
-                  }}
-                />
-              }
-              label="New Graduate"
-            />
+            <Box>
+              <Typography>Gender</Typography>
+              <FormControl fullWidth>
+                <Select {...field} displayEmpty>
+                  <MenuItem value="" disabled>
+                    Select gender
+                  </MenuItem>
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="non-binary">Non-binary</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           )}
         />
-      </Box>
 
-      <Typography variant="h6" className="section-title">
-        Salary Information
-      </Typography>
+        <Controller
+          name="numberOfVeterinarians"
+          control={control}
+          render={({ field, fieldState }) => {
+            const { ref, ...rest } = field;
+            return (
+              <Box>
+                <Typography>Number of Veterinarians in Practice</Typography>
+                <NumericFormat
+                  {...rest}
+                  getInputRef={ref}
+                  customInput={TextField}
+                  fullWidth
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            );
+          }}
+        />
 
-      <Box className="salary-info-container">
-        <Button
-          className="salary-info-btn"
-          onClick={() => handleManualSalaryInfo()}
-          variant="contained"
-          color="primary"
-          fullWidth>
-          Fill out manually
-        </Button>
-        <Button
-          className="salary-info-btn"
-          onClick={() => handleUploadFile()}
-          variant="contained"
-          color="primary"
-          fullWidth>
-          Upload verification
-        </Button>
-      </Box>
-
-      {selectManual && (
-        <>
+        {!isAuthenticated && (
           <Controller
-            name="paymentFrequency"
+            name="email"
             control={control}
-            rules={{ required: "Please select a payment frequency" }}
-            render={({ field }) => (
-              <Box className="payment-frequency-container">
-                <Typography>Payment Frequency: </Typography>
-                <FormGroup row className="payment-frequency-checkboxes">
-                  {paymentFrequencyOptions.map((option: string) => (
-                    <FormControlLabel
-                      key={option}
-                      control={
-                        <Checkbox
-                          checked={field.value === option}
-                          onChange={() => field.onChange(option)}
-                        />
-                      }
-                      label={option}
-                      disabled={isFileUploaded}
-                    />
-                  ))}
-                </FormGroup>
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Email</Typography>
+                <TextField
+                  {...field}
+                  fullWidth
+                  error={!!fieldState.error}
+                  helperText={
+                    fieldState.error?.message ||
+                    "Your email will not be shared. Required if you want to have your compensation details linked to an account."
+                  }
+                />
               </Box>
             )}
           />
-
-          {paymentFrequency === "Annually" && (
-            <Controller
-              name="baseSalary"
-              control={control}
-              rules={{ required: "Base Salary is required" }}
-              render={({ field, fieldState }) => {
-                const { ref, ...rest } = field;
-                return (
-                  <Box>
-                    <Typography gutterBottom>Base Salary</Typography>
-                    <NumericFormat
-                      {...rest}
-                      getInputRef={ref}
-                      fullWidth
-                      placeholder="$0.00"
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      prefix={"$"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                      disabled={isFileUploaded}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          )}
-
-          {paymentFrequency === "Hourly" && (
-            <Controller
-              name="hourlyRate"
-              control={control}
-              rules={{ required: "Hourly Rate is required" }}
-              render={({ field, fieldState }) => {
-                const { ref, ...rest } = field;
-                return (
-                  <Box>
-                    <Typography gutterBottom>Hourly Rate</Typography>
-                    <NumericFormat
-                      {...rest}
-                      getInputRef={ref}
-                      fullWidth
-                      placeholder="$0"
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      prefix={"$"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                      disabled={isFileUploaded}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          )}
-
-          <Box className="additional-comp-btns-container">
-            <Button
-              className="additional-comp-btn"
-              type="button"
-              variant="contained"
-              size="small"
-              onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
-              {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
-            </Button>
-            <Button
-              className="additional-comp-btn"
-              type="button"
-              variant="contained"
-              size="small"
-              onClick={() => setShowPercentProduction(!showPercentProduction)}>
-              {showPercentProduction
-                ? "Hide % of Production"
-                : "Add % of Production"}
-            </Button>
-            <Button
-              className="additional-comp-btn"
-              type="button"
-              variant="contained"
-              size="small"
-              onClick={() =>
-                setShowAverageAnnualProduction(!showAverageAnnualProduction)
-              }>
-              {showAverageAnnualProduction
-                ? "Hide Average Annual Production"
-                : "Add Average Annual Production"}
-            </Button>
-          </Box>
-
-          {showSignOnBonus && (
-            <Controller
-              name="signOnBonus"
-              control={control}
-              render={({ field, fieldState }) => {
-                const { ref, ...rest } = field;
-                return (
-                  <Box>
-                    <Typography gutterBottom>Sign On Bonus</Typography>
-                    <NumericFormat
-                      className="sign-on-bonus"
-                      {...rest}
-                      getInputRef={ref}
-                      placeholder="$0"
-                      fullWidth
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      prefix={"$"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          )}
-
-          {showPercentProduction && (
-            <Controller
-              name="percentProduction"
-              control={control}
-              render={({ field, fieldState }) => {
-                const { ref, ...rest } = field;
-                return (
-                  <Box>
-                    <Typography gutterBottom>
-                      % Production
-                      <Tooltip
-                        title="What percentage of your total production goes towards your salary?"
-                        placement="top">
-                        <InfoIcon
-                          fontSize="small"
-                          style={{
-                            marginLeft: "8px",
-                            verticalAlign: "middle",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </Tooltip>
-                    </Typography>
-                    <NumericFormat
-                      {...rest}
-                      getInputRef={ref}
-                      placeholder="20%"
-                      fullWidth
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      suffix={"%"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          )}
-
-          {showAverageAnnualProduction && (
-            <Controller
-              name="averageAnnualProduction"
-              control={control}
-              render={({ field, fieldState }) => {
-                const { ref, ...rest } = field;
-                return (
-                  <Box>
-                    <Typography gutterBottom>
-                      Average Annual Production
-                      <Tooltip
-                        title="On average, how much money do you make each year from production alone?"
-                        placement="top">
-                        <InfoIcon
-                          fontSize="small"
-                          style={{
-                            marginLeft: "8px",
-                            verticalAlign: "middle",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </Tooltip>
-                    </Typography>
-                    <NumericFormat
-                      {...rest}
-                      getInputRef={ref}
-                      placeholder="$20,000"
-                      fullWidth
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      prefix={"$"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          )}
-        </>
-      )}
-      {uploadFile && (
-        <Box className="file-upload-container">
-          <input
-            name="verificationDocument"
-            accept=".pdf,.doc,.docx"
-            style={{ display: "none" }}
-            id="verification-file-upload"
-            type="file"
-            onChange={handleFileUpload}
-          />
-          <Controller
-            name="verificationDocumentName"
-            control={control}
-            render={({ field }) => <input {...field} type="hidden" />}
-          />
-          <label htmlFor="verification-file-upload">
-            <Button
-              variant="contained"
-              component="span"
-              startIcon={<CloudUploadIcon />}
-              className="file-upload-btn">
-              Upload
-            </Button>
-          </label>
-          {uploadedFileName && (
-            <Box className="uploaded-file-info">
-              <AttachmentIcon />
-              <Link
-                href={uploadedFile ? URL.createObjectURL(uploadedFile) : "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="uploaded-file-link">
-                {uploadedFileName}
-              </Link>
-            </Box>
-          )}
-        </Box>
-      )}
-
-      <Typography className="section-title" variant="h6">
-        Optional Fields
-      </Typography>
-
-      <Controller
-        name="daysWorkedPerWeek"
-        control={control}
-        render={({ field, fieldState }) => {
-          const { ref, ...rest } = field;
-          return (
-            <Box>
-              <Typography gutterBottom>Average days worked per week</Typography>
-              <NumericFormat
-                customInput={TextField}
-                {...rest}
-                getInputRef={ref}
-                fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </Box>
-          );
-        }}
-      />
-
-      <Controller
-        name="gender"
-        control={control}
-        render={({ field }) => (
-          <Box>
-            <Typography gutterBottom>Gender</Typography>
-            <FormControl fullWidth>
-              <Select {...field} displayEmpty>
-                <MenuItem value="" disabled>
-                  Select gender
-                </MenuItem>
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-                <MenuItem value="non-binary">Non-binary</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
         )}
-      />
-
-      <Controller
-        name="numberOfVeterinarians"
-        control={control}
-        render={({ field, fieldState }) => {
-          const { ref, ...rest } = field;
-          return (
-            <Box>
-              <Typography gutterBottom>
-                Number of Veterinarians in Practice
-              </Typography>
-              <NumericFormat
-                {...rest}
-                getInputRef={ref}
-                customInput={TextField}
-                fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </Box>
-          );
-        }}
-      />
-
-      <Controller
-        name="email"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Box>
-            <Typography gutterBottom>Email</Typography>
-            <TextField
-              {...field}
-              fullWidth
-              error={!!fieldState.error}
-              helperText={
-                fieldState.error?.message ||
-                "Your email will not be shared. Required if you wish to have your compensation details associated with an account."
-              }
-            />
-          </Box>
-        )}
-      />
-
-      <Button type="submit" variant="contained" color="primary">
-        Submit
-      </Button>
-    </form>
+        <div className="submit-container">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className="submit-button">
+            Submit
+          </Button>
+        </div>
+        <Typography variant="body2" className="sign-up-link">
+          Or, create an account first:{" "}
+          <RouterLink to="/signup">Sign up here</RouterLink>
+        </Typography>
+      </form>
+    </div>
   );
 };

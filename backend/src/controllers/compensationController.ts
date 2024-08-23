@@ -3,6 +3,7 @@ import compensationService from "../services/compensationService";
 import { ICompensation, ICompFormInput } from "../../../shared-types/types";
 import { z } from "zod";
 import { CompFormSchema } from "../schemas/compensationSchema";
+import userService from "../services/userService";
 
 interface SalaryFilter {
   page: number;
@@ -45,6 +46,18 @@ const createCompensation = async (req: Request, res: Response) => {
   try {
     const validatedData = CompFormSchema.parse(req.body);
 
+    let userId = null;
+    if (req.session && req.session.userId) {
+      userId = req.session.userId;
+    } else if (validatedData.email) {
+      const existingUser = await userService.findByEmail(validatedData.email);
+      if (existingUser) {
+        userId = existingUser.id;
+      } else {
+        userId = await userService.createWithNullPassword(validatedData.email);
+      }
+    }
+
     const compensationData: ICompensation = {
       company: validatedData.company,
       location: validatedData.location,
@@ -65,6 +78,7 @@ const createCompensation = async (req: Request, res: Response) => {
       number_of_veterinarians: validatedData.numberOfVeterinarians,
       days_worked_per_week: validatedData.daysWorkedPerWeek,
       email: validatedData.email || null,
+      user_id: userId,
       is_verified: false,
       is_approved: false,
       verification_document: validatedData.verificationDocument

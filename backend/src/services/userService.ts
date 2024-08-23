@@ -16,6 +16,23 @@ const userService = {
       .returning("id");
     return userId.id;
   },
+
+  createWithNullPassword: async (email: string) => {
+    const [userId] = await knex("users")
+      .insert({ email, password_hash: null, is_verified: false })
+      .returning("id");
+    return userId;
+  },
+
+  updatePassword: async (
+    userId: string,
+    hashedPassword: string
+  ): Promise<void> => {
+    await knex("users")
+      .where({ id: userId })
+      .update({ password_hash: hashedPassword });
+  },
+
   generateVerificationCode: async (userId: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       randomBytes(2, (err, buffer) => {

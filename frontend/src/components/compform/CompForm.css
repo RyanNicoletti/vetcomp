@@ -1,7 +1,13 @@
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
 .form-container {
-  max-width: 600px;
-  margin: 80px auto 50px auto;
-  padding: 30px;
+  width: 30vw;
+  margin-top: 100px;
+  margin-bottom: 50px;
+  padding: 30px 30px 10px 30px;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -71,4 +77,14 @@
 .payment-frequency-checkboxes {
   margin-top: 20px;
   margin-left: 20px;
+}
+
+.submit-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.sign-up-link {
+  text-align: center;
 }

@@ -6,6 +6,7 @@ import z from "zod";
 import emailService from "../services/emailService";
 import { loginSchema } from "../schemas/loginSchema";
 import { User } from "../schemas/userSchema";
+import { hash } from "crypto";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -13,16 +14,31 @@ const createUser = async (req: Request, res: Response) => {
 
     const existingUser: User | undefined = await userService.findByEmail(email);
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already exists",
-        errors: [
-          {
-            field: "email",
-            message: "That email is not available",
-          },
-        ],
-      });
+      if (existingUser.password_hash === null) {
+        const hashedPw = await argon2.hash(password);
+        await userService.updatePassword(existingUser.id, hashedPw);
+
+        if (req.session) {
+          req.session.userId = existingUser.id;
+        }
+
+        return res.status(200).json({
+          message: "Password set successfully",
+          userId: existingUser.id,
+        });
+      } else {
+        return res.status(400).json({
+          message: "Email already exists",
+          errors: [
+            {
+              field: "email",
+              message: "That email is not available",
+            },
+          ],
+        });
+      }
     }
+
     const hashedPw = await argon2.hash(password);
     const userId: string = await userService.create(email, hashedPw);
     const verificationToken = await userService.generateVerificationCode(
