@@ -71,11 +71,11 @@
 
 .payment-frequency-container {
   display: flex;
-  align-items: center;
+  align-items: last baseline;
 }
 
 .payment-frequency-checkboxes {
-  margin-top: 20px;
+  margin-top: 0px;
   margin-left: 20px;
 }
 
@@ -87,4 +87,13 @@
 
 .sign-up-link {
   text-align: center;
+}
+
+#salaryInfoSection {
+  margin-bottom: 0px;
+}
+
+#fileUploadCaption {
+  display: block;
+  margin-bottom: 10px;
 }

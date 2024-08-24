@@ -65,10 +65,12 @@ const emailService = {
         </head>
         <body>
           <h2>Welcome to Veterinarycomp.com</h2>
-          <p>Thank you for signing up. To complete your registration, please use the verification code below:</p>
+          <p>Thanks for signing up to Veterinarycomp.com. To complete your registration, please use the verification code below:</p>
           <div class="verification-code">${code}</div>
           <p>This code will expire in 15 minutes.</p>
-          <p>If you didn't request this verification, please ignore this email.</p>
+          <p>If you didn't request this verification, please ignore this email. If you are having trouble accessing your account, please contact our Support Team.</p>
+          </br>
+          <p>-The Veterinarycomp.com Team</p>
           <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
           <div class="footer">
             <p>&copy; ${new Date().getFullYear()} VeterinaryComp. All rights reserved.</p>

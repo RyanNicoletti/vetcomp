@@ -31,7 +31,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("email").nullable();
     table.boolean("is_verified").defaultTo(false);
     table.boolean("is_approved").defaultTo(false);
-    table.binary("verification_document");
+    table.text("verification_document_url");
     table.text("verification_document_name");
     table.timestamps(true, true);
   });

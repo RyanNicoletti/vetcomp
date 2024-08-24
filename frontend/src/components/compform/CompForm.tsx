@@ -8,6 +8,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Link,
   MenuItem,
   Select,
@@ -15,6 +16,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -67,12 +69,9 @@ export const CompForm = () => {
   const [showPercentProduction, setShowPercentProduction] = useState(false);
   const [showAverageAnnualProduction, setShowAverageAnnualProduction] =
     useState(false);
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const [uploadFile, setUploadFile] = useState(false);
-  const [selectManual, setSelectManual] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSpecialist, setIsSpecialist] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { openSnackbar } = useSnackbar();
 
   const { data: isAuthenticated } = useQuery({
@@ -131,27 +130,27 @@ export const CompForm = () => {
     }
   }, [locations]);
 
-  const handleManualSalaryInfo = () => {
-    setUploadFile(false);
-    setSelectManual(true);
-    setUploadedFileName(null);
-    setUploadedFile(null);
-    setIsFileUploaded(false);
-  };
-
-  const handleUploadFile = () => {
-    setUploadFile(true);
-    setSelectManual(false);
-  };
-
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file: File | undefined = event.target.files?.[0];
     if (file) {
-      setIsFileUploaded(true);
       setUploadedFileName(file.name);
       setUploadedFile(file);
       setValue("verificationDocument", [file]);
       setValue("verificationDocumentName", file.name);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFileName(null);
+    setUploadedFile(null);
+    setValue("verificationDocument", null);
+    setValue("verificationDocumentName", "");
+  };
+
+  const handleFileOpen = () => {
+    if (uploadedFile) {
+      const fileURL = URL.createObjectURL(uploadedFile);
+      window.open(fileURL, "_blank");
     }
   };
 
@@ -377,304 +376,295 @@ export const CompForm = () => {
           />
         </Box>
 
-        <Typography variant="h6" className="section-title">
+        <Typography
+          variant="h6"
+          className="section-title"
+          id="salaryInfoSection">
           Salary Information
         </Typography>
 
-        <Box className="salary-info-container">
+        <Controller
+          name="paymentFrequency"
+          control={control}
+          rules={{ required: "Please select a payment frequency" }}
+          render={({ field }) => (
+            <Box className="payment-frequency-container">
+              <Typography>Payment Frequency: </Typography>
+              <FormGroup row className="payment-frequency-checkboxes">
+                {paymentFrequencyOptions.map((option: string) => (
+                  <FormControlLabel
+                    key={option}
+                    control={
+                      <Checkbox
+                        checked={field.value === option}
+                        onChange={() => field.onChange(option)}
+                      />
+                    }
+                    label={option}
+                  />
+                ))}
+              </FormGroup>
+            </Box>
+          )}
+        />
+
+        {paymentFrequency === "Annually" && (
+          <Controller
+            name="baseSalary"
+            control={control}
+            rules={{ required: "Base Salary is required" }}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box>
+                  <Typography>Base Salary</Typography>
+                  <NumericFormat
+                    {...rest}
+                    getInputRef={ref}
+                    fullWidth
+                    placeholder="$0.00"
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                </Box>
+              );
+            }}
+          />
+        )}
+
+        {paymentFrequency === "Hourly" && (
+          <Controller
+            name="hourlyRate"
+            control={control}
+            rules={{ required: "Hourly Rate is required" }}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box>
+                  <Typography>Hourly Rate</Typography>
+                  <NumericFormat
+                    {...rest}
+                    getInputRef={ref}
+                    fullWidth
+                    placeholder="$0"
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                </Box>
+              );
+            }}
+          />
+        )}
+
+        <Box className="additional-comp-btns-container">
           <Button
-            className="salary-info-btn"
-            onClick={() => handleManualSalaryInfo()}
+            className="additional-comp-btn"
+            type="button"
             variant="contained"
-            color="primary"
-            fullWidth>
-            Fill out manually
+            size="small"
+            onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
+            {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
           </Button>
           <Button
-            className="salary-info-btn"
-            onClick={() => handleUploadFile()}
+            className="additional-comp-btn"
+            type="button"
             variant="contained"
-            color="primary"
-            fullWidth>
-            Upload verification
+            size="small"
+            onClick={() => setShowPercentProduction(!showPercentProduction)}>
+            {showPercentProduction
+              ? "Hide % of Production"
+              : "Add % of Production"}
+          </Button>
+          <Button
+            className="additional-comp-btn"
+            type="button"
+            variant="contained"
+            size="small"
+            onClick={() =>
+              setShowAverageAnnualProduction(!showAverageAnnualProduction)
+            }>
+            {showAverageAnnualProduction
+              ? "Hide Average Annual Production"
+              : "Add Average Annual Production"}
           </Button>
         </Box>
 
-        {selectManual && (
-          <>
-            <Controller
-              name="paymentFrequency"
-              control={control}
-              rules={{ required: "Please select a payment frequency" }}
-              render={({ field }) => (
-                <Box className="payment-frequency-container">
-                  <Typography>Payment Frequency: </Typography>
-                  <FormGroup row className="payment-frequency-checkboxes">
-                    {paymentFrequencyOptions.map((option: string) => (
-                      <FormControlLabel
-                        key={option}
-                        control={
-                          <Checkbox
-                            checked={field.value === option}
-                            onChange={() => field.onChange(option)}
-                          />
-                        }
-                        label={option}
-                        disabled={isFileUploaded}
-                      />
-                    ))}
-                  </FormGroup>
+        {showSignOnBonus && (
+          <Controller
+            name="signOnBonus"
+            control={control}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box>
+                  <Typography>Sign On Bonus</Typography>
+                  <NumericFormat
+                    className="sign-on-bonus"
+                    {...rest}
+                    getInputRef={ref}
+                    placeholder="$0"
+                    fullWidth
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
                 </Box>
-              )}
-            />
+              );
+            }}
+          />
+        )}
 
-            {paymentFrequency === "Annually" && (
-              <Controller
-                name="baseSalary"
-                control={control}
-                rules={{ required: "Base Salary is required" }}
-                render={({ field, fieldState }) => {
-                  const { ref, ...rest } = field;
-                  return (
-                    <Box>
-                      <Typography>Base Salary</Typography>
-                      <NumericFormat
-                        {...rest}
-                        getInputRef={ref}
-                        fullWidth
-                        placeholder="$0.00"
-                        customInput={TextField}
-                        thousandSeparator={true}
-                        prefix={"$"}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        disabled={isFileUploaded}
+        {showPercentProduction && (
+          <Controller
+            name="percentProduction"
+            control={control}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box>
+                  <Typography>
+                    % Production
+                    <Tooltip
+                      title="What percentage of your total production goes towards your salary?"
+                      placement="top">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{
+                          marginLeft: "8px",
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
                       />
-                    </Box>
-                  );
-                }}
-              />
-            )}
+                    </Tooltip>
+                  </Typography>
+                  <NumericFormat
+                    {...rest}
+                    getInputRef={ref}
+                    placeholder="20%"
+                    fullWidth
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    suffix={"%"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                </Box>
+              );
+            }}
+          />
+        )}
 
-            {paymentFrequency === "Hourly" && (
-              <Controller
-                name="hourlyRate"
-                control={control}
-                rules={{ required: "Hourly Rate is required" }}
-                render={({ field, fieldState }) => {
-                  const { ref, ...rest } = field;
-                  return (
-                    <Box>
-                      <Typography>Hourly Rate</Typography>
-                      <NumericFormat
-                        {...rest}
-                        getInputRef={ref}
-                        fullWidth
-                        placeholder="$0"
-                        customInput={TextField}
-                        thousandSeparator={true}
-                        prefix={"$"}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        disabled={isFileUploaded}
+        {showAverageAnnualProduction && (
+          <Controller
+            name="averageAnnualProduction"
+            control={control}
+            render={({ field, fieldState }) => {
+              const { ref, ...rest } = field;
+              return (
+                <Box>
+                  <Typography>
+                    Average Annual Production
+                    <Tooltip
+                      title="On average, how much money do you make each year from production alone?"
+                      placement="top">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{
+                          marginLeft: "8px",
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
                       />
-                    </Box>
-                  );
-                }}
-              />
-            )}
+                    </Tooltip>
+                  </Typography>
+                  <NumericFormat
+                    {...rest}
+                    getInputRef={ref}
+                    placeholder="$20,000"
+                    fullWidth
+                    customInput={TextField}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                </Box>
+              );
+            }}
+          />
+        )}
 
-            <Box className="additional-comp-btns-container">
-              <Button
-                className="additional-comp-btn"
-                type="button"
-                variant="contained"
-                size="small"
-                onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
-                {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
-              </Button>
-              <Button
-                className="additional-comp-btn"
-                type="button"
-                variant="contained"
-                size="small"
-                onClick={() =>
-                  setShowPercentProduction(!showPercentProduction)
-                }>
-                {showPercentProduction
-                  ? "Hide % of Production"
-                  : "Add % of Production"}
-              </Button>
-              <Button
-                className="additional-comp-btn"
-                type="button"
-                variant="contained"
-                size="small"
-                onClick={() =>
-                  setShowAverageAnnualProduction(!showAverageAnnualProduction)
-                }>
-                {showAverageAnnualProduction
-                  ? "Hide Average Annual Production"
-                  : "Add Average Annual Production"}
-              </Button>
+        <Typography className="section-title" variant="h6">
+          Verification Document (Optional)
+        </Typography>
+
+        <Box className="file-upload-container">
+          <input
+            name="verificationDocument"
+            accept=".pdf,.doc,.docx"
+            style={{ display: "none" }}
+            id="verification-file-upload"
+            type="file"
+            onChange={handleFileUpload}
+          />
+          <Controller
+            name="verificationDocumentName"
+            control={control}
+            render={({ field }) => <input {...field} type="hidden" />}
+          />
+          <label htmlFor="verification-file-upload">
+            <Button
+              variant="contained"
+              component="span"
+              startIcon={<CloudUploadIcon />}
+              className="file-upload-btn">
+              Upload Verification Document
+            </Button>
+          </label>
+          {uploadedFileName && (
+            <Box className="uploaded-file-info">
+              <AttachmentIcon />
+              <Link
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleFileOpen();
+                }}
+                className="uploaded-file-link">
+                {uploadedFileName}
+              </Link>
+              <IconButton onClick={handleRemoveFile} size="small">
+                <DeleteIcon />
+              </IconButton>
             </Box>
-
-            {showSignOnBonus && (
-              <Controller
-                name="signOnBonus"
-                control={control}
-                render={({ field, fieldState }) => {
-                  const { ref, ...rest } = field;
-                  return (
-                    <Box>
-                      <Typography>Sign On Bonus</Typography>
-                      <NumericFormat
-                        className="sign-on-bonus"
-                        {...rest}
-                        getInputRef={ref}
-                        placeholder="$0"
-                        fullWidth
-                        customInput={TextField}
-                        thousandSeparator={true}
-                        prefix={"$"}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                      />
-                    </Box>
-                  );
-                }}
-              />
-            )}
-
-            {showPercentProduction && (
-              <Controller
-                name="percentProduction"
-                control={control}
-                render={({ field, fieldState }) => {
-                  const { ref, ...rest } = field;
-                  return (
-                    <Box>
-                      <Typography>
-                        % Production
-                        <Tooltip
-                          title="What percentage of your total production goes towards your salary?"
-                          placement="top">
-                          <InfoIcon
-                            fontSize="small"
-                            style={{
-                              marginLeft: "8px",
-                              verticalAlign: "middle",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </Tooltip>
-                      </Typography>
-                      <NumericFormat
-                        {...rest}
-                        getInputRef={ref}
-                        placeholder="20%"
-                        fullWidth
-                        customInput={TextField}
-                        thousandSeparator={true}
-                        suffix={"%"}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                      />
-                    </Box>
-                  );
-                }}
-              />
-            )}
-
-            {showAverageAnnualProduction && (
-              <Controller
-                name="averageAnnualProduction"
-                control={control}
-                render={({ field, fieldState }) => {
-                  const { ref, ...rest } = field;
-                  return (
-                    <Box>
-                      <Typography>
-                        Average Annual Production
-                        <Tooltip
-                          title="On average, how much money do you make each year from production alone?"
-                          placement="top">
-                          <InfoIcon
-                            fontSize="small"
-                            style={{
-                              marginLeft: "8px",
-                              verticalAlign: "middle",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </Tooltip>
-                      </Typography>
-                      <NumericFormat
-                        {...rest}
-                        getInputRef={ref}
-                        placeholder="$20,000"
-                        fullWidth
-                        customInput={TextField}
-                        thousandSeparator={true}
-                        prefix={"$"}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                      />
-                    </Box>
-                  );
-                }}
-              />
-            )}
-          </>
-        )}
-        {uploadFile && (
-          <Box className="file-upload-container">
-            <input
-              name="verificationDocument"
-              accept=".pdf,.doc,.docx"
-              style={{ display: "none" }}
-              id="verification-file-upload"
-              type="file"
-              onChange={handleFileUpload}
-            />
-            <Controller
-              name="verificationDocumentName"
-              control={control}
-              render={({ field }) => <input {...field} type="hidden" />}
-            />
-            <label htmlFor="verification-file-upload">
-              <Button
-                variant="contained"
-                component="span"
-                startIcon={<CloudUploadIcon />}
-                className="file-upload-btn">
-                Upload
-              </Button>
-            </label>
-            {uploadedFileName && (
-              <Box className="uploaded-file-info">
-                <AttachmentIcon />
-                <Link
-                  href={uploadedFile ? URL.createObjectURL(uploadedFile) : "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="uploaded-file-link">
-                  {uploadedFileName}
-                </Link>
-              </Box>
-            )}
-          </Box>
-        )}
+          )}
+        </Box>
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          id="fileUploadCaption">
+          Upload an offer letter or pay stub to have your compensation details
+          verified. The document will be deleted after review and not stored
+          permanently.
+        </Typography>
 
         <Typography className="section-title" variant="h6">
           Optional Fields

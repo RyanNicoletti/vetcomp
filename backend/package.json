@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.637.0",
+    "@smithy/shared-ini-file-loader": "^3.1.4",
     "argon2": "^0.40.3",
     "connect-redis": "^7.1.1",
     "cors": "^2.8.5",

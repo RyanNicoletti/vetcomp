@@ -1,3 +1,4 @@
+// represents what is stored in the db
 export interface ICompensation {
   id?: string;
   user_id?: string | null;
@@ -22,7 +23,7 @@ export interface ICompensation {
   email: string | null;
   is_verified: boolean;
   is_approved: boolean;
-  verification_document: Uint8Array | null;
+  verification_document_url: string | null;
   verification_document_name: string | null;
   created_at?: Date;
   updated_at?: Date;

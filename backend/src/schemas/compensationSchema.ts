@@ -86,4 +86,5 @@ export const CompFormSchema = z.object({
   email: z.union([z.string().email(), z.literal("")]).nullable(),
 });
 
+// represents users input from the front end
 export type ICompFormInput = z.infer<typeof CompFormSchema>;

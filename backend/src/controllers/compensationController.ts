@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import compensationService from "../services/compensationService";
-import { ICompensation, ICompFormInput } from "../../../shared-types/types";
+import { ICompensation } from "../../../shared-types/types";
 import { z } from "zod";
-import { CompFormSchema } from "../schemas/compensationSchema";
+import { CompFormSchema, ICompFormInput } from "../schemas/compensationSchema";
 import userService from "../services/userService";
-import { UUID } from "crypto";
 
 interface SalaryFilter {
   page: number;
@@ -45,7 +44,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
 
 const createCompensation = async (req: Request, res: Response) => {
   try {
-    const validatedData = CompFormSchema.parse(req.body);
+    const validatedData: ICompFormInput = CompFormSchema.parse(req.body);
 
     let userId;
     if (req.session && req.session.userId) {
@@ -61,6 +60,18 @@ const createCompensation = async (req: Request, res: Response) => {
         userId = userIdObj.id;
       }
     }
+
+    let verificationDocumentKey: string | null = null;
+    if (validatedData.verificationDocument) {
+      const fileBuffer = Buffer.from(
+        await validatedData.verificationDocument[0].arrayBuffer()
+      );
+      verificationDocumentKey = await compensationService.uploadFileToB2(
+        fileBuffer,
+        validatedData.verificationDocumentName || "unnamed_file"
+      );
+    }
+
     const compensationData: ICompensation = {
       company: validatedData.company,
       location: validatedData.location,
@@ -84,9 +95,7 @@ const createCompensation = async (req: Request, res: Response) => {
       user_id: userId,
       is_verified: false,
       is_approved: false,
-      verification_document: validatedData.verificationDocument
-        ? Buffer.from(await validatedData.verificationDocument[0].arrayBuffer())
-        : null,
+      verification_document_url: verificationDocumentKey || null,
       verification_document_name:
         validatedData.verificationDocumentName || null,
     };
