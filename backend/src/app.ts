@@ -32,6 +32,9 @@ const sess = {
   store: redisStore,
   resave: false,
   saveUninitialized: false,
+  genid: () => {
+    return crypto.randomUUID();
+  },
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

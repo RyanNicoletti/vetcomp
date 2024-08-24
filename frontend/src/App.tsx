@@ -8,23 +8,26 @@ import Footer from "./components/footer/Footer";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
+import { SnackbarProvider } from "./context/SnackbarContext";
 
 function App() {
   return (
     <Router>
       <Box className="app_container">
-        <Box className="nav_container">
-          <Header />
-        </Box>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/addcomp" element={<AddCompForm />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-        </Routes>
-        <Footer />
+        <SnackbarProvider>
+          <Box className="nav_container">
+            <Header />
+          </Box>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/addcomp" element={<AddCompForm />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+          </Routes>
+          <Footer />
+        </SnackbarProvider>
       </Box>
     </Router>
   );
@@ -32,9 +35,6 @@ function App() {
 
 function About() {
   return <div>ab</div>;
-}
-function Contact() {
-  return <div>C</div>;
 }
 
 export default App;

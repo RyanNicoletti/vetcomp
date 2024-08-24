@@ -4,6 +4,7 @@ import { ICompensation, ICompFormInput } from "../../../shared-types/types";
 import { z } from "zod";
 import { CompFormSchema } from "../schemas/compensationSchema";
 import userService from "../services/userService";
+import { UUID } from "crypto";
 
 interface SalaryFilter {
   page: number;
@@ -46,7 +47,7 @@ const createCompensation = async (req: Request, res: Response) => {
   try {
     const validatedData = CompFormSchema.parse(req.body);
 
-    let userId = null;
+    let userId;
     if (req.session && req.session.userId) {
       userId = req.session.userId;
     } else if (validatedData.email) {
@@ -54,10 +55,12 @@ const createCompensation = async (req: Request, res: Response) => {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        userId = await userService.createWithNullPassword(validatedData.email);
+        const userIdObj = await userService.createWithNullPassword(
+          validatedData.email
+        );
+        userId = userIdObj.id;
       }
     }
-
     const compensationData: ICompensation = {
       company: validatedData.company,
       location: validatedData.location,
@@ -89,8 +92,13 @@ const createCompensation = async (req: Request, res: Response) => {
     };
 
     const insertedComp = await compensationService.create(compensationData);
-    return res.status(201).json(insertedComp);
+    return res.status(201).json({
+      insertedComp,
+      message:
+        "Success! Thank you for submitting your comp info. It will be reviewed as soon as possible.",
+    });
   } catch (error) {
+    // TODO: if  user was created, delete it by id
     if (error instanceof z.ZodError) {
       const formattedErrors = error.errors.map((err) => ({
         field: err.path.join("."),

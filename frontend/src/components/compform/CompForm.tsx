@@ -5,7 +5,6 @@ import {
   Button,
   Checkbox,
   CircularProgress,
-  Container,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -32,7 +31,8 @@ import {
 import { ICompFormInput } from "../../../../shared-types/types";
 import { createCompensation } from "../../queries/salaryQueries";
 import { getAuthStatus } from "../../queries/authQueries";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export const CompForm = () => {
   const { control, handleSubmit, watch, setValue, setError } =
@@ -73,11 +73,14 @@ export const CompForm = () => {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSpecialist, setIsSpecialist] = useState(false);
+  const { openSnackbar } = useSnackbar();
 
   const { data: isAuthenticated } = useQuery({
     queryKey: ["isAuthenticated"],
     queryFn: () => getAuthStatus(),
   });
+
+  const navigate = useNavigate();
 
   const {
     data: locations,
@@ -100,12 +103,19 @@ export const CompForm = () => {
           });
         });
       } else {
-        // Handle general error
-        console.error("An unexpected error occurred:", error);
+        openSnackbar(
+          "An unexpected error occurred. Please try again.",
+          "error"
+        );
       }
     },
-    onSuccess: async () => {
-      console.log("success");
+    onSuccess: async (data) => {
+      openSnackbar(
+        data.message ||
+          "Success! Thank you for submitting your comp info. It will be reviewed as soon as possible.",
+        "success"
+      );
+      navigate("/");
     },
   });
 

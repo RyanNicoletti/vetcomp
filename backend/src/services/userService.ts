@@ -10,7 +10,7 @@ const userService = {
     const user: User = await knex("users").where({ email }).first();
     return user;
   },
-  create: async (email: string, hash: string): Promise<string> => {
+  create: async (email: string, hash: string) => {
     const [userId] = await knex("users")
       .insert({ email, password_hash: hash, is_verified: false })
       .returning("id");
@@ -68,13 +68,14 @@ const userService = {
       return null;
     }
 
-    const isValidPassword: boolean = await argon2.verify(
-      user.password_hash,
-      password
-    );
-
-    if (!isValidPassword) {
-      return null;
+    if (user.password_hash) {
+      const isValidPassword: boolean = await argon2.verify(
+        user.password_hash,
+        password
+      );
+      if (!isValidPassword) {
+        return null;
+      }
     }
 
     return user;

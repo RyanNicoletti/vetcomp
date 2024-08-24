@@ -2,7 +2,6 @@ import { useState } from "react";
 import logo_expanded from "../../assets/logo_expanded.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  AlertColor,
   AppBar,
   Box,
   Drawer,
@@ -18,7 +17,7 @@ import "./Header.css";
 import { getAuthStatus } from "../../queries/authQueries";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../../queries/usersQueries";
-import CustomSnackbar from "../snackbar/Snackbar";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const linkStyle = {
   padding: "8px 16px",
@@ -32,12 +31,7 @@ const linkStyle = {
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success" as AlertColor,
-    onClose: () => {},
-  });
+  const { openSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: isAuthenticated } = useQuery({
@@ -57,31 +51,20 @@ const Header = () => {
   const logoutUserMutation = useMutation({
     mutationFn: logoutUser,
     onError: (error: any) => {
-      setSnackbar({
-        open: true,
-        message: error.message || "Logout failed. Please try again.",
-        severity: "error",
-        onClose: () => {},
-      });
+      openSnackbar(
+        error.message || "Logout failed. Please try again.",
+        "error"
+      );
     },
     onSuccess: async (data: any) => {
       queryClient.setQueryData(["isAuthenticated"], false);
       navigate("/");
-      setSnackbar({
-        open: true,
-        message: data.message || "Log out successful.",
-        severity: "success",
-        onClose: () => {},
-      });
+      openSnackbar(data.message || "Log out successful.", "success");
     },
   });
 
   const handleLogout = () => {
     logoutUserMutation.mutate();
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   const drawerContent = (
@@ -190,12 +173,6 @@ const Header = () => {
           </Drawer>
         </nav>
       </Box>
-      <CustomSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleCloseSnackbar}
-      />
     </>
   );
 };
