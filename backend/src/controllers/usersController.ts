@@ -50,11 +50,17 @@ const createUser = async (req: Request, res: Response) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: "Invalid input", errors: error.errors });
+      const formattedErrors = error.errors.map((err) => ({
+        field: err.path.join("."),
+        message: err.message,
+      }));
+      return res.status(400).json({ errors: formattedErrors });
     } else {
       res
         .status(500)
-        .json({ message: "Something went wrong, please try again." });
+        .json({
+          message: "An unexpected error occurred, please try again later.",
+        });
     }
   }
 };
@@ -131,9 +137,15 @@ const login = async (req: Request, res: Response) => {
       .json({ message: "Logged in successfully", userId: user.id });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: "Invalid input", errors: error.errors });
+      const formattedErrors = error.errors.map((err) => ({
+        field: err.path.join("."),
+        message: err.message,
+      }));
+      return res.status(400).json({ errors: formattedErrors });
     } else {
-      return res.status(500).json({ message: "An unexpected error occurred" });
+      return res
+        .status(500)
+        .json({ message: "Unable to login, please try again later." });
     }
   }
 };

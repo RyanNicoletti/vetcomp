@@ -6,7 +6,6 @@ import { ILoginFormInput } from "./types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../queries/usersQueries";
 import { getAuthStatus } from "../../queries/authQueries";
-import { useState } from "react";
 
 export const LoginForm = () => {
   const {
@@ -21,11 +20,10 @@ export const LoginForm = () => {
     },
   });
 
-  const [loginError, setLoginError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: isAuthenticated } = useQuery({
+  const { data: _isAuthenticated } = useQuery({
     queryKey: ["isAuthenticated"],
     queryFn: () => getAuthStatus(),
   });
@@ -41,12 +39,14 @@ export const LoginForm = () => {
           });
         });
       } else {
-        setLoginError("Invalid email or password");
+        setError("root.serverError", {
+          type: "manual",
+          message: error.message || "Invalid email or password.",
+        });
       }
       queryClient.setQueryData(["isAuthenticated"], false);
     },
     onSuccess: async () => {
-      setLoginError(undefined);
       queryClient.setQueryData(["isAuthenticated"], true);
       navigate("/");
     },
@@ -97,9 +97,11 @@ export const LoginForm = () => {
             )}
           />
         </div>
-        {loginError && (
-          <Typography color="error" className="login-error-message">
-            {loginError}
+        {errors.root?.serverError && (
+          <Typography
+            color="error"
+            style={{ marginBottom: "10px", textAlign: "center" }}>
+            {errors.root.serverError.message}
           </Typography>
         )}
         <Button

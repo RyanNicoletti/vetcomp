@@ -1,5 +1,7 @@
 import knex from "../db/connection";
 import { ICompensation } from "../../../shared-types/types";
+import { b2Client } from "../../config/b2Client";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 interface SalaryFilter {
   page: number;
@@ -32,6 +34,25 @@ const salariesService = {
 
     const compensations: ICompensation[] = await salariesQueryBuilder;
     return { compensations, pages };
+  },
+
+  uploadFileToB2: async (
+    fileBuffer: Buffer,
+    fileName: string
+  ): Promise<string | undefined> => {
+    try {
+      const uploadedFile = await b2Client.send(
+        new PutObjectCommand({
+          Bucket: process.env.B2_BUCKET_NAME,
+          Key: fileName,
+          Body: fileBuffer,
+        })
+      );
+      return uploadedFile.ETag;
+    } catch (err) {
+      console.error("upload file error: ", err);
+      return undefined;
+    }
   },
   create: async (newCompensation: ICompensation) => {
     try {

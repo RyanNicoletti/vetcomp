@@ -71,7 +71,7 @@ export const CompFormSchema = z.object({
       "Number of veterinarians must be a positive integer"
     )
     .nullable(),
-  verificationDocument: z.array(z.instanceof(Blob)).nullable(),
+  verificationDocument: z.any().optional(),
   verificationDocumentName: z.string().optional(),
   daysWorkedPerWeek: z
     .union([

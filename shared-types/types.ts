@@ -23,7 +23,7 @@ export interface ICompensation {
   email: string | null;
   is_verified: boolean;
   is_approved: boolean;
-  verification_document_url: string | null;
+  verification_document_url: string | undefined;
   verification_document_name: string | null;
   created_at?: Date;
   updated_at?: Date;
@@ -51,7 +51,7 @@ export interface ICompFormInput {
   percentProduction?: string;
   gender: "male" | "female" | "non-binary" | "";
   numberOfVeterinarians?: string;
-  verificationDocument: Blob[] | null;
+  verificationDocument: any;
   verificationDocumentName?: string;
   daysWorkedPerWeek?: string;
   email?: string;

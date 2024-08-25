@@ -37,31 +37,37 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 export const CompForm = () => {
-  const { control, handleSubmit, watch, setValue, setError } =
-    useForm<ICompFormInput>({
-      defaultValues: {
-        company: "",
-        title: "",
-        typeOfPractice: "",
-        isSpecialist: false,
-        specialization: "",
-        isNewGrad: false,
-        yearsOfExperience: "",
-        location: "",
-        baseSalary: "",
-        hourlyRate: "",
-        paymentFrequency: "",
-        signOnBonus: "",
-        averageAnnualProduction: "",
-        percentProduction: "",
-        gender: "",
-        numberOfVeterinarians: "",
-        verificationDocument: null,
-        verificationDocumentName: "",
-        daysWorkedPerWeek: "",
-        email: "",
-      },
-    });
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    setError,
+    formState: { errors },
+  } = useForm<ICompFormInput>({
+    defaultValues: {
+      company: "",
+      title: "",
+      typeOfPractice: "",
+      isSpecialist: false,
+      specialization: "",
+      isNewGrad: false,
+      yearsOfExperience: "",
+      location: "",
+      baseSalary: "",
+      hourlyRate: "",
+      paymentFrequency: "",
+      signOnBonus: "",
+      averageAnnualProduction: "",
+      percentProduction: "",
+      gender: "",
+      numberOfVeterinarians: "",
+      verificationDocument: null,
+      verificationDocumentName: "",
+      daysWorkedPerWeek: "",
+      email: "",
+    },
+  });
 
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
@@ -102,19 +108,20 @@ export const CompForm = () => {
           });
         });
       } else {
-        openSnackbar(
-          "An unexpected error occurred. Please try again.",
-          "error"
-        );
+        setError("root.serverError", {
+          type: "manual",
+          message:
+            error.message || "An unexpected error occurred. Please try again.",
+        });
       }
     },
     onSuccess: async (data) => {
+      navigate("/");
       openSnackbar(
         data.message ||
           "Success! Thank you for submitting your comp info. It will be reviewed as soon as possible.",
         "success"
       );
-      navigate("/");
     },
   });
 
@@ -131,7 +138,7 @@ export const CompForm = () => {
   }, [locations]);
 
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file: File | undefined = event.target.files?.[0];
+    const file = event.target.files?.[0];
     if (file) {
       setUploadedFileName(file.name);
       setUploadedFile(file);
@@ -177,7 +184,7 @@ export const CompForm = () => {
   const onSubmit: SubmitHandler<ICompFormInput> = async (
     data: ICompFormInput
   ) => {
-    addCompensationMutation.mutate(data);
+    addCompensationMutation.mutateAsync(data);
   };
 
   return (
@@ -657,6 +664,16 @@ export const CompForm = () => {
             </Box>
           )}
         </Box>
+        {errors.verificationDocument && (
+          <Typography
+            color="error"
+            variant="caption"
+            style={{ marginTop: "8px" }}>
+            {typeof errors.verificationDocument.message === "string"
+              ? errors.verificationDocument.message
+              : "Invalid file"}
+          </Typography>
+        )}
         <Typography
           variant="caption"
           color="textSecondary"
@@ -761,6 +778,13 @@ export const CompForm = () => {
             Submit
           </Button>
         </div>
+        {errors.root?.serverError && (
+          <Typography
+            color="error"
+            style={{ marginBottom: "10px", textAlign: "center" }}>
+            {errors.root.serverError.message}
+          </Typography>
+        )}
         <Typography variant="body2" className="sign-up-link">
           Or, create an account first:{" "}
           <RouterLink to="/signup">Sign up here</RouterLink>

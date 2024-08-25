@@ -25,21 +25,30 @@ export const getAllSalaries = async (
 };
 
 export const createCompensation = async (data: ICompFormInput) => {
+  const formData = new FormData();
+  if (data.verificationDocument && data.verificationDocument.length > 0) {
+    formData.append("verificationDocument", data.verificationDocument[0]);
+    data = { ...data, verificationDocument: data.verificationDocument[0] };
+  }
+  formData.append("newCompensation", JSON.stringify(data));
+
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/salaries`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+      body: formData,
       credentials: "include",
     }
   );
+  const responseData = await response.json();
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw errorData;
+    throw {
+      status: response.status,
+      message: responseData.message,
+      errors: responseData.errors,
+    };
   }
-  const addCompResponse = await response.json();
-  return addCompResponse;
+
+  return responseData;
 };

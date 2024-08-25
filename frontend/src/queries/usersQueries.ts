@@ -15,11 +15,15 @@ export const registerUser = async (userData: ISignUpFormInput) => {
     body: JSON.stringify(userData),
     credentials: "include",
   });
-  const data = await response.json();
+  const responseData = await response.json();
   if (!response.ok) {
-    throw data;
+    throw {
+      status: response.status,
+      message: responseData.message,
+      errors: responseData.errors,
+    };
   }
-  return data;
+  return responseData;
 };
 
 export const loginUser = async (user: ILoginFormInput) => {
@@ -31,11 +35,15 @@ export const loginUser = async (user: ILoginFormInput) => {
     body: JSON.stringify(user),
     credentials: "include",
   });
-  const data = await response.json();
+  const responseData = await response.json();
   if (!response.ok) {
-    throw data;
+    throw {
+      status: response.status,
+      message: responseData.message,
+      errors: responseData.errors,
+    };
   }
-  return data;
+  return responseData;
 };
 
 export const verifyEmail = async ({
