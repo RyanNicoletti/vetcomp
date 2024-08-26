@@ -11,22 +11,13 @@ import { hash } from "crypto";
 const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = NewUserSchema.parse(req.body);
-
     const existingUser: User | undefined = await userService.findByEmail(email);
+
+    let userId: string;
+    let isNewUser: boolean = false;
+
     if (existingUser) {
-      if (existingUser.password_hash === null) {
-        const hashedPw = await argon2.hash(password);
-        await userService.updatePassword(existingUser.id, hashedPw);
-
-        if (req.session) {
-          req.session.userId = existingUser.id;
-        }
-
-        return res.status(200).json({
-          message: "Password set successfully",
-          userId: existingUser.id,
-        });
-      } else {
+      if (existingUser.is_verified) {
         return res.status(400).json({
           message: "Email already exists",
           errors: [
@@ -37,16 +28,22 @@ const createUser = async (req: Request, res: Response) => {
           ],
         });
       }
+      userId = existingUser.id;
+    } else {
+      userId = await userService.createTemporaryUser(email, password);
+      isNewUser = true;
     }
 
-    const hashedPw = await argon2.hash(password);
-    const userId: string = await userService.create(email, hashedPw);
-    const verificationToken = await userService.generateVerificationCode(
-      userId
+    const verificationCode = await userService.generateVerificationCode(
+      userId,
+      email
     );
-    await emailService.sendVerificationEmail(email, verificationToken);
+    await emailService.sendVerificationEmail(email, verificationCode);
+
     return res.status(201).json({
       userId,
+      message: "Verification email sent",
+      isNewUser,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -56,36 +53,39 @@ const createUser = async (req: Request, res: Response) => {
       }));
       return res.status(400).json({ errors: formattedErrors });
     } else {
-      res
-        .status(500)
-        .json({
-          message: "An unexpected error occurred, please try again later.",
-        });
+      res.status(500).json({
+        message: "An unexpected error occurred, please try again later.",
+      });
     }
   }
 };
 
 const verifyEmail = async (req: Request, res: Response) => {
   const { userId, verificationCode } = req.body;
-
   if (typeof userId !== "string" || typeof verificationCode !== "string") {
     return res.status(400).json({ message: "Invalid input." });
   }
 
-  const verified: boolean = await userService.verifyEmail(
-    userId,
-    verificationCode
-  );
+  try {
+    const result = await userService.verifyEmailAndActivateUser(userId, verificationCode);
 
-  if (verified) {
-    if (req.session) {
-      req.session.userId = userId;
+    if (result.success) {
+      if (req.session) {
+        req.session.userId = userId;
+      }
+      return res.json({ 
+        message: result.message,
+        isNewUser: result.isNewUser 
+      });
+    } else {
+      return res.status(400).json({ message: result.message });
     }
-    return res.json({ message: "Email verified successfully" });
-  } else {
-    return res.status(400).json({ message: "Invalid or expired code" });
+  } catch (error) {
+    console.error('Error during email verification:', error);
+    return res.status(500).json({ message: "An unexpected error occurred during verification." });
   }
 };
+
 
 const logout = async (req: Request, res: Response) => {
   if (req.session) {

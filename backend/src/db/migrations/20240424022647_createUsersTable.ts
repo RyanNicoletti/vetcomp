@@ -1,8 +1,8 @@
 import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable("users", (table) => {
-    table.uuid("id", { primaryKey: true }).defaultTo(knex.fn.uuid());
+  await knex.schema.createTable("users", (table) => {
+    table.uuid("id").primary().defaultTo(knex.fn.uuid());
     table.text("email").notNullable().unique();
     table.text("password_hash");
     table.boolean("is_admin").defaultTo(false);
@@ -12,5 +12,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable("users");
+  await knex.schema.dropTable("users");
 }

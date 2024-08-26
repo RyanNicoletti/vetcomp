@@ -35,8 +35,8 @@ export const EmailVerification = () => {
   const verifyEmailMutation = useMutation({
     mutationFn: verifyEmail,
     onSuccess: () => {
-      navigate("/");
       queryClient.setQueryData(["isAuthenticated"], true);
+      navigate("/");
     },
     onError: (error: any) => {
       setError("verificationCode", {
