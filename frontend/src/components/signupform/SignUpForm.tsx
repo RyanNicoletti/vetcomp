@@ -38,7 +38,7 @@ export const SignUpForm = () => {
       }
     },
     onSuccess: async (data: any) => {
-      navigate("/verify-email", { state: { email, userId: data.userId } });
+      navigate("/verify-email", { state: { email, token: data.token } });
     },
   });
 

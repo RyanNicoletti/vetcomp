@@ -13,7 +13,7 @@ interface IVerificationFormInput {
 export const EmailVerification = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { email, userId } = location.state as { email: string; userId: string };
+  const { email, token } = location.state as { email: string; token: string };
   const queryClient = useQueryClient();
 
   const { data: isAuthenticated } = useQuery({
@@ -49,7 +49,7 @@ export const EmailVerification = () => {
 
   const onSubmit: SubmitHandler<IVerificationFormInput> = (data) => {
     verifyEmailMutation.mutate({
-      userId,
+      token,
       verificationCode: data.verificationCode,
     });
   };
@@ -68,8 +68,8 @@ export const EmailVerification = () => {
           control={control}
           rules={{
             required: "Verification code is required",
-            minLength: { value: 4, message: "Code must be 4 characters" },
-            maxLength: { value: 4, message: "Code must be 4 characters" },
+            minLength: { value: 6, message: "Code must be 6 characters" },
+            maxLength: { value: 6, message: "Code must be 6 characters" },
           }}
           render={({ field }) => (
             <TextField
@@ -79,7 +79,7 @@ export const EmailVerification = () => {
               margin="normal"
               error={!!errors.verificationCode}
               helperText={errors.verificationCode?.message}
-              inputProps={{ maxLength: 4 }}
+              inputProps={{ maxLength: 6 }}
             />
           )}
         />

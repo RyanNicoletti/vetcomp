@@ -10,13 +10,15 @@ const userService = {
     const user: User = await knex("users").where({ email }).first();
     return user;
   },
-  createTemporaryUser: async (email: string, password: string) => {
+  createUnverifiedTempUser: async (
+    email: string,
+    password: string
+  ): Promise<string> => {
     const hashedPassword = await argon2.hash(password);
-    const [userId] = await knex("users")
+    const [userId] = await knex("email_verifications")
       .insert({
         email,
         password_hash: hashedPassword,
-        is_verified: false,
       })
       .returning("id");
 
@@ -47,56 +49,85 @@ const userService = {
 
   generateVerificationCode: async (
     userId: string,
-    email: string
+    email: string,
+    password: string
   ): Promise<string> => {
-    const code = randomBytes(2).toString("hex").toUpperCase();
-
-    await knex("email_verifications").insert({
-      user_id: userId,
-      email,
-      verification_code: code,
-      expires_at: knex.raw("NOW() + INTERVAL '15 minutes'"),
-    });
+    const passwordHash = await argon2.hash(password);
+    const code = randomBytes(3).toString("hex").toUpperCase();
+    const existingTempUser = await knex("email_verifications")
+      .where({ id: userId })
+      .first();
+    if (existingTempUser) {
+      await knex("email_verifications")
+        .where({ id: userId })
+        .update({
+          verification_code: code,
+          expires_at: knex.raw("NOW() + INTERVAL '15 minutes'"),
+        });
+    } else {
+      await knex("email_verifications").insert({
+        id: userId,
+        email,
+        verification_code: code,
+        password_hash: passwordHash,
+        expires_at: knex.raw("NOW() + INTERVAL '15 minutes'"),
+      });
+    }
 
     return code;
   },
 
-  verifyEmailAndActivateUser: async (
-    userId: string,
+  verifyEmail: async (
+    token: string,
     code: string
-  ): Promise<{ success: boolean; message: string; isNewUser?: boolean }> => {
-    const verification = await knex("email_verifications")
-      .where({ user_id: userId, verification_code: code })
+  ): Promise<{
+    success: boolean;
+    message: string;
+    isNewUser?: boolean;
+    userId?: string;
+  }> => {
+    const userId = await redisClient.get(`verify_token:${token}`);
+    if (!userId) {
+      return { success: false, message: "Invalid or expired token" };
+    }
+
+    const tempUser = await knex("email_verifications")
+      .where({ id: userId, verification_code: code })
       .first();
 
-    if (!verification) {
+    if (!tempUser) {
       return {
         success: false,
         message: "Verification code expired or invalid",
       };
     }
 
-    if (verification.expires_at < new Date()) {
-      await knex("email_verifications").where({ id: verification.id }).del();
+    if (tempUser.expires_at < new Date()) {
+      await knex("email_verifications").where({ id: tempUser.id }).del();
       return { success: false, message: "Verification code has expired" };
     }
 
     const user = await knex("users").where({ id: userId }).first();
-
-    if (!user) {
-      return { success: false, message: "User not found" };
+    let isNewUser;
+    if (user) {
+      isNewUser = false;
+      await knex.transaction(async (trx) => {
+        await trx("users").where({ id: userId }).update({
+          is_verified: true,
+          password_hash: tempUser.hashed_password,
+        });
+      });
+    } else {
+      isNewUser = true;
+      await knex("users").insert({
+        id: userId,
+        email: tempUser.email,
+        password_hash: tempUser.password_hash,
+        is_verified: true,
+      });
     }
-
-    let isNewUser = false;
-
-    await knex.transaction(async (trx) => {
-      if (!user.is_verified) {
-        await trx("users").where({ id: userId }).update({ is_verified: true });
-        isNewUser = true;
-      }
-
-      await trx("email_verifications").where({ id: verification.id }).del();
-    });
+    await knex("email_verifications").where({ id: tempUser.id }).del();
+    await redisClient.del(`verify_token:${token}`);
 
     return {
       success: true,
@@ -104,16 +135,8 @@ const userService = {
         ? "New user verified and activated successfully"
         : "Existing user verified successfully",
       isNewUser,
+      userId,
     };
-  },
-  verifyEmail: async (userId: string, code: string): Promise<boolean> => {
-    const storedCode = await redisClient.get(`verify:${userId}`);
-    if (storedCode && storedCode === code) {
-      await knex("users").where({ id: userId }).update({ is_verified: true });
-      await redisClient.del(`verify:${userId}`);
-      return true;
-    }
-    return false;
   },
 
   login: async (loginInput: UserLogin): Promise<User | null> => {

@@ -1,12 +1,12 @@
 import { NewUserSchema } from "../schemas/newUserSchema";
 import userService from "../services/userService";
 import { Request, Response } from "express";
-import * as argon2 from "argon2";
 import z from "zod";
 import emailService from "../services/emailService";
 import { loginSchema } from "../schemas/loginSchema";
 import { User } from "../schemas/userSchema";
-import { hash } from "crypto";
+import { randomBytes } from "node:crypto";
+import { redisClient } from "../../config/redisConfig";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -30,18 +30,23 @@ const createUser = async (req: Request, res: Response) => {
       }
       userId = existingUser.id;
     } else {
-      userId = await userService.createTemporaryUser(email, password);
+      userId = await userService.createUnverifiedTempUser(email, password);
       isNewUser = true;
     }
 
     const verificationCode = await userService.generateVerificationCode(
       userId,
-      email
+      email,
+      password
     );
     await emailService.sendVerificationEmail(email, verificationCode);
 
+    const token = randomBytes(16).toString("hex");
+
+    await redisClient.set(`verify_token:${token}`, userId, { EX: 15 * 60 }); // 15 minutes expiry
+
     return res.status(201).json({
-      userId,
+      token,
       message: "Verification email sent",
       isNewUser,
     });
@@ -61,31 +66,33 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const verifyEmail = async (req: Request, res: Response) => {
-  const { userId, verificationCode } = req.body;
-  if (typeof userId !== "string" || typeof verificationCode !== "string") {
+  const { token, verificationCode } = req.body;
+  if (typeof token !== "string" || typeof verificationCode !== "string") {
+    console.log(req.body);
     return res.status(400).json({ message: "Invalid input." });
   }
 
   try {
-    const result = await userService.verifyEmailAndActivateUser(userId, verificationCode);
+    const result = await userService.verifyEmail(token, verificationCode);
 
     if (result.success) {
-      if (req.session) {
-        req.session.userId = userId;
+      if (req.session && result.userId) {
+        req.session.userId = result.userId;
       }
-      return res.json({ 
+      return res.json({
         message: result.message,
-        isNewUser: result.isNewUser 
+        isNewUser: result.isNewUser,
       });
     } else {
       return res.status(400).json({ message: result.message });
     }
   } catch (error) {
-    console.error('Error during email verification:', error);
-    return res.status(500).json({ message: "An unexpected error occurred during verification." });
+    console.error("Error during email verification:", error);
+    return res
+      .status(500)
+      .json({ message: "An unexpected error occurred during verification." });
   }
 };
-
 
 const logout = async (req: Request, res: Response) => {
   if (req.session) {

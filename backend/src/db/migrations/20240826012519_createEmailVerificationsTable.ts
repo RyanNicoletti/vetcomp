@@ -3,19 +3,19 @@ import type { Knex } from "knex";
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable("email_verifications", (table) => {
     table.uuid("id").primary().defaultTo(knex.fn.uuid());
-    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE");
     table.string("email").notNullable();
-    table.string("verification_code").notNullable();
-    table.timestamp("expires_at").notNullable();
+    table.string("verification_code").nullable();
+    table.string("password_hash").nullable();
+    table.timestamp("expires_at").nullable();
     table.timestamps(true, true);
   });
 
-  // Create an index on the expires_at column for efficient querying
+  // index on the expires_at column for efficient querying
   await knex.schema.raw(`
     CREATE INDEX idx_email_verifications_expires_at ON email_verifications (expires_at)
   `);
 
-  // Create a function to automatically delete expired verifications
+  // function to automatically delete expired verifications
   await knex.schema.raw(`
     CREATE OR REPLACE FUNCTION delete_expired_verifications()
     RETURNS trigger AS $$
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
     $$ LANGUAGE plpgsql;
   `);
 
-  // Create a trigger to run the function periodically
+  // trigger to run the function periodically
   await knex.schema.raw(`
     CREATE TRIGGER trigger_delete_expired_verifications
     AFTER INSERT OR UPDATE ON email_verifications

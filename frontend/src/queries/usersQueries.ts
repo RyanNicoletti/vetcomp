@@ -47,9 +47,13 @@ export const loginUser = async (user: ILoginFormInput) => {
 };
 
 export const verifyEmail = async ({
-  userId,
+  token,
   verificationCode,
-}: IVerifyEmailParams) => {
+}: {
+  token: string;
+  verificationCode: string;
+}) => {
+  console.log(token);
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/verify-email`,
     {
@@ -57,7 +61,7 @@ export const verifyEmail = async ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId, verificationCode }),
+      body: JSON.stringify({ token, verificationCode }),
       credentials: "include",
     }
   );
