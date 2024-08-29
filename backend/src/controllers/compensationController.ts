@@ -146,6 +146,7 @@ const createCompensation = async (req: Request, res: Response) => {
       console.error("Unexpected error in compensation controller", error);
       return res.status(500).json({
         message: "An unexpected error occurred, please try again later.",
+        errors: error,
       });
     }
   });

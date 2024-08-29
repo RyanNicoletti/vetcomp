@@ -53,21 +53,27 @@ app.use(session(sess));
 
 // Routes
 // User routes
-const userRouter: Router = express.Router();
-app.post("/users", usersController.createUser);
-app.post("/verify-email", usersController.verifyEmail);
-app.post("/login", usersController.login);
-app.post("/logout", usersController.logout);
-app.use("api/users", userRouter);
+const usersRouter: Router = express.Router();
+usersRouter.post("/", usersController.createUser);
+usersRouter.post("/verify-email", usersController.verifyEmail);
+usersRouter.post("/login", usersController.login);
+usersRouter.post("/logout", usersController.logout);
+app.use("/users", usersRouter);
 
 // Auth
 app.get("/authStatus", authController.getAuthStatus);
+app.get("/adminStatus", authController.getAdminStatus);
 
 // Location routes
 app.get("/locations", locationsController.getLocations);
 
 // Compensation routes
-app.get("/salaries", compensationController.getAllSalaries);
-app.post("/salaries", compensationController.createCompensation);
+const compensationsRouter: Router = express.Router();
+compensationsRouter.get("/", compensationController.getAllSalaries);
+compensationsRouter.post("/", compensationController.createCompensation);
+// app.delete("/", compensationController.deleteCompensationById);
+// app.patch("/verify", compensationController.verifyCompensationById);
+// app.patch("/approve", compensationController.approveCompensationById);
+app.use("/compensations", compensationsRouter);
 
 export default app;

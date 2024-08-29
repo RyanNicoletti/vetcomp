@@ -1,6 +1,6 @@
 // represents what is stored in the db
 export interface ICompensation {
-  id?: string;
+  id: string;
   user_id?: string | null;
   company: string;
   location: string;

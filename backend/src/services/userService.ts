@@ -161,6 +161,12 @@ const userService = {
 
     return user;
   },
+
+  getAdminStatusById: async (id: string): Promise<boolean> => {
+    const adminStatus = await knex("users").where({ id }).returning("is_admin");
+    const isAdmin: boolean = adminStatus[0].is_admin;
+    return isAdmin;
+  },
 };
 
 export default userService;

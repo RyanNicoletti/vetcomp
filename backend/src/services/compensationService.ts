@@ -54,7 +54,7 @@ const salariesService = {
       return undefined;
     }
   },
-  create: async (newCompensation: ICompensation) => {
+  create: async (newCompensation: Partial<ICompensation>) => {
     try {
       let totalCompensation;
       if (

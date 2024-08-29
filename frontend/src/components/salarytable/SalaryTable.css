@@ -1,7 +1,7 @@
 .table-container {
   display: flex;
   flex-direction: column;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 100px auto 60px auto;
 }
 
@@ -12,6 +12,7 @@
 
 .salary-table {
   table-layout: fixed;
+  width: 100%;
 }
 
 .table-header .MuiTableCell-head {
@@ -45,6 +46,32 @@
   background-color: #ebebeb;
 }
 
+.expand-cell {
+  width: 80px;
+  padding: 0 8px;
+}
+
+.company-location-cell {
+  width: 35%;
+}
+
+.type-of-practice-cell {
+  width: 25%;
+}
+
+.years-of-experience-cell {
+  width: 15%;
+  padding-left: 2px !important;
+}
+
+.years-of-experience-label {
+  white-space: nowrap;
+}
+
+.total-compensation-cell {
+  width: 35%;
+}
+
 @media (max-width: 1300px) {
   .table-container {
     padding-left: 25px;
@@ -53,7 +80,7 @@
 }
 
 @media (max-width: 480px) {
-  .years-of-experience-header {
+  .years-of-experience-cell {
     display: none;
   }
 

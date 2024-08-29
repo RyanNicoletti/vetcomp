@@ -31,7 +31,7 @@ import {
   specialistOptions,
 } from "./CompFormData";
 import { ICompFormInput } from "../../../../shared-types/types";
-import { createCompensation } from "../../queries/salaryQueries";
+import { createCompensation } from "../../queries/compensationQueries";
 import { getAuthStatus } from "../../queries/authQueries";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
