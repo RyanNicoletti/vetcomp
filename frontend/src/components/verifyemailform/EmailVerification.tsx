@@ -1,10 +1,9 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { TextField, Button, Typography, Box } from "@mui/material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { verifyEmail } from "../../queries/usersQueries";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { getAuthStatus } from "../../queries/authQueries";
+import { useUserStatus } from "../hooks/useUserStatus";
 
 interface IVerificationFormInput {
   verificationCode: string;
@@ -15,11 +14,7 @@ export const EmailVerification = () => {
   const navigate = useNavigate();
   const { email, token } = location.state as { email: string; token: string };
   const queryClient = useQueryClient();
-
-  const { data: isAuthenticated } = useQuery({
-    queryKey: ["isAuthenticated"],
-    queryFn: () => getAuthStatus(),
-  });
+  const { isAuthenticated } = useUserStatus();
 
   const {
     control,
@@ -35,10 +30,10 @@ export const EmailVerification = () => {
   const verifyEmailMutation = useMutation({
     mutationFn: verifyEmail,
     onSuccess: () => {
-      queryClient.setQueryData(["isAuthenticated"], true);
+      queryClient.invalidateQueries({ queryKey: ["userStatus"] });
       navigate("/");
     },
-    onError: (error: any) => {
+    onError: (_error: any) => {
       setError("verificationCode", {
         type: "manual",
         message: "Invalid or expired verification code.",

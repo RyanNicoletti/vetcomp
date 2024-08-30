@@ -32,9 +32,9 @@ import {
 } from "./CompFormData";
 import { ICompFormInput } from "../../../../shared-types/types";
 import { createCompensation } from "../../queries/compensationQueries";
-import { getAuthStatus } from "../../queries/authQueries";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { useUserStatus } from "../hooks/useUserStatus";
 
 export const CompForm = () => {
   const {
@@ -79,11 +79,7 @@ export const CompForm = () => {
   const [isSpecialist, setIsSpecialist] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { openSnackbar } = useSnackbar();
-
-  const { data: isAuthenticated } = useQuery({
-    queryKey: ["isAuthenticated"],
-    queryFn: () => getAuthStatus(),
-  });
+  const { isAuthenticated } = useUserStatus();
 
   const navigate = useNavigate();
 
@@ -785,10 +781,12 @@ export const CompForm = () => {
             {errors.root.serverError.message}
           </Typography>
         )}
-        <Typography variant="body2" className="sign-up-link">
-          Or, create an account first:{" "}
-          <RouterLink to="/signup">Sign up here</RouterLink>
-        </Typography>
+        {!isAuthenticated && (
+          <Typography variant="body2" className="sign-up-link">
+            Or, create an account first:{" "}
+            <RouterLink to="/signup">Sign up here</RouterLink>
+          </Typography>
+        )}
       </form>
     </div>
   );

@@ -83,3 +83,22 @@ export const logoutUser = async () => {
   }
   return data;
 };
+
+export const getUserStatus = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/userStatus`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Server error.");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching user status:", error);
+    return { isAuthenticated: false, isAdmin: false };
+  }
+};

@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import compensationService from "../services/compensationService";
-import { ICompensation } from "../../../shared-types/types";
 import { z } from "zod";
 import { CompFormSchema, ICompFormInput } from "../schemas/compensationSchema";
 import userService from "../services/userService";
 import multer from "multer";
-import path from "path";
 import { SalaryFilter } from "../types";
 import { db } from "../db/connection";
 

@@ -9,8 +9,8 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
 import { SnackbarProvider } from "./context/SnackbarContext";
-import { ProtectedRoute } from "./components/protectedroute/protectedroute";
 import AdminPage from "./pages/AdminPage";
+import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 
 function App() {
   return (

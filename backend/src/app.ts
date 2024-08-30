@@ -80,9 +80,8 @@ usersRouter.post("/login", usersController.login);
 usersRouter.post("/logout", usersController.logout);
 app.use("/users", usersRouter);
 
-// Auth
-app.get("/authStatus", authController.getAuthStatus);
-app.get("/adminStatus", authController.getAdminStatus);
+// Check for authentication/admin status
+app.get("/userStatus", authController.getUserStatus);
 
 // Location routes
 app.get("/locations", locationsController.getLocations);

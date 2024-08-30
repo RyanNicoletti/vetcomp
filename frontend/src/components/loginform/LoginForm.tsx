@@ -1,11 +1,11 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import "./LoginForm.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ILoginFormInput } from "./types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../queries/usersQueries";
-import { getAuthStatus } from "../../queries/authQueries";
+import { useUserStatus } from "../hooks/useUserStatus";
 
 export const LoginForm = () => {
   const {
@@ -21,12 +21,8 @@ export const LoginForm = () => {
   });
 
   const navigate = useNavigate();
+  const { isAuthenticated } = useUserStatus();
   const queryClient = useQueryClient();
-
-  const { data: _isAuthenticated } = useQuery({
-    queryKey: ["isAuthenticated"],
-    queryFn: () => getAuthStatus(),
-  });
 
   const loginUserMutation = useMutation({
     mutationFn: loginUser,
@@ -57,6 +53,10 @@ export const LoginForm = () => {
   ) => {
     loginUserMutation.mutate(userData);
   };
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="login-container">
@@ -108,7 +108,8 @@ export const LoginForm = () => {
           type="submit"
           variant="contained"
           color="primary"
-          id="login-button">
+          id="login-button"
+          disabled={loginUserMutation.isPending}>
           Log in
         </Button>
         <p className="password-reset">I forgot my password</p>

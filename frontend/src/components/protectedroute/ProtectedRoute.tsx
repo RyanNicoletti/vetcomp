@@ -1,14 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAdminStatus } from "../../queries/authQueries";
 import { Navigate, Outlet } from "react-router-dom";
+import { useUserStatus } from "../hooks/useUserStatus";
 
 export const ProtectedRoute = () => {
-  const { data: isAdmin, isLoading } = useQuery({
-    queryKey: ["isAdmin"],
-    queryFn: () => getAdminStatus(),
-    staleTime: 5 * 60 * 1000, // 5 min
-    retry: false,
-  });
+  const { isAdmin, isLoading } = useUserStatus();
 
   if (isLoading) {
     return <div>loading...</div>;
