@@ -10,6 +10,7 @@ import locationsController from "./controllers/locationsController";
 import usersController from "./controllers/usersController";
 import "dotenv/config";
 import authController from "./controllers/authController";
+import { isAdmin } from "./middleware/isAdmin";
 
 const app: Express = express();
 

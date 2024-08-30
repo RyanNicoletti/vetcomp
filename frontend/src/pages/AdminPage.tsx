@@ -1,7 +1,7 @@
 import AdminCompTable from "../components/admin/AdminCompTable";
 
-const Admin = () => {
+const AdminPage = () => {
   return <AdminCompTable />;
 };
 
-export default Admin;
+export default AdminPage;

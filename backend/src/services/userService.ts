@@ -1,21 +1,27 @@
 import { randomBytes } from "crypto";
-import knex from "../db/connection";
 import { User } from "../schemas/userSchema";
 import { redisClient } from "../../config/redisConfig";
 import * as argon2 from "argon2";
 import { UserLogin } from "../schemas/loginSchema";
+import { Knex } from "knex";
 
 const userService = {
-  findByEmail: async (email: string): Promise<User | undefined> => {
-    const user: User = await knex("users").where({ email }).first();
+  findByEmail: async (db: Knex, email: string): Promise<User | undefined> => {
+    const user = await db("users").where({ email }).first();
     return user;
   },
+  getById: async (db: Knex, id: string) => {
+    const user: User = await db("users").where({ id }).first();
+    return user;
+  },
+
   createUnverifiedTempUser: async (
+    db: Knex,
     email: string,
     password: string
   ): Promise<string> => {
     const hashedPassword = await argon2.hash(password);
-    const [userId] = await knex("email_verifications")
+    const [userId] = await db("email_verifications")
       .insert({
         email,
         password_hash: hashedPassword,
@@ -24,53 +30,55 @@ const userService = {
 
     return userId.id;
   },
-  create: async (email: string, hash: string) => {
-    const [userId] = await knex("users")
+  create: async (db: Knex, email: string, hash: string) => {
+    const [userId] = await db("users")
       .insert({ email, password_hash: hash, is_verified: false })
       .returning("id");
     return userId.id;
   },
 
-  createWithNullPassword: async (email: string) => {
-    const [userId] = await knex("users")
+  createWithNullPassword: async (db: Knex, email: string) => {
+    const [userId] = await db("users")
       .insert({ email, password_hash: null, is_verified: false })
       .returning("id");
     return userId;
   },
 
   updatePassword: async (
+    db: Knex,
     userId: string,
     hashedPassword: string
   ): Promise<void> => {
-    await knex("users")
+    await db("users")
       .where({ id: userId })
       .update({ password_hash: hashedPassword });
   },
 
   generateVerificationCode: async (
+    db: Knex,
     userId: string,
     email: string,
     password: string
   ): Promise<string> => {
     const passwordHash = await argon2.hash(password);
     const code = randomBytes(3).toString("hex").toUpperCase();
-    const existingTempUser = await knex("email_verifications")
+    const existingTempUser = await db("email_verifications")
       .where({ id: userId })
       .first();
     if (existingTempUser) {
-      await knex("email_verifications")
+      await db("email_verifications")
         .where({ id: userId })
         .update({
           verification_code: code,
-          expires_at: knex.raw("NOW() + INTERVAL '15 minutes'"),
+          expires_at: db.raw("NOW() + INTERVAL '15 minutes'"),
         });
     } else {
-      await knex("email_verifications").insert({
+      await db("email_verifications").insert({
         id: userId,
         email,
         verification_code: code,
         password_hash: passwordHash,
-        expires_at: knex.raw("NOW() + INTERVAL '15 minutes'"),
+        expires_at: db.raw("NOW() + INTERVAL '15 minutes'"),
       });
     }
 
@@ -78,6 +86,7 @@ const userService = {
   },
 
   verifyEmail: async (
+    db: Knex,
     token: string,
     code: string
   ): Promise<{
@@ -91,7 +100,7 @@ const userService = {
       return { success: false, message: "Invalid or expired token" };
     }
 
-    const tempUser = await knex("email_verifications")
+    const tempUser = await db("email_verifications")
       .where({ id: userId, verification_code: code })
       .first();
 
@@ -103,15 +112,15 @@ const userService = {
     }
 
     if (tempUser.expires_at < new Date()) {
-      await knex("email_verifications").where({ id: tempUser.id }).del();
+      await db("email_verifications").where({ id: tempUser.id }).del();
       return { success: false, message: "Verification code has expired" };
     }
 
-    const user = await knex("users").where({ id: userId }).first();
+    const user = await db("users").where({ id: userId }).first();
     let isNewUser;
     if (user) {
       isNewUser = false;
-      await knex.transaction(async (trx) => {
+      await db.transaction(async (trx) => {
         await trx("users").where({ id: userId }).update({
           is_verified: true,
           password_hash: tempUser.hashed_password,
@@ -119,14 +128,14 @@ const userService = {
       });
     } else {
       isNewUser = true;
-      await knex("users").insert({
+      await db("users").insert({
         id: userId,
         email: tempUser.email,
         password_hash: tempUser.password_hash,
         is_verified: true,
       });
     }
-    await knex("email_verifications").where({ id: tempUser.id }).del();
+    await db("email_verifications").where({ id: tempUser.id }).del();
     await redisClient.del(`verify_token:${token}`);
 
     return {
@@ -139,9 +148,9 @@ const userService = {
     };
   },
 
-  login: async (loginInput: UserLogin): Promise<User | null> => {
+  login: async (db: Knex, loginInput: UserLogin): Promise<User | null> => {
     const { email, password } = loginInput;
-    const user: User | undefined = await knex<User>("users")
+    const user: User | undefined = await db<User>("users")
       .where({ email })
       .first();
 
@@ -162,8 +171,8 @@ const userService = {
     return user;
   },
 
-  getAdminStatusById: async (id: string): Promise<boolean> => {
-    const adminStatus = await knex("users").where({ id }).returning("is_admin");
+  getAdminStatusById: async (db: Knex, id: string): Promise<boolean> => {
+    const adminStatus = await db("users").where({ id }).returning("is_admin");
     const isAdmin: boolean = adminStatus[0].is_admin;
     return isAdmin;
   },

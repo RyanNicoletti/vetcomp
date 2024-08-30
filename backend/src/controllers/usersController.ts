@@ -7,11 +7,15 @@ import { loginSchema } from "../schemas/loginSchema";
 import { User } from "../schemas/userSchema";
 import { randomBytes } from "node:crypto";
 import { redisClient } from "../../config/redisConfig";
+import { db } from "../db/connection";
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = NewUserSchema.parse(req.body);
-    const existingUser: User | undefined = await userService.findByEmail(email);
+    const existingUser: User | undefined = await userService.findByEmail(
+      db,
+      email
+    );
 
     let userId: string;
     let isNewUser: boolean = false;
@@ -30,11 +34,12 @@ const createUser = async (req: Request, res: Response) => {
       }
       userId = existingUser.id;
     } else {
-      userId = await userService.createUnverifiedTempUser(email, password);
+      userId = await userService.createUnverifiedTempUser(db, email, password);
       isNewUser = true;
     }
 
     const verificationCode = await userService.generateVerificationCode(
+      db,
       userId,
       email,
       password
@@ -73,7 +78,7 @@ const verifyEmail = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await userService.verifyEmail(token, verificationCode);
+    const result = await userService.verifyEmail(db, token, verificationCode);
 
     if (result.success) {
       if (req.session && result.userId) {
@@ -113,7 +118,7 @@ const logout = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const loginInput = loginSchema.parse(req.body);
-    const user: User | null = await userService.login(loginInput);
+    const user: User | null = await userService.login(db, loginInput);
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",

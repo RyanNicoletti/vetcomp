@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import "./Header.css";
-import { getAuthStatus } from "../../queries/authQueries";
+import { getAdminStatus, getAuthStatus } from "../../queries/authQueries";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../../queries/usersQueries";
 import { useSnackbar } from "../../context/SnackbarContext";
@@ -39,10 +39,19 @@ const Header = () => {
     queryFn: () => getAuthStatus(),
   });
 
-  const navItems: string[] =
-    isAuthenticated === true
-      ? ["Home", "About", "Log out"]
-      : ["Home", "About", "Sign up", "Log in"];
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: () => getAdminStatus(),
+    staleTime: 5 * 60 * 1000, // 5 min
+    retry: false,
+  });
+
+  const navItems: string[] = [
+    "Home",
+    "About",
+    ...(isAuthenticated ? ["Log out"] : ["Sign up", "Log in"]),
+    ...(isAdmin ? ["Admin"] : []),
+  ];
 
   const toggleDrawer = () => {
     setMobileOpen((prev) => !prev);
@@ -58,6 +67,7 @@ const Header = () => {
     },
     onSuccess: async (data: any) => {
       queryClient.setQueryData(["isAuthenticated"], false);
+      queryClient.setQueryData(["isAdmin"], false);
       navigate("/");
       openSnackbar(data.message || "Log out successful.", "success");
     },

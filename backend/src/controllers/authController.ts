@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import userService from "../services/userService";
-import { isAuthenticated } from "../middleware/isAuthenticated";
+import { db } from "../db/connection";
 
 const getAuthStatus = (req: Request, res: Response) => {
   if (req.session && req.session.userId) {
@@ -11,21 +11,22 @@ const getAuthStatus = (req: Request, res: Response) => {
 };
 
 const getAdminStatus = async (req: Request, res: Response) => {
-  if (req.session && req.session.userId) {
-    try {
-      const isAdmin = await userService.getAdminStatusById(req.session.userId);
-      if (isAdmin) {
-        return res.status(200).json({ isAdmin: true });
-      } else {
-        return res.status(200).json({ isAdmin: false });
-      }
-    } catch (err) {
-      return res.status(400).json({
-        isAdmin: false,
-        message: "Unable to verify admin status",
-        errors: err,
-      });
+  try {
+    if (!req.session || !req.session.userId) {
+      return res
+        .status(401)
+        .json({ isAdmin: false, message: "User not authenticated" });
     }
+    const user = await userService.getById(db, req.session.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ isAdmin: false, message: "User not found" });
+    }
+    res.json({ isAdmin: user.is_admin });
+  } catch (error) {
+    console.error("Error in getAdminStatus:", error);
+    res.status(500).json({ isAdmin: false, message: "Internal server error" });
   }
 };
 

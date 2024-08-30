@@ -9,6 +9,8 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
 import { SnackbarProvider } from "./context/SnackbarContext";
+import { ProtectedRoute } from "./components/protectedroute/protectedroute";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   return (
@@ -25,6 +27,9 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/addcomp" element={<AddCompForm />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
           </Routes>
           <Footer />
         </SnackbarProvider>

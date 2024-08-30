@@ -86,7 +86,10 @@ const createCompensation = async (req: Request, res: Response) => {
       if (req.session && req.session.userId) {
         userId = req.session.userId;
       } else if (validatedData.email) {
-        const existingUser = await userService.findByEmail(validatedData.email);
+        const existingUser = await userService.findByEmail(
+          db,
+          validatedData.email
+        );
         if (existingUser) {
           return res.status(409).json({
             message: "Invalid email address.",
@@ -100,6 +103,7 @@ const createCompensation = async (req: Request, res: Response) => {
           });
         } else {
           const userIdObj = await userService.createWithNullPassword(
+            db,
             validatedData.email
           );
           userId = userIdObj.id;

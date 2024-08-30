@@ -11,8 +11,8 @@ export const isAdmin = async (
       return res.status(401).json({ message: "Unauthorized: Please log in" });
     }
     const user = await db("users")
-      .where({ id: req.session.userId })
-      .first("is_admin");
+      .where({ id: req.session.userId, is_admin: true })
+      .first();
     if (!user || !user.is_admin) {
       return res
         .status(403)
