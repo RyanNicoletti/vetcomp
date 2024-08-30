@@ -1,38 +1,35 @@
-import knex from "../db/connection";
 import { ICompensation } from "../../../shared-types/types";
 import { b2Client } from "../../config/b2Client";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-
-interface SalaryFilter {
-  page: number;
-  rowsPerPage: number;
-  sortDirection: "asc" | "desc";
-  sortBy?: string;
-}
+import { Knex } from "knex";
+import { SalaryFilter } from "../types";
 
 const salariesService = {
-  getAll: async (salaryFilter: SalaryFilter) => {
-    let salariesQueryBuilder = knex<ICompensation>("salaries").select("*");
-    if (salaryFilter.sortBy !== "") {
-      salariesQueryBuilder = salariesQueryBuilder.orderBy(
-        salaryFilter.sortBy!,
+  getAll: async (db: Knex, salaryFilter: SalaryFilter) => {
+    let query = db<ICompensation>("salaries").select("*");
+
+    if (salaryFilter.sortBy) {
+      query = query.orderBy(
+        salaryFilter.sortBy,
         salaryFilter.sortDirection,
         "last"
       );
     }
 
     const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
-    salariesQueryBuilder = salariesQueryBuilder
-      .offset(offset)
-      .limit(salaryFilter.rowsPerPage);
+    query = query.offset(offset).limit(salaryFilter.rowsPerPage);
 
-    const [{ totalSalaryCount }] = await knex("salaries").count(
-      "* as totalSalaryCount"
-    );
-    const total: number = totalSalaryCount as number;
+    query = query.where({ is_approved: salaryFilter.getApprovedSalaries });
+
+    const compensations: ICompensation[] = await query;
+
+    const [{ count }] = await db("salaries")
+      .count("* as count")
+      .where({ is_approved: salaryFilter.getApprovedSalaries });
+
+    const total: number = Number(count);
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
-    const compensations: ICompensation[] = await salariesQueryBuilder;
     return { compensations, pages };
   },
 
@@ -54,7 +51,7 @@ const salariesService = {
       return undefined;
     }
   },
-  create: async (newCompensation: Partial<ICompensation>) => {
+  create: async (knex: Knex, newCompensation: Partial<ICompensation>) => {
     try {
       let totalCompensation;
       if (

@@ -52,6 +52,25 @@ if (app.get("env") === "production") {
 app.use(session(sess));
 
 // Routes
+
+// Admin Routes
+const adminRouter: Router = express.Router();
+adminRouter.use(isAdmin);
+adminRouter.get("/compensations", compensationController.getAllSalaries);
+// adminRouter.delete(
+//   "/compensations/:id",
+//   compensationController.deleteCompensationById
+// );
+// adminRouter.patch(
+//   "/compensations/:id/verify",
+//   compensationController.verifyCompensationById
+// );
+// adminRouter.patch(
+//   "/compensations/:id/approve",
+//   compensationController.approveCompensationById
+// );
+app.use("/admin", adminRouter);
+
 // User routes
 const usersRouter: Router = express.Router();
 usersRouter.post("/", usersController.createUser);
@@ -71,9 +90,6 @@ app.get("/locations", locationsController.getLocations);
 const compensationsRouter: Router = express.Router();
 compensationsRouter.get("/", compensationController.getAllSalaries);
 compensationsRouter.post("/", compensationController.createCompensation);
-// app.delete("/", compensationController.deleteCompensationById);
-// app.patch("/verify", compensationController.verifyCompensationById);
-// app.patch("/approve", compensationController.approveCompensationById);
 app.use("/compensations", compensationsRouter);
 
 export default app;

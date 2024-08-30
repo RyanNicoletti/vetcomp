@@ -6,21 +6,18 @@ import { CompFormSchema, ICompFormInput } from "../schemas/compensationSchema";
 import userService from "../services/userService";
 import multer from "multer";
 import path from "path";
-
-interface SalaryFilter {
-  page: number;
-  rowsPerPage: number;
-  sortDirection: "asc" | "desc";
-  sortBy?: string;
-}
+import { SalaryFilter } from "../types";
+import { db } from "../db/connection";
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
-    page: 1,
+    page: 0,
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
+    getApprovedSalaries: true,
   };
+
   if (typeof req.query.page === "string") {
     const pageNumber: number = parseInt(req.query.page, 10);
     const oneIndexedPageNumber: number = pageNumber - 1;
@@ -40,8 +37,23 @@ const getAllSalaries = async (req: Request, res: Response) => {
   if (typeof req.query.sortBy === "string" && req.query.sortBy !== "") {
     salaryFilter.sortBy = req.query.sortBy;
   }
-  const compensationsWithPages = await compensationService.getAll(salaryFilter);
-  return res.json(compensationsWithPages);
+
+  if (req.path.includes("/admin")) {
+    salaryFilter.getApprovedSalaries = false;
+  }
+
+  try {
+    const compensationsWithPages = await compensationService.getAll(
+      db,
+      salaryFilter
+    );
+    return res.json(compensationsWithPages);
+  } catch (error) {
+    console.error("Error fetching salaries:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while fetching salaries" });
+  }
 };
 
 const upload = multer().single("verificationDocument");
@@ -129,7 +141,10 @@ const createCompensation = async (req: Request, res: Response) => {
         verification_document_name: req.file ? req.file.originalname : null,
       };
 
-      const insertedComp = await compensationService.create(compensationData);
+      const insertedComp = await compensationService.create(
+        db,
+        compensationData
+      );
       return res.status(201).json({
         insertedComp,
         message:

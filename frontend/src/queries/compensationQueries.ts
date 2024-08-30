@@ -55,8 +55,8 @@ export const createCompensation = async (data: ICompFormInput) => {
 
 export const deleteCompensationById = async (id: string) => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/compensations`,
-    { method: "DELETE", body: id, credentials: "include" }
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/${id}`,
+    { method: "DELETE", credentials: "include" }
   );
   const responseData = await response.json();
   if (!response.ok) {
@@ -71,8 +71,8 @@ export const deleteCompensationById = async (id: string) => {
 
 export const verifyCompensationById = async (id: string) => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/compensations/verify`,
-    { method: "PATCH", body: id, credentials: "include" }
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/${id}/verify`,
+    { method: "PATCH", credentials: "include" }
   );
   const responseData = await response.json();
   if (!response.ok) {
@@ -87,8 +87,8 @@ export const verifyCompensationById = async (id: string) => {
 
 export const approveCompensationById = async (id: string) => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/compensations/approve`,
-    { method: "PATCH", body: id, credentials: "include" }
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/${id}/approve`,
+    { method: "PATCH", credentials: "include" }
   );
   const responseData = await response.json();
   if (!response.ok) {
