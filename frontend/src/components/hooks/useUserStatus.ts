@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserStatus } from "../../queries/usersQueries";
+import { getUserStatus, logoutUser } from "../../queries/usersQueries";
 
 export const useUserStatus = () => {
   const queryClient = useQueryClient();
@@ -9,15 +9,21 @@ export const useUserStatus = () => {
     queryFn: getUserStatus,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
   });
 
-  const logout = () => {
-    queryClient.setQueryData(["userStatus"], {
-      isAuthenticated: false,
-      isAdmin: false,
-    });
+  const logout = async () => {
+    try {
+      await logoutUser();
+      queryClient.setQueryData(["userStatus"], {
+        isAuthenticated: false,
+        isAdmin: false,
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return {

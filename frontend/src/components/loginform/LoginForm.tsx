@@ -40,10 +40,16 @@ export const LoginForm = () => {
           message: error.message || "Invalid email or password.",
         });
       }
-      queryClient.setQueryData(["isAuthenticated"], false);
+      queryClient.setQueryData(["userStatus"], {
+        isAuthenticated: false,
+        isAdmin: false,
+      });
     },
-    onSuccess: async () => {
-      queryClient.setQueryData(["isAuthenticated"], true);
+    onSuccess: async (data) => {
+      queryClient.setQueryData(["userStatus"], {
+        isAuthenticated: data.isAuthenticated,
+        isAdmin: data.isAdmin,
+      });
       navigate("/");
     },
   });

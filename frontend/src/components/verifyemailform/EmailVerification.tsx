@@ -29,8 +29,11 @@ export const EmailVerification = () => {
 
   const verifyEmailMutation = useMutation({
     mutationFn: verifyEmail,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userStatus"] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(["userStatus"], {
+        isAuthenticated: data.isAuthenticated,
+        isAdmin: data.isAdmin,
+      });
       navigate("/");
     },
     onError: (_error: any) => {
@@ -38,7 +41,7 @@ export const EmailVerification = () => {
         type: "manual",
         message: "Invalid or expired verification code.",
       });
-      queryClient.setQueryData(["isAuthenticated"], false);
+      queryClient.invalidateQueries({ queryKey: ["userStatus"] });
     },
   });
 

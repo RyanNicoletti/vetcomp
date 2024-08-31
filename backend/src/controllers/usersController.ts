@@ -73,20 +73,22 @@ const createUser = async (req: Request, res: Response) => {
 const verifyEmail = async (req: Request, res: Response) => {
   const { token, verificationCode } = req.body;
   if (typeof token !== "string" || typeof verificationCode !== "string") {
-    console.log(req.body);
     return res.status(400).json({ message: "Invalid input." });
   }
 
   try {
     const result = await userService.verifyEmail(db, token, verificationCode);
+    const user = await userService.getById(db, result.userId!); // needs err handling
 
     if (result.success) {
       if (req.session && result.userId) {
         req.session.userId = result.userId;
       }
-      return res.json({
+      return res.status(200).json({
         message: result.message,
         isNewUser: result.isNewUser,
+        isAuthenticated: true,
+        isAdmin: user.is_admin,
       });
     } else {
       return res.status(400).json({ message: result.message });
@@ -146,7 +148,12 @@ const login = async (req: Request, res: Response) => {
     }
     return res
       .status(200)
-      .json({ message: "Logged in successfully", userId: user.id });
+      .json({
+        message: "Logged in successfully",
+        userId: user.id,
+        isAuthenticated: true,
+        isAdmin: user.is_admin,
+      });
   } catch (error) {
     if (error instanceof z.ZodError) {
       const formattedErrors = error.errors.map((err) => ({
