@@ -34,7 +34,7 @@ import { ICompFormInput } from "../../../../shared-types/types";
 import { createCompensation } from "../../queries/compensationQueries";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 
 export const CompForm = () => {
   const {

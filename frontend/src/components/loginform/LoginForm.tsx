@@ -5,7 +5,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ILoginFormInput } from "./types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../queries/usersQueries";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 
 export const LoginForm = () => {
   const {

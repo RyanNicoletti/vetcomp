@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserStatus, logoutUser } from "../../queries/usersQueries";
+import { getUserStatus, logoutUser } from "../queries/usersQueries";
 
 export const useUserStatus = () => {
   const queryClient = useQueryClient();

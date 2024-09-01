@@ -3,7 +3,7 @@ import { TextField, Button, Typography, Box } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { verifyEmail } from "../../queries/usersQueries";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 
 interface IVerificationFormInput {
   verificationCode: string;

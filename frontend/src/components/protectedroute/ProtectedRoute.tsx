@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 
 export const ProtectedRoute = () => {
   const { isAdmin, isLoading } = useUserStatus();

@@ -17,7 +17,7 @@ import "./Header.css";
 import { useMutation } from "@tanstack/react-query";
 import { logoutUser } from "../../queries/usersQueries";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { useUserStatus } from "../hooks/useUserStatus";
+import { useUserStatus } from "../../hooks/useUserStatus";
 
 const linkStyle = {
   padding: "8px 16px",
