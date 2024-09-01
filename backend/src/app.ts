@@ -26,6 +26,7 @@ app.use(express.json());
 
 let redisStore = new RedisStore({
   client: redisClient,
+  prefix: "veterinarycomp:",
 });
 
 const sess = {
@@ -33,20 +34,14 @@ const sess = {
   store: redisStore,
   resave: false,
   saveUninitialized: false,
-  genid: () => {
-    return crypto.randomUUID();
-  },
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 1000 * 60 * 60 * 24,
-    sameSite:
-      process.env.NODE_ENV === "production"
-        ? ("none" as boolean | "none" | "lax" | "strict" | undefined)
-        : ("none" as boolean | "none" | "lax" | "strict" | undefined),
-  },
+    maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    sameSite: false,
+  } as express.CookieOptions,
 };
-if (app.get("env") === "production") {
+if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1); // trust first proxy (CF)
 }
 

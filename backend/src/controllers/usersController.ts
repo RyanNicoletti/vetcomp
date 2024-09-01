@@ -146,14 +146,12 @@ const login = async (req: Request, res: Response) => {
     if (req.session) {
       req.session.userId = user.id;
     }
-    return res
-      .status(200)
-      .json({
-        message: "Logged in successfully",
-        userId: user.id,
-        isAuthenticated: true,
-        isAdmin: user.is_admin,
-      });
+    return res.status(200).json({
+      message: "Logged in successfully",
+      userId: user.id,
+      isAuthenticated: true,
+      isAdmin: user.is_admin,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       const formattedErrors = error.errors.map((err) => ({

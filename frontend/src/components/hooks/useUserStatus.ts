@@ -9,9 +9,6 @@ export const useUserStatus = () => {
     queryFn: getUserStatus,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    refetchOnMount: true,
   });
 
   const logout = async () => {
