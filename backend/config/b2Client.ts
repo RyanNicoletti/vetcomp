@@ -8,3 +8,5 @@ export const b2Client = new S3Client({
   region: process.env.B2_REGION,
   endpoint: process.env.B2_ENDPOINT_URL,
 });
+
+console.log(process.env.B2_REGION);

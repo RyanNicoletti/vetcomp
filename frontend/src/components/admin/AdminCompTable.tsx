@@ -115,6 +115,14 @@ export default function SalaryTable() {
                   </div>
                 </TableSortLabel>
               </TableCell>
+              <TableCell
+                key="verification-document"
+                className="verification-document-cell">
+                <div>
+                  <p>Verification</p>
+                  <span className="empty-span"></span>
+                </div>
+              </TableCell>
               <TableCell key="admin-actions" className="admin-actions-cell">
                 <div>
                   <p>Admin Actions</p>

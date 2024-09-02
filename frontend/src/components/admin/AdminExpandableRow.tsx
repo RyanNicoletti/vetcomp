@@ -48,6 +48,7 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminCompensations"] });
       queryClient.invalidateQueries({ queryKey: ["salaries"] });
+      openSnackbar("Verified compensation successfully", "success");
     },
     onError: (error) => handleError(error, "verifying"),
   });
@@ -57,6 +58,7 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminCompensations"] });
       queryClient.invalidateQueries({ queryKey: ["salaries"] });
+      openSnackbar("Deleted compensation successfully", "success");
     },
     onError: (error) => handleError(error, "deleting"),
   });
@@ -77,6 +79,10 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
   };
   const handleDeleteComp = (id: string) => {
     deleteCompMutation.mutate(id);
+  };
+
+  const handleViewDocument = (url: string) => {
+    window.open(url, "_blank");
   };
 
   return (
@@ -125,6 +131,13 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
                 : "n/a"}
             </span>
           </div>
+        </TableCell>
+        <TableCell>
+          {row.verification_document_url && (
+            <IconButton
+              onClick={() => handleViewDocument(row.verification_document_url!)}
+              size="small"></IconButton>
+          )}
         </TableCell>
         <TableCell>
           <Button onClick={() => handleApproveComp(row.id)}>Approve</Button>

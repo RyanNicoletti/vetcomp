@@ -161,7 +161,6 @@ const createCompensation = async (req: Request, res: Response) => {
           req.file.originalname
         );
       }
-
       const compensationData = {
         company: validatedData.company,
         location: validatedData.location,
@@ -236,9 +235,53 @@ const approveCompensationById = (req: Request, res: Response) => {
   }
 };
 
+const verifyCompensationById = (req: Request, res: Response) => {
+  const compIdSchema = z.object({ compId: z.string().uuid() });
+  try {
+    const { compId } = compIdSchema.parse({ compId: req.params.id });
+    if (!compId) {
+      return res
+        .status(404)
+        .json({ message: `Compensation with id ${compId} not found` });
+    }
+    compensationService.verifyById(db, compId);
+    return res
+      .status(200)
+      .json({ message: `Success: compensation ${compId} verified.` });
+  } catch (err) {
+    return res.status(500).json({
+      message: `Error verifying compensation: ${req.params.id}`,
+      errors: err,
+    });
+  }
+};
+
+const deleteCompensationById = (req: Request, res: Response) => {
+  const compIdSchema = z.object({ compId: z.string().uuid() });
+  try {
+    const { compId } = compIdSchema.parse({ compId: req.params.id });
+    if (!compId) {
+      return res
+        .status(404)
+        .json({ message: `Compensation with id ${compId} not found` });
+    }
+    compensationService.deleteById(db, compId);
+    return res
+      .status(200)
+      .json({ message: `Success: compensation ${compId} deleted.` });
+  } catch (err) {
+    return res.status(500).json({
+      message: `Error deleting compensation: ${req.params.id}`,
+      errors: err,
+    });
+  }
+};
+
 export default {
   getAllSalaries,
   createCompensation,
   getAllAdminCompensations,
   approveCompensationById,
+  verifyCompensationById,
+  deleteCompensationById,
 };

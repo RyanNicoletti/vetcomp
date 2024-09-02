@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 import express, { Express, Router } from "express";
 import session from "express-session";
 import RedisStore from "connect-redis";
@@ -8,7 +12,6 @@ import cors from "cors";
 import compensationController from "./controllers/compensationController";
 import locationsController from "./controllers/locationsController";
 import usersController from "./controllers/usersController";
-import "dotenv/config";
 import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
 
@@ -56,14 +59,14 @@ adminRouter.get(
   "/compensations",
   compensationController.getAllAdminCompensations
 );
-// adminRouter.delete(
-//   "/compensations/:id",
-//   compensationController.deleteCompensationById
-// );
-// adminRouter.patch(
-//   "/compensations/:id/verify",
-//   compensationController.verifyCompensationById
-// );
+adminRouter.delete(
+  "/compensations/:id",
+  compensationController.deleteCompensationById
+);
+adminRouter.patch(
+  "/compensations/:id/verify",
+  compensationController.verifyCompensationById
+);
 adminRouter.patch(
   "/compensations/:id/approve",
   compensationController.approveCompensationById

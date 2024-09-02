@@ -91,6 +91,20 @@ const salariesService = {
       throw new Error("Failed to approve comp in compensation service");
     }
   },
+  verifyById: async (knex: Knex, compId: string): Promise<void> => {
+    try {
+      await knex("salaries").where({ id: compId }).update("is_verified", true);
+    } catch (err) {
+      throw new Error("Failed to verify comp in compensation service");
+    }
+  },
+  deleteById: async (knex: Knex, compId: string): Promise<void> => {
+    try {
+      await knex("salaries").where({ id: compId }).del();
+    } catch (err) {
+      throw new Error("Failed to delete comp in compensation service");
+    }
+  },
 };
 
 export default salariesService;

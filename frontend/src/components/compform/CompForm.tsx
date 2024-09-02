@@ -115,7 +115,7 @@ export const CompForm = () => {
       navigate("/");
       openSnackbar(
         data.message ||
-          "Success! Thank you for submitting your comp info. It will be reviewed as soon as possible.",
+          "Success! Thank you, your compensation details will be reviewed as soon as possible.",
         "success"
       );
     },
@@ -213,7 +213,6 @@ export const CompForm = () => {
           control={control}
           rules={{
             required: "Location is required",
-            validate: (value) => options.includes(value) || "Invalid location",
           }}
           render={({ field, fieldState }) => (
             <Box>

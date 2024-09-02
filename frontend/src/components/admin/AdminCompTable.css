@@ -60,7 +60,7 @@
 }
 
 .years-of-experience-cell {
-  width: 15%;
+  width: 10%;
   padding-left: 2px !important;
 }
 
@@ -71,8 +71,13 @@
 .total-compensation-cell {
   width: 35%;
 }
-.admin-actions-cell {
+
+.verification-document-cell {
   width: 30%;
+}
+
+.admin-actions-cell {
+  width: 45%;
 }
 
 @media (max-width: 1300px) {
