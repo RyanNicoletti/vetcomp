@@ -52,7 +52,10 @@ app.use(session(sess));
 // Admin Routes
 const adminRouter: Router = express.Router();
 adminRouter.use(isAdmin);
-adminRouter.get("/compensations", compensationController.getAllSalaries);
+adminRouter.get(
+  "/compensations",
+  compensationController.getAllAdminCompensations
+);
 // adminRouter.delete(
 //   "/compensations/:id",
 //   compensationController.deleteCompensationById
@@ -61,10 +64,10 @@ adminRouter.get("/compensations", compensationController.getAllSalaries);
 //   "/compensations/:id/verify",
 //   compensationController.verifyCompensationById
 // );
-// adminRouter.patch(
-//   "/compensations/:id/approve",
-//   compensationController.approveCompensationById
-// );
+adminRouter.patch(
+  "/compensations/:id/approve",
+  compensationController.approveCompensationById
+);
 app.use("/admin", adminRouter);
 
 // User routes

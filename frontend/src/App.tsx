@@ -13,7 +13,7 @@ import AdminPage from "./pages/AdminPage";
 import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 import PolicyPage from "./pages/PolicyPage";
 import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
-import Cookies from "./components/tos-privacypolicy-cookies/cookies/cookies";
+import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
 
 function App() {
   return (

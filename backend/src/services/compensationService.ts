@@ -19,13 +19,13 @@ const salariesService = {
     const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
     query = query.offset(offset).limit(salaryFilter.rowsPerPage);
 
-    query = query.where({ is_approved: salaryFilter.getApprovedSalaries });
+    query = query.where({ is_approved: salaryFilter.getApprovedCompensations });
 
     const compensations: ICompensation[] = await query;
 
     const [{ count }] = await db("salaries")
       .count("* as count")
-      .where({ is_approved: salaryFilter.getApprovedSalaries });
+      .where({ is_approved: salaryFilter.getApprovedCompensations });
 
     const total: number = Number(count);
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
@@ -82,6 +82,13 @@ const salariesService = {
     } catch (error) {
       console.error("Error creating compensation:", error);
       throw error;
+    }
+  },
+  approveById: async (knex: Knex, compId: string): Promise<void> => {
+    try {
+      await knex("salaries").where({ id: compId }).update("is_approved", true);
+    } catch (err) {
+      throw new Error("Failed to approve comp in compensation service");
     }
   },
 };

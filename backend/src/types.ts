@@ -3,5 +3,5 @@ export interface SalaryFilter {
   rowsPerPage: number;
   sortDirection: "asc" | "desc";
   sortBy?: string;
-  getApprovedSalaries: boolean;
+  getApprovedCompensations: boolean;
 }

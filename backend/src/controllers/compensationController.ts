@@ -13,7 +13,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
-    getApprovedSalaries: true,
+    getApprovedCompensations: true,
   };
 
   if (typeof req.query.page === "string") {
@@ -36,8 +36,54 @@ const getAllSalaries = async (req: Request, res: Response) => {
     salaryFilter.sortBy = req.query.sortBy;
   }
 
-  if (req.path.includes("/admin")) {
-    salaryFilter.getApprovedSalaries = false;
+  try {
+    const compensationsWithPages = await compensationService.getAll(
+      db,
+      salaryFilter
+    );
+    return res.json(compensationsWithPages);
+  } catch (error) {
+    console.error("Error fetching salaries:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while fetching salaries" });
+  }
+};
+
+const getAllAdminCompensations = async (req: Request, res: Response) => {
+  const salaryFilter: SalaryFilter = {
+    page: 0,
+    rowsPerPage: 10,
+    sortDirection: "asc",
+    sortBy: "",
+    getApprovedCompensations: true,
+  };
+
+  if (typeof req.query.page === "string") {
+    const pageNumber: number = parseInt(req.query.page, 10);
+    const oneIndexedPageNumber: number = pageNumber - 1;
+    salaryFilter.page = oneIndexedPageNumber;
+  }
+  if (typeof req.query.rowsPerPage === "string") {
+    salaryFilter.rowsPerPage = parseInt(req.query.rowsPerPage, 10);
+  }
+  if (typeof req.query.sortDirection === "string") {
+    if (
+      req.query.sortDirection === "asc" ||
+      req.query.sortDirection === "desc"
+    ) {
+      salaryFilter.sortDirection = req.query.sortDirection;
+    }
+  }
+  if (typeof req.query.sortBy === "string" && req.query.sortBy !== "") {
+    salaryFilter.sortBy = req.query.sortBy;
+  }
+
+  if (req.session && req.session.userId) {
+    const user = await userService.getById(db, req.session.userId);
+    if (user.is_admin) {
+      salaryFilter.getApprovedCompensations = false;
+    }
   }
 
   try {
@@ -169,4 +215,30 @@ const createCompensation = async (req: Request, res: Response) => {
   });
 };
 
-export default { getAllSalaries, createCompensation };
+const approveCompensationById = (req: Request, res: Response) => {
+  const compIdSchema = z.object({ compId: z.string().uuid() });
+  try {
+    const { compId } = compIdSchema.parse({ compId: req.params.id });
+    if (!compId) {
+      return res.status(404).json({
+        message: `Compensation with id ${compId} not found`,
+      });
+    }
+    compensationService.approveById(db, compId);
+    return res
+      .status(200)
+      .json({ message: `Success: compensation ${compId} approved.` });
+  } catch (err) {
+    return res.status(500).json({
+      message: `Error approving compensation: ${req.params.id}`,
+      errors: err,
+    });
+  }
+};
+
+export default {
+  getAllSalaries,
+  createCompensation,
+  getAllAdminCompensations,
+  approveCompensationById,
+};

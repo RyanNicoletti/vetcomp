@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   TableRow,
   TableCell,
@@ -24,33 +24,50 @@ import {
   approveCompensationById,
   deleteCompensationById,
   verifyCompensationById,
-} from "../../queries/compensationQueries";
+} from "../../queries/adminQueries";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { openSnackbar } = useSnackbar();
 
   const queryClient = useQueryClient();
 
   const approveCompMutation = useMutation({
     mutationFn: approveCompensationById,
     onSuccess: () => {
-      console.log("approved");
+      queryClient.invalidateQueries({ queryKey: ["adminCompensations"] });
+      queryClient.invalidateQueries({ queryKey: ["salaries"] });
+      openSnackbar("Approved compensation successfully", "success");
     },
+    onError: (error) => handleError(error, "approving"),
   });
 
   const verifyCompMutation = useMutation({
     mutationFn: verifyCompensationById,
     onSuccess: () => {
-      console.log("verified");
+      queryClient.invalidateQueries({ queryKey: ["adminCompensations"] });
+      queryClient.invalidateQueries({ queryKey: ["salaries"] });
     },
+    onError: (error) => handleError(error, "verifying"),
   });
 
   const deleteCompMutation = useMutation({
     mutationFn: deleteCompensationById,
     onSuccess: () => {
-      console.log("deleted");
+      queryClient.invalidateQueries({ queryKey: ["adminCompensations"] });
+      queryClient.invalidateQueries({ queryKey: ["salaries"] });
     },
+    onError: (error) => handleError(error, "deleting"),
   });
+
+  const handleError = (error: any, action: string) => {
+    console.error(`Error ${action} compensation:`, error);
+    openSnackbar(
+      error.message || `An error occurred while ${action} the compensation`,
+      "error"
+    );
+  };
 
   const handleApproveComp = (id: string) => {
     approveCompMutation.mutate(id);

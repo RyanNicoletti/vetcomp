@@ -6,7 +6,6 @@ import TableHead from "@mui/material/TableHead";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TableRow from "@mui/material/TableRow";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getAllSalaries } from "../../queries/compensationQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "../salarytable/types";
 import { ICompensation } from "../../../../shared-types/types";
@@ -16,6 +15,7 @@ import { useState } from "react";
 import Pagination from "../pagination/Pagination";
 import { NavLink } from "react-router-dom";
 import { AdminExpandableRow } from "./AdminExpandableRow";
+import { getCompensationsAdmin } from "../../queries/adminQueries";
 
 export default function SalaryTable() {
   const [page, setPage] = useState(1);
@@ -46,8 +46,8 @@ export default function SalaryTable() {
     error: salaryError,
     isPending: salaryIsPending,
   } = useQuery({
-    queryKey: ["salaries", page, rowsPerPage, sortParams],
-    queryFn: () => getAllSalaries(page, rowsPerPage, sortParams),
+    queryKey: ["adminCompensations", page, rowsPerPage, sortParams],
+    queryFn: () => getCompensationsAdmin(page, rowsPerPage, sortParams),
     placeholderData: keepPreviousData,
   });
 
