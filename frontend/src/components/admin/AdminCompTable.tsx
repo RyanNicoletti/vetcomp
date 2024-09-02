@@ -10,12 +10,12 @@ import { getAllSalaries } from "../../queries/compensationQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "../salarytable/types";
 import { ICompensation } from "../../../../shared-types/types";
-import "../salarytable/SalaryTable.css";
+import "./AdminCompTable.css";
 import { Button, TableFooter } from "@mui/material";
 import { useState } from "react";
 import Pagination from "../pagination/Pagination";
 import { NavLink } from "react-router-dom";
-import { ExpandableRow } from "../salarytable/ExpandableRow";
+import { AdminExpandableRow } from "./AdminExpandableRow";
 
 export default function SalaryTable() {
   const [page, setPage] = useState(1);
@@ -70,14 +70,20 @@ export default function SalaryTable() {
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
             <TableRow>
-              <TableCell />
-              <TableCell key="company-location" align={"left"}>
+              <TableCell className="expand-cell" />
+              <TableCell
+                key="company-location"
+                className="company-location-cell"
+                align={"left"}>
                 <div>
                   <p>Company</p>
                   <span>Location | Date</span>
                 </div>
               </TableCell>
-              <TableCell key="type-of-practice" align={"left"}>
+              <TableCell
+                key="type-of-practice"
+                className="type-of-practice-cell"
+                align={"left"}>
                 <div>
                   <p>Job Title</p>
                   <span>Practice Type</span>
@@ -86,7 +92,7 @@ export default function SalaryTable() {
               <TableCell
                 key="years-of-experience"
                 align={"left"}
-                className="years-of-experience-header">
+                className="years-of-experience-cell">
                 <TableSortLabel
                   direction={sortParams.sortDirection}
                   onClick={() => handleSortRequest("years_of_experience")}>
@@ -96,7 +102,10 @@ export default function SalaryTable() {
                   </div>
                 </TableSortLabel>
               </TableCell>
-              <TableCell key="total-compensation" align={"right"}>
+              <TableCell
+                key="total-compensation"
+                className="total-compensation-cell"
+                align={"right"}>
                 <TableSortLabel
                   direction={sortParams.sortDirection}
                   onClick={() => handleSortRequest("total_compensation")}>
@@ -116,7 +125,7 @@ export default function SalaryTable() {
           </TableHead>
           <TableBody>
             {compensationData?.compensations?.map((row: ICompensation) => (
-              <ExpandableRow key={row.id} row={row} />
+              <AdminExpandableRow key={row.id} row={row} />
             ))}
           </TableBody>
           <TableFooter>

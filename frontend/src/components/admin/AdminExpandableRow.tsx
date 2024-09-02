@@ -26,7 +26,7 @@ import {
   verifyCompensationById,
 } from "../../queries/compensationQueries";
 
-export const ExpandableRow = (row: ICompensation) => {
+export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const queryClient = useQueryClient();
