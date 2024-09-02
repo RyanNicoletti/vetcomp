@@ -12,7 +12,8 @@ import { SnackbarProvider } from "./context/SnackbarContext";
 import AdminPage from "./pages/AdminPage";
 import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 import PolicyPage from "./pages/PolicyPage";
-import TermsOfService from "./components/termsofservice/TermsOfService";
+import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
+import Cookies from "./components/tos-privacypolicy-cookies/cookies/cookies";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/privacy-policy" element={<PolicyPage />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookies" element={<Cookies />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminPage />} />
             </Route>

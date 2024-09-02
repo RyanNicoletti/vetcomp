@@ -16,12 +16,11 @@ const Footer = () => {
         <NavLink className="footer_nav_link" to="/terms-of-service">
           Terms of Service
         </NavLink>
-      </Box>
-      {/* <Box className="socials">
-        <NavLink to="blank.com" target="_blank" rel="noopener noreferrer">
-          <LinkedInIcon className="linkedin-icon" />
+        <p>|</p>
+        <NavLink className="footer_nav_link" to="/cookies">
+          Cookies
         </NavLink>
-      </Box> */}
+      </Box>
     </Box>
   );
 };

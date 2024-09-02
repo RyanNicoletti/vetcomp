@@ -1,15 +1,19 @@
-import { useEffect, createRef } from "react";
+import { useEffect, useRef } from "react";
 import "./TermsOfService.css";
 
 const TermsOfService = () => {
-  const terms: any = createRef();
+  const terms = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(
       "https://app.termageddon.com/api/policy/YVhOMk5rTjNiV1JEWW1GSWVIYzlQUT09?no-title=true"
     )
       .then((res) => res.text())
-      .then((res) => (terms.current.innerHTML = res));
+      .then((res) => {
+        if (terms.current) {
+          terms.current.innerHTML = res;
+        }
+      });
   }, []);
 
   return (

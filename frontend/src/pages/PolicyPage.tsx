@@ -1,4 +1,4 @@
-import Policy from "../components/policy/Policy";
+import Policy from "../components/tos-privacypolicy-cookies/policy/Policy";
 
 const PolicyPage = () => {
   return <Policy />;

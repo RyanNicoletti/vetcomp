@@ -4,10 +4,37 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Veterinarycomp</title>
+
+    <!-- Usercentrics Cookie Consent Tool -->
+    <link rel="preconnect" href="//privacy-proxy.usercentrics.eu" />
+    <link
+      rel="preload"
+      href="//privacy-proxy.usercentrics.eu/latest/uc-block.bundle.js"
+      as="script" />
+    <script
+      type="application/javascript"
+      src="https://privacy-proxy.usercentrics.eu/latest/uc-block.bundle.js"></script>
+    <script
+      id="usercentrics-cmp"
+      src="https://app.usercentrics.eu/browser-ui/latest/loader.js"
+      data-settings-id="72stTDu73cXzHZ"
+      async></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.addEventListener("load", function () {
+        if (
+          window.uc &&
+          typeof window.uc.setCustomTranslations === "function"
+        ) {
+          uc.setCustomTranslations(
+            "https://termageddon.ams3.cdn.digitaloceanspaces.com/translations/"
+          );
+        }
+      });
+    </script>
   </body>
 </html>

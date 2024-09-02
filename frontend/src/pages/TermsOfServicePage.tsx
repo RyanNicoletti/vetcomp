@@ -1,4 +1,4 @@
-import TermsOfService from "../components/termsofservice/TermsOfService";
+import TermsOfService from "../components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
 
 const TermsOfServicePage = () => {
   return <TermsOfService />;
