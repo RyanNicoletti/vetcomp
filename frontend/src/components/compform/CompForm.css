@@ -85,7 +85,7 @@
   margin-bottom: 30px;
 }
 
-.sign-up-link {
+.sign-up-link-container {
   text-align: center;
 }
 
@@ -96,4 +96,8 @@
 #fileUploadCaption {
   display: block;
   margin-bottom: 10px;
+}
+
+.sign-up-link {
+  text-decoration: underline;
 }

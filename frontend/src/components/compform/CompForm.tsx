@@ -782,9 +782,11 @@ export const CompForm = () => {
           </Typography>
         )}
         {!isAuthenticated && (
-          <Typography variant="body2" className="sign-up-link">
+          <Typography variant="body2" className="sign-up-link-container">
             Or, create an account first:{" "}
-            <RouterLink to="/signup">Sign up here</RouterLink>
+            <RouterLink to="/signup" className="sign-up-link">
+              Sign up here
+            </RouterLink>
           </Typography>
         )}
       </form>

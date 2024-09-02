@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./Cookies.css";
+import PrivacySettings from "../PrivacySettings";
 
 const Cookies = () => {
   const cookies = useRef<HTMLDivElement>(null);
@@ -22,6 +23,10 @@ const Cookies = () => {
       <div className="policy-content">
         <h1 className="policy-title">Cookies Policy</h1>
         <div className="policy-text" ref={cookies}></div>
+        <div className="privacy-settings-link">
+          You are free to change your privacy settings at any time by clicking
+          the following link: <PrivacySettings />
+        </div>
       </div>
     </div>
   );

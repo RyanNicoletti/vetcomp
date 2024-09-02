@@ -26,5 +26,7 @@
   list-style: none;
 }
 
-.cookies-text li {
+.privacy-settings-link {
+  margin-bottom: 20px;
+  margin-top: 50px;
 }
