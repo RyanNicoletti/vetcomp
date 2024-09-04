@@ -163,13 +163,6 @@ const createCompensation = async (req: Request, res: Response) => {
         );
       }
 
-      let verificationDocumentUrl;
-      if (verificationDocumentKey) {
-        verificationDocumentUrl = await b2Service.getSignedUrl(
-          verificationDocumentKey
-        );
-      }
-
       const compensationData = {
         company: validatedData.company,
         location: validatedData.location,
@@ -193,7 +186,7 @@ const createCompensation = async (req: Request, res: Response) => {
         user_id: userId,
         is_verified: false,
         is_approved: false,
-        verification_document_url: verificationDocumentUrl,
+        verification_document_url: undefined,
         verification_document_name: verificationDocumentKey,
       };
 

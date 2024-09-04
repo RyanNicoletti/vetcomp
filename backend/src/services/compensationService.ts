@@ -24,6 +24,17 @@ const salariesService = {
 
     const compensations: ICompensation[] = await query;
 
+    const compensationsWithDocuments = await Promise.all(
+      compensations.map(async (comp) => {
+        if (comp.verification_document_url) {
+          comp.verification_document_url = await b2Service.getSignedUrl(
+            comp.verification_document_name!
+          );
+        }
+        return comp;
+      })
+    );
+
     const [{ count }] = await db("salaries")
       .count("* as count")
       .where({ is_approved: salaryFilter.getApprovedCompensations });
@@ -31,7 +42,7 @@ const salariesService = {
     const total: number = Number(count);
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
-    return { compensations, pages };
+    return { compensations: compensationsWithDocuments, pages };
   },
 
   create: async (knex: Knex, newCompensation: Partial<ICompensation>) => {
