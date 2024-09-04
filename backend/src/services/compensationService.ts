@@ -3,6 +3,7 @@ import { b2Client } from "../../config/b2Client";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { Knex } from "knex";
 import { SalaryFilter } from "../types";
+import b2Service from "./b2Service";
 
 const salariesService = {
   getAll: async (db: Knex, salaryFilter: SalaryFilter) => {
@@ -33,24 +34,6 @@ const salariesService = {
     return { compensations, pages };
   },
 
-  uploadFileToB2: async (
-    fileBuffer: Buffer,
-    fileName: string
-  ): Promise<string | undefined> => {
-    try {
-      const uploadedFile = await b2Client.send(
-        new PutObjectCommand({
-          Bucket: process.env.B2_BUCKET_NAME,
-          Key: fileName,
-          Body: fileBuffer,
-        })
-      );
-      return uploadedFile.ETag;
-    } catch (err) {
-      console.error("upload file error: ", err);
-      return undefined;
-    }
-  },
   create: async (knex: Knex, newCompensation: Partial<ICompensation>) => {
     try {
       let totalCompensation;

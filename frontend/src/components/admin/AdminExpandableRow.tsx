@@ -9,6 +9,7 @@ import {
   Typography,
   Tooltip,
   Button,
+  Link,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -81,10 +82,6 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
     deleteCompMutation.mutate(id);
   };
 
-  const handleViewDocument = (url: string) => {
-    window.open(url, "_blank");
-  };
-
   return (
     <>
       <TableRow className="table-rows">
@@ -133,10 +130,15 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
           </div>
         </TableCell>
         <TableCell>
-          {row.verification_document_url && (
-            <IconButton
-              onClick={() => handleViewDocument(row.verification_document_url!)}
-              size="small"></IconButton>
+          {row.verification_document_url ? (
+            <a
+              href={row.verification_document_url}
+              target="_blank"
+              rel="noopener noreferrer">
+              {row.verification_document_name}
+            </a>
+          ) : (
+            ""
           )}
         </TableCell>
         <TableCell>

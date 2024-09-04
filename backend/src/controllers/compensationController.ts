@@ -6,6 +6,7 @@ import userService from "../services/userService";
 import multer from "multer";
 import { SalaryFilter } from "../types";
 import { db } from "../db/connection";
+import b2Service from "../services/b2Service";
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
@@ -156,11 +157,19 @@ const createCompensation = async (req: Request, res: Response) => {
 
       let verificationDocumentKey: string | undefined = undefined;
       if (req.file) {
-        verificationDocumentKey = await compensationService.uploadFileToB2(
+        verificationDocumentKey = await b2Service.uploadFileToB2(
           req.file.buffer,
           req.file.originalname
         );
       }
+
+      let verificationDocumentUrl;
+      if (verificationDocumentKey) {
+        verificationDocumentUrl = await b2Service.getSignedUrl(
+          verificationDocumentKey
+        );
+      }
+
       const compensationData = {
         company: validatedData.company,
         location: validatedData.location,
@@ -184,8 +193,8 @@ const createCompensation = async (req: Request, res: Response) => {
         user_id: userId,
         is_verified: false,
         is_approved: false,
-        verification_document_url: verificationDocumentKey,
-        verification_document_name: req.file ? req.file.originalname : null,
+        verification_document_url: verificationDocumentUrl,
+        verification_document_name: verificationDocumentKey,
       };
 
       const insertedComp = await compensationService.create(
