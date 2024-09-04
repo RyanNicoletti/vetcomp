@@ -24,6 +24,17 @@ const salariesService = {
 
     const compensations: ICompensation[] = await query;
 
+    const [{ count }] = await db("salaries")
+      .count("* as count")
+      .where({ is_approved: salaryFilter.getApprovedCompensations });
+
+    const total: number = Number(count);
+    const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
+
+    if (salaryFilter.getApprovedCompensations) {
+      return { compensations, pages };
+    }
+
     const compensationsWithDocuments = await Promise.all(
       compensations.map(async (comp) => {
         if (comp.verification_document_url) {
@@ -34,13 +45,6 @@ const salariesService = {
         return comp;
       })
     );
-
-    const [{ count }] = await db("salaries")
-      .count("* as count")
-      .where({ is_approved: salaryFilter.getApprovedCompensations });
-
-    const total: number = Number(count);
-    const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
     return { compensations: compensationsWithDocuments, pages };
   },
