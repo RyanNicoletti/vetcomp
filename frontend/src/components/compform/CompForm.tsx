@@ -107,7 +107,8 @@ export const CompForm = () => {
         setError("root.serverError", {
           type: "manual",
           message:
-            error.message || "An unexpected error occurred. Please try again.",
+            error.message ||
+            "An unexpected error occurred. Please try again later.",
         });
       }
     },
@@ -344,6 +345,7 @@ export const CompForm = () => {
                   <Typography>Years of Experience</Typography>
                   <NumericFormat
                     {...rest}
+                    className="years-of-experience-input"
                     customInput={TextField}
                     getInputRef={ref}
                     placeholder="0"
@@ -475,7 +477,7 @@ export const CompForm = () => {
             variant="contained"
             size="small"
             onClick={() => setShowSignOnBonus(!showSignOnBonus)}>
-            {showSignOnBonus ? "Hide Sign On Bonus" : "Add Sign On Bonus"}
+            {showSignOnBonus ? "- Sign On Bonus" : "+ Sign On Bonus"}
           </Button>
           <Button
             className="additional-comp-btn"
@@ -484,8 +486,8 @@ export const CompForm = () => {
             size="small"
             onClick={() => setShowPercentProduction(!showPercentProduction)}>
             {showPercentProduction
-              ? "Hide % of Production"
-              : "Add % of Production"}
+              ? "- Production Bonus"
+              : "+ Production Bonus"}
           </Button>
           <Button
             className="additional-comp-btn"
@@ -496,8 +498,8 @@ export const CompForm = () => {
               setShowAverageAnnualProduction(!showAverageAnnualProduction)
             }>
             {showAverageAnnualProduction
-              ? "Hide Average Annual Production"
-              : "Add Average Annual Production"}
+              ? "- Annual Production"
+              : "+ Annual Production"}
           </Button>
         </Box>
 
@@ -539,7 +541,7 @@ export const CompForm = () => {
               return (
                 <Box>
                   <Typography>
-                    % Production
+                    Production bonus
                     <Tooltip
                       title="What percentage of your total production goes towards your salary?"
                       placement="top">
@@ -615,7 +617,7 @@ export const CompForm = () => {
         )}
 
         <Typography className="section-title" variant="h6">
-          Verification Document (Optional)
+          Upload Verification (Optional)
         </Typography>
 
         <Box className="file-upload-container">
@@ -674,8 +676,8 @@ export const CompForm = () => {
           color="textSecondary"
           id="fileUploadCaption">
           Upload an offer letter or pay stub to have your compensation details
-          verified. The document will be deleted after review and not stored
-          permanently.
+          verified. The document is deleted after review and not stored or
+          shared.
         </Typography>
 
         <Typography className="section-title" variant="h6">

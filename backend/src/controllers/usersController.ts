@@ -124,14 +124,9 @@ const login = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",
-        errors: [
-          {
-            field: "password",
-            message: "Invalid email or password",
-          },
-        ],
       });
     }
+    // should technically never happen
     if (!user.is_verified) {
       return res.status(400).json({
         message: "Please verify your email before logging in",
@@ -154,15 +149,12 @@ const login = async (req: Request, res: Response) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const formattedErrors = error.errors.map((err) => ({
-        field: err.path.join("."),
-        message: err.message,
-      }));
-      return res.status(400).json({ errors: formattedErrors });
+      // if its a ZodError then its an invalid email/password
+      return res.status(400).json({ message: "Invalid email or password" });
     } else {
       return res
         .status(500)
-        .json({ message: "Unable to login, please try again later." });
+        .json({ message: "Unexpected server error, please try again later." });
     }
   }
 };

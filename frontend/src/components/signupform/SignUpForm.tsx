@@ -8,7 +8,13 @@ import { registerUser } from "../../queries/usersQueries";
 
 export const SignUpForm = () => {
   const navigate = useNavigate();
-  const { control, handleSubmit, watch, setError } = useForm<ISignUpFormInput>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setError,
+    formState: { errors },
+  } = useForm<ISignUpFormInput>({
     defaultValues: {
       email: "",
       password: "",
@@ -22,7 +28,6 @@ export const SignUpForm = () => {
   const registerUserMutation = useMutation({
     mutationFn: registerUser,
     onError: (error: any) => {
-      console.log(error);
       if (error.errors) {
         error.errors.forEach((err: { field: string; message: string }) => {
           setError(err.field as keyof ISignUpFormInput, {
@@ -31,9 +36,9 @@ export const SignUpForm = () => {
           });
         });
       } else {
-        setError("confirmPassword", {
+        setError("root.serverError", {
           type: "manual",
-          message: "An unexpected error occurred. Please try again.",
+          message: error.message || "Invalid email or password.",
         });
       }
     },
@@ -127,6 +132,13 @@ export const SignUpForm = () => {
             )}
           />
         </div>
+        {errors.root?.serverError && (
+          <Typography
+            color="error"
+            style={{ marginBottom: "10px", textAlign: "center" }}>
+            {errors.root.serverError.message}
+          </Typography>
+        )}
         <Button
           type="submit"
           variant="contained"
