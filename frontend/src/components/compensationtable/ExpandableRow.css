@@ -1,4 +1,4 @@
-.expandedDetailsOuterContainer {
+.expanded-detail-container {
   margin: 10px;
 }
 
@@ -11,10 +11,19 @@
 }
 
 .expanded-row-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  line-height: 1.6;
+  font-size: 1.1rem;
   margin-bottom: 0.35em;
+}
+
+.yoe {
+  display: none;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 0.3fr);
+  gap: 5px 1px;
+  margin-left: 100px;
 }
 
 .sign-on .percent-production .days-per-week .number-vets .gender {
@@ -37,6 +46,13 @@
   }
   .expanded-row-title {
     font-size: 15px;
+  }
+  .yoe {
+    display: block;
+  }
+  .grid-container {
+    display: block;
+    margin-left: 50px;
   }
   .sign-on .percent-production .days-per-week .number-vets .gender {
     font-size: 13px;

@@ -1,5 +1,5 @@
 .sign-up-container {
-  height: 90vh;
+  margin-top: 170px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,6 +19,7 @@
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease-in-out;
+  min-width: 443px;
 }
 
 .signup-input {
@@ -28,4 +29,10 @@
 
 #signup-button {
   margin-bottom: 30px;
+}
+
+@media (max-width: 515px) {
+  .sign-up-form {
+    min-width: 90%;
+  }
 }

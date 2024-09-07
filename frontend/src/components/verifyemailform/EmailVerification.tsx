@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { verifyEmail } from "../../queries/usersQueries";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useUserStatus } from "../../hooks/useUserStatus";
+import "./EmailVerification.css";
 
 interface IVerificationFormInput {
   verificationCode: string;
@@ -53,14 +54,16 @@ export const EmailVerification = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
+    <Box className="verify-email-form-container">
       <Typography variant="h4" gutterBottom>
         Verify Your Email
       </Typography>
-      <Typography variant="body1" paragraph>
-        We've sent a verification code to {email}. Please enter it below.
+      <Typography paragraph className="verify-instructions">
+        We've sent a verification code to{" "}
+        <span className="email-address">{email}</span>.{" "}
+        <span className="enter-below">Please enter it below.</span>
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="verify-email-form">
         <Controller
           name="verificationCode"
           control={control}
@@ -72,6 +75,7 @@ export const EmailVerification = () => {
           render={({ field }) => (
             <TextField
               {...field}
+              className="verify-input"
               label="Verification Code"
               fullWidth
               margin="normal"
@@ -86,7 +90,6 @@ export const EmailVerification = () => {
           variant="contained"
           color="primary"
           fullWidth
-          sx={{ mt: 2 }}
           disabled={verifyEmailMutation.isPending}>
           {verifyEmailMutation.isPending ? "Verifying..." : "Verify Email"}
         </Button>

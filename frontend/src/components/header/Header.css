@@ -35,7 +35,7 @@
   color: var(--color-text-dark);
 }
 
-@media (width <= 600px) {
+@media (width <= 850px) {
   #burger_menu {
     display: block;
     margin-top: 10px;

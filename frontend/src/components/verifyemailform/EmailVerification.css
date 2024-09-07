@@ -1,14 +1,12 @@
-.login-container {
+.verify-email-form-container {
   margin-top: 170px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-#top-input {
-  margin-top: 30px;
-}
-.login-form {
+.verify-email-form {
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -22,21 +20,26 @@
   min-width: 443px;
 }
 
-.login-input {
+.email-address {
+  font-weight: var(--font-weight-bold);
+}
+
+.verify-input {
   width: 100%;
   margin: 15px 0px;
 }
 
-#login-button {
-  margin-bottom: 30px;
-}
-
-.password-reset {
-  margin-bottom: 20px;
-}
-
 @media (max-width: 515px) {
-  .login-form {
+  .verify-email-form-container {
+    text-align: center;
+  }
+  .verify-instructions {
+    max-width: 80%;
+  }
+  .verify-email-form {
     min-width: 90%;
+  }
+  .enter-below {
+    display: block;
   }
 }

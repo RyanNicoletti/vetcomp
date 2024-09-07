@@ -83,45 +83,43 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-              <Box className="expandedDetailsOuterContainer">
+              <Box className="expanded-details-container">
                 <div className="expanded-row-title">
                   Additional Comp Details:
                 </div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <div className="yoe">
-                      Years of Experience: {row.years_of_experience}
-                    </div>
-                    <div className="sign-on">
-                      Sign on bonus:{" "}
-                      {formatNullableMoneyValue(row.sign_on_bonus) ?? "--"}
-                    </div>
-                    <div className="percent-production">
-                      Percent production:
-                      <Tooltip title="Percent of total production that goes towards salary">
-                        <IconButton
-                          size="small"
-                          style={{
-                            padding: 0,
-                            marginLeft: "0px",
-                            marginRight: "2px",
-                            marginBottom: "10px",
-                          }}>
-                          <InfoOutlinedIcon style={{ fontSize: "0.8rem" }} />
-                        </IconButton>
-                      </Tooltip>
-                      {row.percent_production ?? "--"}
-                    </div>
-                    <div className="days-per-week">
-                      Days/week: {row.days_worked_per_week ?? "--"}
-                    </div>
-                    <div className="number-vets">
-                      Number Veterinarians in practice:{" "}
-                      {row.number_of_veterinarians ?? "--"}
-                    </div>
-                    <div className="gender">Gender: {row.gender ?? "--"}</div>
-                  </Grid>
-                </Grid>
+                <Box className="grid-container">
+                  <div className="yoe">
+                    Years of Experience: {row.years_of_experience}
+                  </div>
+                  <div className="sign-on">
+                    Sign on bonus:{" "}
+                    {formatNullableMoneyValue(row.sign_on_bonus) ?? "--"}
+                  </div>
+                  <div className="percent-production">
+                    Percent production:
+                    <Tooltip title="Percent of total production that goes towards salary">
+                      <IconButton
+                        size="small"
+                        style={{
+                          padding: 0,
+                          marginLeft: "0px",
+                          marginRight: "2px",
+                          marginBottom: "10px",
+                        }}>
+                        <InfoOutlinedIcon style={{ fontSize: "0.8rem" }} />
+                      </IconButton>
+                    </Tooltip>
+                    {row.percent_production ?? "--"}
+                  </div>
+                  <div className="days-per-week">
+                    Days/week: {row.days_worked_per_week ?? "--"}
+                  </div>
+                  <div className="number-vets">
+                    Number Veterinarians in practice:{" "}
+                    {row.number_of_veterinarians ?? "--"}
+                  </div>
+                  <div className="gender">Gender: {row.gender ?? "--"}</div>
+                </Box>
               </Box>
             </Collapse>
           </TableCell>
