@@ -1,0 +1,38 @@
+.about-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.about-title {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-section {
+  margin-bottom: 30px;
+}
+
+.about-section h2 {
+  color: #2c3e50;
+  border-bottom: 2px solid lightblue;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.about-section p {
+  color: #555;
+}
+
+.about-section ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.about-section li {
+  margin-bottom: 10px;
+  color: #555;
+}

@@ -14,6 +14,8 @@ import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 import PolicyPage from "./pages/PolicyPage";
 import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
 import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
+import About from "./pages/About";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
           </Box>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/landing" element={<LandingPage />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
@@ -42,10 +45,6 @@ function App() {
       </Box>
     </Router>
   );
-}
-
-function About() {
-  return <div>ab</div>;
 }
 
 export default App;
