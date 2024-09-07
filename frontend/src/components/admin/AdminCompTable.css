@@ -1,111 +1,88 @@
-.table-container {
+.table-container-admin {
   display: flex;
   flex-direction: column;
   max-width: 1200px;
   margin: 100px auto 60px auto;
 }
 
-.btn-link {
+.btn-link-admin {
   margin-left: auto;
   margin-bottom: 5px;
 }
 
-.salary-table {
+.salary-table-admin {
   table-layout: fixed;
   width: 100%;
 }
 
-.table-header .MuiTableCell-head {
+.table-header-admin .MuiTableCell-head {
   color: white;
   font-weight: var(--font-semi-bold);
 }
 
-.table-header p {
+.table-header-admin p {
   font-weight: var(--font-semi-bold);
   font-size: 0.85rem;
 }
 
-.table-header span {
+.table-header-admin span {
   font-weight: normal;
   font-size: 0.7rem;
 }
 
-.empty-span {
+.empty-span-admin {
   display: inline-block;
 }
 
-.table-header {
+.table-header-admin {
   background-color: #919191;
 }
 
-.table-rows:nth-child(even) {
+.table-rows-admin:nth-child(even) {
   background-color: #ffffff;
 }
 
-.table-rows:nth-child(odd) {
+.table-rows-admin:nth-child(odd) {
   background-color: #ebebeb;
 }
 
-.expand-cell {
+.expand-cell-admin {
   width: 80px;
   padding: 0 8px;
 }
 
-.company-location-cell {
+.company-location-cell-admin {
   width: 35%;
 }
 
-.type-of-practice-cell {
+.type-of-practice-cell-admin {
   width: 25%;
 }
 
-.years-of-experience-cell {
+.years-of-experience-cell-admin {
   width: 10%;
   padding-left: 2px !important;
 }
 
-.years-of-experience-label {
+.years-of-experience-label-admin {
   white-space: nowrap;
 }
 
-.total-compensation-cell {
+.total-compensation-cell-admin {
   width: 35%;
 }
 
-.verification-document-cell {
+.verification-document-cell-admin {
   width: 30%;
 }
 
-.admin-actions-cell {
+.admin-actions-cell-admin {
   width: 45%;
 }
 
 @media (max-width: 1300px) {
-  .table-container {
+  .table-container-admin {
     padding-left: 25px;
     padding-right: 25px;
-  }
-}
-
-@media (max-width: 480px) {
-  .years-of-experience-cell {
-    display: none;
-  }
-
-  .salary-table td:nth-child(3),
-  .salary-table th:nth-child(3) {
-    display: none;
-  }
-  .table-header p {
-    font-size: 0.8rem;
-  }
-
-  .table-header span {
-    font-size: 0.6rem;
-  }
-
-  .table-rows div p,
-  .table-rows div span {
-    font-size: 0.7rem;
   }
 }

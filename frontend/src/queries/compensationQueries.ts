@@ -2,7 +2,7 @@ import {
   CompensationDetailsWithPages,
   ICompFormInput,
 } from "../../../shared-types/types";
-import { SortParams } from "../components/salarytable/types";
+import { SortParams } from "../components/compensationtable/types";
 
 export const getAllSalaries = async (
   page: number,

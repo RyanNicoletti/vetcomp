@@ -10,7 +10,7 @@ import { getAllSalaries } from "../../queries/compensationQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { ICompensation } from "../../../../shared-types/types";
-import "./SalaryTable.css";
+import "./CompensationTable.css";
 import { Button, TableFooter, Typography } from "@mui/material";
 import { useState } from "react";
 import Pagination from "../pagination/Pagination";
@@ -69,7 +69,7 @@ export default function SalaryTable() {
         </NavLink>
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
-            <TableRow>
+            <TableRow className="table-row">
               <TableCell className="expand-cell" />
               <TableCell
                 key="company-location"
@@ -86,7 +86,7 @@ export default function SalaryTable() {
                 className="type-of-practice-cell">
                 <div>
                   <p>Job Title</p>
-                  <span>Practice Type</span>
+                  <span className="practice-type-span">Practice Type</span>
                 </div>
               </TableCell>
               <TableCell
@@ -113,13 +113,13 @@ export default function SalaryTable() {
                   onClick={() => handleSortRequest("total_compensation")}>
                   <div>
                     <p>Total Compensation (USD)</p>
-                    <span>Base salary | Production/year</span>
+                    <span>Base salary | Production</span>
                   </div>
                 </TableSortLabel>
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody className="tbody">
             {compensationData?.compensations?.map((row: ICompensation) => (
               <ExpandableRow key={row.id} row={row} />
             ))}

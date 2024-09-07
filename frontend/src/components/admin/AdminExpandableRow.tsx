@@ -18,7 +18,7 @@ import {
   formatNullableMoneyValue,
   moneyFormatter,
 } from "../../utils/moneyFormatter";
-import "../salarytable/ExpandableRow.css";
+import "./AdminExpandableRow.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   approveCompensationById,

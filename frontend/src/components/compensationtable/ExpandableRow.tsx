@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   TableRow,
   TableCell,
@@ -14,6 +14,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { ICompensation } from "../../../../shared-types/types";
 import {
+  formatMoneyAbbreviated,
   formatNullableMoneyValue,
   moneyFormatter,
 } from "../../utils/moneyFormatter";
@@ -23,13 +24,13 @@ interface ExpandableRowProps {
   row: ICompensation;
 }
 
-export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
+export const ExpandableRow = ({ row }: ExpandableRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <>
       <TableRow className="table-rows">
-        <TableCell>
+        <TableCell className="expand-cell">
           <IconButton
             aria-label="expand row"
             size="small"
@@ -37,7 +38,7 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
             {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell className="company-location-cell">
           <div>
             <p>{row.company}</p>
             <span>
@@ -50,14 +51,16 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
             </span>
           </div>
         </TableCell>
-        <TableCell align="left">
+        <TableCell align="left" className="type-of-practice-cell">
           <div>
             <p>{row.title}</p>
             <span>{row.type_of_practice}</span>
           </div>
         </TableCell>
-        <TableCell align="left">{row.years_of_experience}</TableCell>
-        <TableCell align="right">
+        <TableCell align="left" className="years-of-experience-cell">
+          {row.years_of_experience}
+        </TableCell>
+        <TableCell align="right" className="total-compensation-cell">
           <div>
             <p>
               {row.total_compensation
@@ -65,10 +68,12 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
                 : moneyFormatter.format(row.hourly_rate!) + "/hr"}
             </p>
             <span>
-              {row.base_salary ? moneyFormatter.format(row.base_salary) : "n/a"}{" "}
+              {row.base_salary
+                ? formatMoneyAbbreviated(row.base_salary)
+                : "n/a"}{" "}
               |{" "}
               {row.average_annual_production
-                ? moneyFormatter.format(row.average_annual_production)
+                ? formatMoneyAbbreviated(row.average_annual_production)
                 : "n/a"}
             </span>
           </div>
@@ -79,16 +84,19 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
               <Box className="expandedDetailsOuterContainer">
-                <Grid container>
-                  <Grid item xs={2.5}>
-                    <Typography variant="h6">Compensation Details:</Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Typography>
+                <div className="expanded-row-title">
+                  Additional Comp Details:
+                </div>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <div className="yoe">
+                      Years of Experience: {row.years_of_experience}
+                    </div>
+                    <div className="sign-on">
                       Sign on bonus:{" "}
                       {formatNullableMoneyValue(row.sign_on_bonus) ?? "--"}
-                    </Typography>
-                    <Typography>
+                    </div>
+                    <div className="percent-production">
                       Percent production:
                       <Tooltip title="Percent of total production that goes towards salary">
                         <IconButton
@@ -103,17 +111,15 @@ export const ExpandableRow: React.FC<ExpandableRowProps> = ({ row }) => {
                         </IconButton>
                       </Tooltip>
                       {row.percent_production ?? "--"}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Typography>
+                    </div>
+                    <div className="days-per-week">
                       Days/week: {row.days_worked_per_week ?? "--"}
-                    </Typography>
-                    <Typography>
+                    </div>
+                    <div className="number-vets">
                       Number Veterinarians in practice:{" "}
                       {row.number_of_veterinarians ?? "--"}
-                    </Typography>
-                    <Typography>Gender: {row.gender ?? "--"}</Typography>
+                    </div>
+                    <div className="gender">Gender: {row.gender ?? "--"}</div>
                   </Grid>
                 </Grid>
               </Box>

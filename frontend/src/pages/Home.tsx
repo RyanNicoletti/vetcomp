@@ -1,4 +1,4 @@
-import SalaryTable from "../components/salarytable/SalaryTable";
+import SalaryTable from "../components/compensationtable/CompensationTable";
 import "./Home.css";
 
 const Home = () => {

@@ -7,3 +7,13 @@ export const moneyFormatter = new Intl.NumberFormat("default", {
 export const formatNullableMoneyValue = (value: number | null | undefined) => {
   return value != null ? moneyFormatter.format(value) : "--";
 };
+
+export const formatMoneyAbbreviated = (value: number): string => {
+  if (value == null) return "n/a";
+
+  if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}k`;
+  }
+
+  return moneyFormatter.format(value);
+};

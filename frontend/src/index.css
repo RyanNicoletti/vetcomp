@@ -7,20 +7,45 @@
 }
 
 :root {
-  --teal-blue: #1894ad;
-  --light-blue: #a0d6e1;
-  --light-gray: #fbfbfb;
-  --font-color: #333333;
-  --body-font: "Montserrat", sans-serif;
-  --second-font: "Dancing Script", cursive;
-  --font-semi-bold: 600;
+  /* Colors */
+  --color-primary: #1894ad;
+  --color-secondary: #e57373;
+  --color-accent: #ff9800;
+  --color-background: #f7f3f0;
+  --color-text-dark: #3a3a3a;
+  --color-text-light: #ffffff;
+  --color-border: #d7ccc8;
+  --color-table-alternate: #fcfaf9;
+  --color-header-footer: #e0e0e0;
+
+  /* Typography */
+  --font-primary: "Roboto", sans-serif;
+  --font-secondary: "Open Sans", sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Border radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Box shadow */
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 body {
   min-height: 100%;
-  background-color: #eaeaea;
-  color: var(--font-color);
-  font-family: var(--body-font);
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+  font-family: var(--font-primary);
 }
 
 ul {
@@ -29,8 +54,4 @@ ul {
 
 a {
   text-decoration: none;
-}
-
-a:visited {
-  color: black;
 }

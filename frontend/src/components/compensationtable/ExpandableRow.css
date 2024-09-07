@@ -1,0 +1,44 @@
+.expandedDetailsOuterContainer {
+  margin: 10px;
+}
+
+.table-rows:nth-child(even) {
+  background-color: var(--color-table-alternate);
+}
+
+.table-rows:nth-child(odd) {
+  background-color: var(--color-text-light);
+}
+
+.expanded-row-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 0.35em;
+}
+
+.sign-on .percent-production .days-per-week .number-vets .gender {
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .company-location-cell p {
+    font-size: 14px;
+  }
+  .company-location-cell span {
+    font-size: 12px;
+  }
+
+  .type-of-practice-cell p {
+    font-size: 14px;
+  }
+  .type-of-practice-cell span {
+    font-size: 12px;
+  }
+  .expanded-row-title {
+    font-size: 15px;
+  }
+  .sign-on .percent-production .days-per-week .number-vets .gender {
+    font-size: 13px;
+  }
+}

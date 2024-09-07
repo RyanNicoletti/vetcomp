@@ -19,16 +19,6 @@ import { logoutUser } from "../../queries/usersQueries";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useUserStatus } from "../../hooks/useUserStatus";
 
-const linkStyle = {
-  padding: "8px 16px",
-  color: "#333333",
-  textDecoration: "none",
-  fontSize: "16px",
-  fontWeight: 500,
-  transition: "background-color 0.3s ease",
-  cursor: "pointer",
-};
-
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { openSnackbar } = useSnackbar();
@@ -114,7 +104,6 @@ const Header = () => {
           style={{
             height: "68px",
             position: "absolute",
-            background: "#d3d3d3",
             fontWeight: "500",
             display: "flex",
             justifyContent: "center",
@@ -135,7 +124,6 @@ const Header = () => {
                 if (item === "Log out") {
                   return (
                     <Link
-                      style={linkStyle}
                       onClick={handleLogout}
                       className="desktop_nav_item"
                       key={item}>

@@ -1,5 +1,5 @@
 import { CompensationDetailsWithPages } from "../../../shared-types/types";
-import { SortParams } from "../components/salarytable/types";
+import { SortParams } from "../components/compensationtable/types";
 
 export const deleteCompensationById = async (id: string) => {
   const response = await fetch(

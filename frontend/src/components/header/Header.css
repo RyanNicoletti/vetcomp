@@ -1,3 +1,7 @@
+.appbar {
+  background-color: var(--color-header-footer) !important;
+}
+
 .logo {
   margin-left: 100px;
   height: 50px;
@@ -8,13 +12,17 @@
 }
 
 .desktop_nav_item {
-  color: black;
+  color: var(--color-text-dark);
   padding: 10px 20px;
 }
 
+.desktop_nav_item:hover {
+  color: var(--color-primary);
+}
+
 .desktop_nav_item.active {
-  color: var(--teal-blue);
-  font-weight: 700;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .nav_container {
@@ -24,6 +32,7 @@
 
 #burger_menu {
   display: none;
+  color: var(--color-text-dark);
 }
 
 @media (width <= 600px) {

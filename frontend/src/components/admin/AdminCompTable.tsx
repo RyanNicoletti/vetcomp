@@ -7,7 +7,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TableRow from "@mui/material/TableRow";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ErrorBlock from "../ErrorBlock";
-import { SortParams } from "../salarytable/types";
+import { SortParams } from "../compensationtable/types";
 import { ICompensation } from "../../../../shared-types/types";
 import "./AdminCompTable.css";
 import { Button, TableFooter } from "@mui/material";
@@ -61,19 +61,22 @@ export default function SalaryTable() {
 
   return (
     <>
-      <TableContainer className="table-container">
-        <NavLink to="/addcomp" className="btn-link">
-          <Button className="add-comp-btn" color="primary" variant="contained">
+      <TableContainer className="table-container-admin">
+        <NavLink to="/addcomp" className="btn-link-admin">
+          <Button
+            className="add-comp-btn-admin"
+            color="primary"
+            variant="contained">
             Add Compensation
           </Button>
         </NavLink>
-        <Table className="salary-table" aria-labelledby="tableTitle">
-          <TableHead className="table-header">
+        <Table className="salary-table-admin" aria-labelledby="tableTitle">
+          <TableHead className="table-header-admin">
             <TableRow>
-              <TableCell className="expand-cell" />
+              <TableCell className="expand-cell-admin" />
               <TableCell
                 key="company-location"
-                className="company-location-cell"
+                className="company-location-cell-admin"
                 align={"left"}>
                 <div>
                   <p>Company</p>
@@ -82,7 +85,7 @@ export default function SalaryTable() {
               </TableCell>
               <TableCell
                 key="type-of-practice"
-                className="type-of-practice-cell"
+                className="type-of-practice-cell-admin"
                 align={"left"}>
                 <div>
                   <p>Job Title</p>
@@ -92,19 +95,19 @@ export default function SalaryTable() {
               <TableCell
                 key="years-of-experience"
                 align={"left"}
-                className="years-of-experience-cell">
+                className="years-of-experience-cell-admin">
                 <TableSortLabel
                   direction={sortParams.sortDirection}
                   onClick={() => handleSortRequest("years_of_experience")}>
                   <div>
                     <p>Years of Experience</p>
-                    <span className="empty-span"></span>
+                    <span className="empty-span-admin"></span>
                   </div>
                 </TableSortLabel>
               </TableCell>
               <TableCell
                 key="total-compensation"
-                className="total-compensation-cell"
+                className="total-compensation-cell-admin"
                 align={"right"}>
                 <TableSortLabel
                   direction={sortParams.sortDirection}
@@ -117,16 +120,18 @@ export default function SalaryTable() {
               </TableCell>
               <TableCell
                 key="verification-document"
-                className="verification-document-cell">
+                className="verification-document-cell-admin">
                 <div>
                   <p>Verification</p>
-                  <span className="empty-span"></span>
+                  <span className="empty-span-admin"></span>
                 </div>
               </TableCell>
-              <TableCell key="admin-actions" className="admin-actions-cell">
+              <TableCell
+                key="admin-actions"
+                className="admin-actions-cell-admin">
                 <div>
                   <p>Admin Actions</p>
-                  <span className="empty-span"></span>
+                  <span className="empty-span-admin"></span>
                 </div>
               </TableCell>
             </TableRow>
