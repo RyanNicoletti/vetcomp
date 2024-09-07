@@ -26,8 +26,29 @@
   margin-left: 100px;
 }
 
-.sign-on .percent-production .days-per-week .number-vets .gender {
-  font-size: 14px;
+.company-location-cell p {
+  font-size: 16px;
+}
+.company-location-cell span {
+  font-size: 12px;
+}
+
+.type-of-practice-cell p {
+  font-size: 16px;
+}
+.type-of-practice-cell span {
+  font-size: 12px;
+}
+
+.years-of-experience-cell {
+  font-size: 16px;
+}
+
+.total-comp-p {
+  font-size: 16px;
+}
+.total-comp-span {
+  font-size: 12px;
 }
 
 @media (max-width: 760px) {

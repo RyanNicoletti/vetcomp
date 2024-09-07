@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Pagination.css";
 
 interface PaginationProps {
@@ -63,43 +63,23 @@ const Pagination = ({
       <ul>
         <li
           className={page <= 1 ? "disabled" : ""}
-          onClick={() => {
-            if (page <= 1) {
-              return;
-            }
-            onPageChange(1);
-          }}>
+          onClick={() => page > 1 && onPageChange(1)}>
           {"<<"}
         </li>
         <li
           className={page <= 1 ? "disabled" : ""}
-          onClick={() => {
-            if (page <= 1) {
-              return;
-            }
-            onPageChange(page - 1);
-          }}>
+          onClick={() => page > 1 && onPageChange(page - 1)}>
           {"<"}
         </li>
         {renderPageNumbers()}
         <li
           className={page === totalPages ? "disabled" : ""}
-          onClick={() => {
-            if (page >= totalPages) {
-              return;
-            }
-            onPageChange(page + 1);
-          }}>
+          onClick={() => page < totalPages && onPageChange(page + 1)}>
           {">"}
         </li>
         <li
           className={page === totalPages ? "disabled" : ""}
-          onClick={() => {
-            if (page >= totalPages) {
-              return;
-            }
-            onPageChange(totalPages);
-          }}>
+          onClick={() => page < totalPages && onPageChange(totalPages)}>
           {">>"}
         </li>
       </ul>

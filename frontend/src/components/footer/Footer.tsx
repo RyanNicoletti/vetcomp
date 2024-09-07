@@ -5,9 +5,7 @@ import "./Footer.css";
 const Footer = () => {
   return (
     <Box component="footer" className="footer_container">
-      <Typography paragraph>
-        © 2024 Veterinarycomp.com. All rights reserved.
-      </Typography>
+      <Typography paragraph>© 2024 Veterinarycomp.com</Typography>
       <Box className="tos_links">
         <NavLink className="footer_nav_link" to="/privacy-policy">
           Privacy Policy

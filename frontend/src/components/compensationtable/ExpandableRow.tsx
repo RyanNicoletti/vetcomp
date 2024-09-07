@@ -5,8 +5,6 @@ import {
   IconButton,
   Collapse,
   Box,
-  Grid,
-  Typography,
   Tooltip,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -57,17 +55,17 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
             <span>{row.type_of_practice}</span>
           </div>
         </TableCell>
-        <TableCell align="left" className="years-of-experience-cell">
+        <TableCell align="center" className="years-of-experience-cell">
           {row.years_of_experience}
         </TableCell>
         <TableCell align="right" className="total-compensation-cell">
           <div>
-            <p>
+            <p className="total-comp-p">
               {row.total_compensation
                 ? moneyFormatter.format(row.total_compensation)
                 : moneyFormatter.format(row.hourly_rate!) + "/hr"}
             </p>
-            <span>
+            <span className="total-comp-span">
               {row.base_salary
                 ? formatMoneyAbbreviated(row.base_salary)
                 : "n/a"}{" "}

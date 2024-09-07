@@ -91,7 +91,7 @@ export default function SalaryTable() {
               </TableCell>
               <TableCell
                 key="years-of-experience"
-                align={"left"}
+                align={"center"}
                 className="years-of-experience-cell">
                 <TableSortLabel
                   direction={sortParams.sortDirection}

@@ -36,4 +36,9 @@
 
 .rows-per-page {
   margin-right: 20px;
+  white-space: nowrap;
+}
+
+.rows-per-page select {
+  margin-left: 8px;
 }
