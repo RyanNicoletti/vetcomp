@@ -76,6 +76,11 @@ app.use("/admin", adminRouter);
 // User routes
 const usersRouter: Router = express.Router();
 usersRouter.post("/", usersController.createUser);
+usersRouter.post(
+  "/forgot-password/verify",
+  usersController.forgotPwVerifyEmail
+);
+usersRouter.post("/reset-password", usersController.resetPassword);
 usersRouter.post("/verify-email", usersController.verifyEmail);
 usersRouter.post("/login", usersController.login);
 usersRouter.post("/logout", usersController.logout);

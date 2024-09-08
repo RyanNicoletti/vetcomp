@@ -95,6 +95,83 @@ const emailService = {
       throw new Error("Failed to send verification email");
     }
   },
+
+  sendPasswordResetEmail: async (email: string, resetLink: string) => {
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: "Reset Your Veterinarycomp.com Password",
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Reset Your Password for VeterinaryComp</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .reset-button {
+              display: inline-block;
+              padding: 10px 20px;
+              background-color: #4CAF50;
+              color: white;
+              text-decoration: none;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Reset Your Veterinarycomp.com Password</h2>
+          <p>We received a request to reset your password for Veterinarycomp.com. If you didn't make this request, you can ignore this email.</p>
+          <p>To reset your password, copy and paste this link into your browser:</p>
+          <p>${resetLink}</p>
+          <p>This link will expire in 1 hour for security reasons.</p>
+          <p>If you're having trouble, please contact us at support@veterinarycomp.com.</p>
+          </br>
+          <p>-The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send password reset email:", error);
+      throw new Error("Failed to send password reset email");
+    }
+  },
 };
 
 export default emailService;

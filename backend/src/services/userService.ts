@@ -47,11 +47,10 @@ const userService = {
   updatePassword: async (
     db: Knex,
     userId: string,
-    hashedPassword: string
+    password: string
   ): Promise<void> => {
-    await db("users")
-      .where({ id: userId })
-      .update({ password_hash: hashedPassword });
+    const hashedPw = await argon2.hash(password);
+    await db("users").where({ id: userId }).update({ password_hash: hashedPw });
   },
 
   generateVerificationCode: async (
@@ -175,6 +174,34 @@ const userService = {
     const adminStatus = await db("users").where({ id }).returning("is_admin");
     const isAdmin: boolean = adminStatus[0].is_admin;
     return isAdmin;
+  },
+
+  saveResetToken: async (
+    db: Knex,
+    userId: string,
+    resetToken: string,
+    resetTokenExpiry: number
+  ): Promise<void> => {
+    await db<User>("users")
+      .where({ id: userId })
+      .update({
+        reset_token: resetToken,
+        reset_token_expiry: new Date(resetTokenExpiry),
+      });
+  },
+
+  findByResetToken: async (
+    db: Knex,
+    token: string
+  ): Promise<User | undefined> => {
+    return db<User>("users").where({ reset_token: token }).first();
+  },
+
+  clearResetToken: async (db: Knex, userId: string): Promise<void> => {
+    await db<User>("users").where({ id: userId }).update({
+      reset_token: null,
+      reset_token_expiry: null,
+    });
   },
 };
 

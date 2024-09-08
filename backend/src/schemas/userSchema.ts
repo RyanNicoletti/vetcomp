@@ -6,6 +6,8 @@ export const userSchema = z.object({
   password_hash: z.string().nullable(),
   is_verified: z.boolean(),
   is_admin: z.boolean(),
+  reset_token: z.string().nullable(),
+  reset_token_expiry: z.date().nullable(),
   created_at: z.date().optional(),
   updated_at: z.date().optional(),
 });

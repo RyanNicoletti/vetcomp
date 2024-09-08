@@ -159,4 +159,58 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-export default { createUser, verifyEmail, logout, login };
+const forgotPwVerifyEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  try {
+    const user = await userService.findByEmail(db, email);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const resetToken = randomBytes(20).toString("hex");
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+
+    await userService.saveResetToken(db, user.id, resetToken, resetTokenExpiry);
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    await emailService.sendPasswordResetEmail(email, resetLink);
+
+    res.json({ message: "Password reset email sent" });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({ message: "Error sending password reset email" });
+  }
+};
+
+const resetPassword = async (req: Request, res: Response) => {
+  const { token, password } = req.body;
+  try {
+    const user = await userService.findByResetToken(db, token);
+    if (
+      !user ||
+      (user.reset_token_expiry !== null &&
+        user.reset_token_expiry.getTime() < Date.now())
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token" });
+    }
+
+    await userService.updatePassword(db, user.id, password);
+
+    await userService.clearResetToken(db, user.id);
+
+    res.json({ message: "Password reset successful" });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({ message: "Error resetting password" });
+  }
+};
+export default {
+  createUser,
+  verifyEmail,
+  logout,
+  login,
+  forgotPwVerifyEmail,
+  resetPassword,
+};

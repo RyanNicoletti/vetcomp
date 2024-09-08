@@ -102,3 +102,44 @@ export const getUserStatus = async () => {
     return { isAuthenticated: false, isAdmin: false };
   }
 };
+
+export const sendPasswordResetEmail = async (data: { email: string }) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/users/forgot-password/verify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw errorData;
+  }
+  return response.json();
+};
+
+export const resetPassword = async (data: {
+  password: string;
+  token: string;
+}) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/users/reset-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to reset password");
+  }
+
+  return response.json();
+};

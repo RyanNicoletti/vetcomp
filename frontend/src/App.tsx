@@ -16,6 +16,8 @@ import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservic
 import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
 import About from "./pages/About";
 import LandingPage from "./pages/LandingPage";
+import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
+import { PasswordReset } from "./pages/Passwordreset";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
             <Route path="/privacy-policy" element={<PolicyPage />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/cookies" element={<Cookies />} />
+            <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
+            <Route path="/reset-password/:token" element={<PasswordReset />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminPage />} />
             </Route>

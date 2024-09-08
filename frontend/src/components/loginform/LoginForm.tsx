@@ -118,7 +118,9 @@ export const LoginForm = () => {
           disabled={loginUserMutation.isPending}>
           Log in
         </Button>
-        <p className="password-reset">I forgot my password</p>
+        <p className="password-reset">
+          <Link to="/forgot-password">I forgot my password</Link>
+        </p>
         <p>
           Don't have an account? <Link to="/signup">Sign up</Link>
         </p>

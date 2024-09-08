@@ -7,6 +7,8 @@ export async function up(knex: Knex): Promise<void> {
     table.text("password_hash");
     table.boolean("is_admin").defaultTo(false);
     table.boolean("is_verified").defaultTo(false);
+    table.text("reset_token").nullable();
+    table.timestamp("reset_token_expiry").nullable();
     table.timestamps(true, true);
   });
 }
