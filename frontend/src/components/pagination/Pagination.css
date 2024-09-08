@@ -4,6 +4,7 @@
   align-items: center;
   margin-top: 20px;
   margin-left: 10px;
+  margin-bottom: 20px;
 }
 
 .pagination ul {
@@ -41,4 +42,18 @@
 
 .rows-per-page select {
   margin-left: 8px;
+}
+
+@media (max-width: 760px) {
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 10px;
+  }
+  .pagination li {
+    cursor: pointer;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    margin-right: 4px;
+  }
 }

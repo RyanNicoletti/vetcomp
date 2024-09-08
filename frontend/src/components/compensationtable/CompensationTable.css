@@ -79,6 +79,8 @@
 @media (max-width: 760px) {
   .table-container {
     min-width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
   }
   .table-header {
     font-size: var(--font-size-sm);
