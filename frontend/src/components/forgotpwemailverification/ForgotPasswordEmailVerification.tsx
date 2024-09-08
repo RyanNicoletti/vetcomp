@@ -1,14 +1,17 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { sendPasswordResetEmail } from "../../queries/usersQueries";
 import "./ForgotPasswordEmailVerification.css";
+import { useState } from "react";
 
 interface IForgotPasswordInput {
   email: string;
 }
 
 export const ForgotPasswordEmailVerification = () => {
+  const [resetPasswordEmailSent, setResetPasswordEmailSent] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -38,13 +41,24 @@ export const ForgotPasswordEmailVerification = () => {
       }
     },
     onSuccess: () => {
-      alert("Password reset email sent. Please check your inbox.");
+      setResetPasswordEmailSent(true);
     },
   });
 
   const onSubmit: SubmitHandler<IForgotPasswordInput> = (data) => {
     sendResetEmailMutation.mutate(data);
   };
+
+  if (resetPasswordEmailSent) {
+    return (
+      <Box className="password-reset-container">
+        <Typography variant="h6" className="success-message">
+          Please check your email and follow the provided instructions to reset
+          your password...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <div className="forgot-password-container">
