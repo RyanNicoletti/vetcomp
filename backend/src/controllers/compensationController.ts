@@ -279,6 +279,8 @@ const deleteCompensationById = (req: Request, res: Response) => {
   }
 };
 
+const getProfileCompensations = () => {};
+
 export default {
   getAllSalaries,
   createCompensation,
@@ -286,4 +288,5 @@ export default {
   approveCompensationById,
   verifyCompensationById,
   deleteCompensationById,
+  getProfileCompensations,
 };

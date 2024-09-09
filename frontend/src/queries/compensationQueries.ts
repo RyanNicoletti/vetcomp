@@ -1,5 +1,6 @@
 import {
   CompensationDetailsWithPages,
+  ICompensation,
   ICompFormInput,
 } from "../../../shared-types/types";
 import { SortParams } from "../components/compensationtable/types";
@@ -51,4 +52,22 @@ export const createCompensation = async (data: ICompFormInput) => {
   }
 
   return responseData;
+};
+
+export const getUsersCompensation = async (): Promise<ICompensation[]> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/profile`,
+    { method: "GET", credentials: "include" }
+  );
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw {
+      status: response.status,
+      message: responseData.message,
+      errors: responseData.errors,
+    };
+  }
+  const profileCompensations: ICompensation[] = await response.json();
+  return profileCompensations;
 };
