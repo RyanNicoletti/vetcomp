@@ -25,6 +25,17 @@
   font-weight: var(--font-weight-bold);
 }
 
+#logout {
+  text-decoration: none;
+  color: black;
+  color: var(--color-text-dark);
+  padding: 10px 20px;
+}
+#logout:hover {
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
 .nav_container {
   display: flex;
   justify-content: space-between;

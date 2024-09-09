@@ -59,15 +59,9 @@ export const getUsersCompensation = async (): Promise<ICompensation[]> => {
     `${import.meta.env.VITE_API_BASE_URL}/compensations/profile`,
     { method: "GET", credentials: "include" }
   );
-  const responseData = await response.json();
-
   if (!response.ok) {
-    throw {
-      status: response.status,
-      message: responseData.message,
-      errors: responseData.errors,
-    };
+    throw new Error("Unable to get compensation data");
   }
-  const profileCompensations: ICompensation[] = await response.json();
-  return profileCompensations;
+  const data = response.json();
+  return data;
 };

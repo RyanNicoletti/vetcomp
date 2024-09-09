@@ -7,6 +7,8 @@ import multer from "multer";
 import { SalaryFilter } from "../types";
 import { db } from "../db/connection";
 import b2Service from "../services/b2Service";
+import { ICompensation } from "../../../shared-types/types";
+import { Http2ServerResponse } from "node:http2";
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
@@ -279,7 +281,31 @@ const deleteCompensationById = (req: Request, res: Response) => {
   }
 };
 
-const getProfileCompensations = () => {};
+const getProfileCompensations = async (req: Request, res: Response) => {
+  let userId: string | undefined;
+  if (req.session && req.session.userId) {
+    userId = req.session.userId;
+  }
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ message: "Please login before viewing profile." });
+  }
+  try {
+    const userCompensations = await userService.getCompsByUserId(db, userId);
+    if (!userCompensations) {
+      return res.status(200).json(userCompensations || []);
+    }
+    return res.status(200).json(userCompensations || []);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message:
+        "An error occurred while fetching your compensations. Please try again later.",
+      code: "SERVER_ERROR",
+    });
+  }
+};
 
 export default {
   getAllSalaries,

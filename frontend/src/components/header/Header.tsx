@@ -28,7 +28,7 @@ const Header = () => {
   const navItems: string[] = [
     "Home",
     "About",
-    ...(isAuthenticated ? ["Log out"] : ["Sign up", "Log in"]),
+    ...(isAuthenticated ? ["Profile", "Log out"] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
 
@@ -126,6 +126,7 @@ const Header = () => {
                     <Link
                       onClick={handleLogout}
                       className="desktop_nav_item"
+                      id="logout"
                       key={item}>
                       {item}
                     </Link>

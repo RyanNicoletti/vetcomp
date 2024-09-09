@@ -4,6 +4,7 @@ import { redisClient } from "../../config/redisConfig";
 import * as argon2 from "argon2";
 import { UserLogin } from "../schemas/loginSchema";
 import { Knex } from "knex";
+import { ICompensation } from "../../../shared-types/types";
 
 const userService = {
   findByEmail: async (db: Knex, email: string): Promise<User | undefined> => {
@@ -202,6 +203,13 @@ const userService = {
       reset_token: null,
       reset_token_expiry: null,
     });
+  },
+
+  getCompsByUserId: async (
+    db: Knex,
+    userId: string
+  ): Promise<ICompensation[]> => {
+    return db("salaries").select("*").where({ user_id: userId });
   },
 };
 

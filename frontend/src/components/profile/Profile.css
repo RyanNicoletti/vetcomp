@@ -1,0 +1,99 @@
+.profile-container {
+  max-width: 1200px;
+  margin: 125px auto 0px auto;
+  padding: 20px;
+}
+
+.construction-message {
+  background-color: #f0f4f8;
+  border-left: 4px solid #3498db;
+  padding: 15px;
+  margin-bottom: 30px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-title {
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.compensations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.comp-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.company {
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.location {
+  color: #7f8c8d;
+  margin-bottom: 15px;
+}
+
+.comp-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  color: #34495e;
+}
+
+.value {
+  color: #2c3e50;
+}
+
+.verified {
+  margin-top: 15px;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.verify-button {
+  margin-top: 15px;
+  align-self: flex-start;
+}
+
+.no-compensations {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.no-compensations h6 {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .compensations-grid {
+    grid-template-columns: 1fr;
+  }
+}
