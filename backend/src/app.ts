@@ -64,8 +64,8 @@ adminRouter.delete(
   compensationController.deleteCompensationById
 );
 adminRouter.patch(
-  "/compensations/:id/upload-verification",
-  compensationController.uploadVerificationDocument
+  "/compensations/:id/verify",
+  compensationController.verifyCompensationById
 );
 adminRouter.patch(
   "/compensations/:id/approve",
@@ -101,8 +101,8 @@ compensationsRouter.get(
 );
 compensationsRouter.post("/", compensationController.createCompensation);
 compensationsRouter.post(
-  "/:compId/verify",
-  compensationController.verifyCompensationById
+  "/:compId/upload-verification",
+  compensationController.uploadVerificationDocument
 );
 app.use("/compensations", compensationsRouter);
 

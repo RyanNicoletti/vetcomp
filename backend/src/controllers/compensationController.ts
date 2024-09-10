@@ -16,7 +16,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
-    getApprovedCompensations: true,
+    isAdminQuery: false,
   };
 
   if (typeof req.query.page === "string") {
@@ -59,7 +59,7 @@ const getAllAdminCompensations = async (req: Request, res: Response) => {
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
-    getApprovedCompensations: true,
+    isAdminQuery: true,
   };
 
   if (typeof req.query.page === "string") {
@@ -84,9 +84,11 @@ const getAllAdminCompensations = async (req: Request, res: Response) => {
 
   if (req.session && req.session.userId) {
     const user = await userService.getById(db, req.session.userId);
-    if (user.is_admin) {
-      salaryFilter.getApprovedCompensations = false;
+    if (!user.is_admin) {
+      return res.status(403).json({ message: "Access denied" });
     }
+  } else {
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
@@ -158,11 +160,13 @@ const createCompensation = async (req: Request, res: Response) => {
       }
 
       let verificationDocumentKey: string | undefined = undefined;
+      let needsReview: boolean = false;
       if (req.file) {
         verificationDocumentKey = await b2Service.uploadFileToB2(
           req.file.buffer,
           req.file.originalname
         );
+        needsReview = true;
       }
 
       const compensationData = {
@@ -190,6 +194,7 @@ const createCompensation = async (req: Request, res: Response) => {
         is_approved: false,
         verification_document_url: undefined,
         verification_document_name: verificationDocumentKey,
+        needs_review: needsReview,
       };
 
       const insertedComp = await compensationService.create(
@@ -308,9 +313,7 @@ const getProfileCompensations = async (req: Request, res: Response) => {
 };
 
 const uploadVerificationDocument = async (req: Request, res: Response) => {
-  const uploadVerificationDocumentSchema = z.object({
-    compId: z.string().uuid(),
-  });
+  const compIdSchema = z.string().uuid();
   upload(req, res, async (err) => {
     if (err) {
       return res.status(400).json({
@@ -326,9 +329,7 @@ const uploadVerificationDocument = async (req: Request, res: Response) => {
     }
 
     try {
-      const { compId } = uploadVerificationDocumentSchema.parse(
-        req.params.compId
-      );
+      const compId: string = compIdSchema.parse(req.params.compId);
 
       if (!req.file) {
         return res.status(400).json({

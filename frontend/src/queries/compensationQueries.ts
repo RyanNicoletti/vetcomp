@@ -66,7 +66,7 @@ export const getUsersCompensation = async (): Promise<ICompensation[]> => {
   return data;
 };
 
-export const verifyCompensation = async ({
+export const uploadVerificationDocument = async ({
   compId,
   file,
 }: {

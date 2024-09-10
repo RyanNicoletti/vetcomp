@@ -17,21 +17,34 @@ const salariesService = {
       );
     }
 
-    const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
-    query = query.offset(offset).limit(salaryFilter.rowsPerPage);
-
-    query = query.where({ is_approved: salaryFilter.getApprovedCompensations });
-
-    const compensations: ICompensation[] = await query;
+    if (salaryFilter.isAdminQuery) {
+      query = query.where(function () {
+        this.where({ is_approved: false }).orWhere({ needs_review: true });
+      });
+    } else {
+      query = query.where({ is_approved: true });
+    }
 
     const [{ count }] = await db("salaries")
       .count("* as count")
-      .where({ is_approved: salaryFilter.getApprovedCompensations });
-
+      .modify(function (queryBuilder) {
+        if (salaryFilter.isAdminQuery) {
+          queryBuilder.where(function () {
+            this.where({ is_approved: false }).orWhere({ needs_review: true });
+          });
+        } else {
+          queryBuilder.where({ is_approved: true });
+        }
+      });
     const total: number = Number(count);
+
+    const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
+    query = query.offset(offset).limit(salaryFilter.rowsPerPage);
+    const compensations: ICompensation[] = await query;
+
     const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
 
-    if (salaryFilter.getApprovedCompensations) {
+    if (!salaryFilter.isAdminQuery) {
       return { compensations, pages };
     }
 
@@ -91,7 +104,9 @@ const salariesService = {
   },
   verifyById: async (knex: Knex, compId: string): Promise<void> => {
     try {
-      await knex("salaries").where({ id: compId }).update("is_verified", true);
+      await knex("salaries")
+        .where({ id: compId })
+        .update({ is_verified: true, needs_review: false });
     } catch (err) {
       throw new Error("Failed to verify comp in compensation service");
     }
@@ -115,7 +130,7 @@ const salariesService = {
       .update({
         verification_document_url: verificationDocumentKey,
         verification_document_name: verificationDocumentName,
-        is_approved: false,
+        needs_review: true,
       })
       .returning("*");
 
