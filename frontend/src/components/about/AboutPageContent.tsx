@@ -1,4 +1,6 @@
+import { Button } from "@mui/material";
 import "./AboutPageContent.css";
+import { Link } from "react-router-dom";
 
 export const AboutPageContent = () => {
   return (
@@ -24,9 +26,9 @@ export const AboutPageContent = () => {
       <section className="about-section">
         <h2>Our Mission</h2>
         <p>
-          VeterinaryComp is dedicated to providing transparency in veterinary
-          compensation. We aim to empower veterinary professionals with
-          accurate, up-to-date salary information to make informed career
+          Veterinarycomp.com is dedicated to providing transparency in
+          veterinary compensation. We aim to empower veterinary professionals
+          with accurate, up-to-date salary information to make informed career
           decisions and ensure they are fairly compensated for their valuable
           work.
         </p>
@@ -77,6 +79,13 @@ export const AboutPageContent = () => {
           veterinarians make informed decisions about their careers and
           negotiate fair salaries.
         </p>
+        <Button
+          component={Link}
+          to="/addcomp"
+          variant="contained"
+          color="primary">
+          Add Compensation
+        </Button>
       </section>
     </div>
   );
