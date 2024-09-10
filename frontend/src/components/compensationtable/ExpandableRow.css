@@ -11,8 +11,9 @@
 }
 
 .expanded-row-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 0.35em;
+  margin-left: 80px;
 }
 
 .yoe {

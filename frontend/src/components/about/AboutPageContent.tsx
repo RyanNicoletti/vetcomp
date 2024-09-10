@@ -79,13 +79,15 @@ export const AboutPageContent = () => {
           veterinarians make informed decisions about their careers and
           negotiate fair salaries.
         </p>
-        <Button
-          component={Link}
-          to="/addcomp"
-          variant="contained"
-          color="primary">
-          Add Compensation
-        </Button>
+        <div id="add-btn">
+          <Button
+            component={Link}
+            to="/addcomp"
+            variant="contained"
+            color="primary">
+            Add Compensation
+          </Button>
+        </div>
       </section>
     </div>
   );

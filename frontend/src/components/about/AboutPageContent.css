@@ -64,6 +64,11 @@
   text-transform: uppercase;
 }
 
+#add-btn {
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .about-container {
     margin-top: 80px;

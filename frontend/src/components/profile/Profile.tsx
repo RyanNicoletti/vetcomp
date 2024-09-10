@@ -160,32 +160,48 @@ export const Profile = () => {
                   </div>
                 )}
               </div>
-              {!comp.is_verified && comp.needs_review ? (
-                <div>Verification pending review...</div>
-              ) : (
-                <div className="verification-section">
-                  <Input
-                    type="file"
-                    onChange={(e) => handleFileChange(e, comp.id)}
-                    fullWidth
-                    disableUnderline
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleUploadVerification(comp.id)}
-                    disabled={
-                      !selectedFiles[comp.id] || uploadingCompId === comp.id
-                    }
-                    fullWidth
-                    style={{ marginTop: "10px" }}>
-                    {uploadingCompId === comp.id
-                      ? "Uploading..."
-                      : "Upload Verification"}
-                  </Button>
-                </div>
-              )}
-              {comp.is_verified && <div className="verified">✓ Verified</div>}
+              <div className="verification-section">
+                {!comp.is_verified && comp.needs_review && (
+                  <div>Verification pending review...</div>
+                )}
+                {!comp.is_verified && (
+                  <div>
+                    <Typography
+                      variant="h6"
+                      className="verify-header"
+                      style={{
+                        marginTop: "20px",
+                        textAlign: "center",
+                      }}>
+                      Verify Compensation
+                    </Typography>
+                    <Typography component="p">
+                      Upload an offer letter or pay stub to have this
+                      compensation verified.
+                    </Typography>
+                    <Input
+                      type="file"
+                      onChange={(e) => handleFileChange(e, comp.id)}
+                      fullWidth
+                      disableUnderline
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleUploadVerification(comp.id)}
+                      disabled={
+                        !selectedFiles[comp.id] || uploadingCompId === comp.id
+                      }
+                      fullWidth
+                      style={{ marginTop: "10px" }}>
+                      {uploadingCompId === comp.id
+                        ? "Uploading..."
+                        : "Upload Verification"}
+                    </Button>
+                  </div>
+                )}
+                {comp.is_verified && <div className="verified">✓ Verified</div>}
+              </div>
             </div>
           ))}
         </div>
