@@ -51,6 +51,22 @@
   font-size: 12px;
 }
 
+.comp-row-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comp-data {
+  align-self: center;
+  margin-right: 5px;
+}
+.verification-checkmark {
+  width: 24px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 @media (max-width: 760px) {
   .company-location-cell p {
     font-size: 14px;

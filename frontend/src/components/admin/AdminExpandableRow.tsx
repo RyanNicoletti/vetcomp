@@ -108,7 +108,11 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
         <TableCell align="left">
           <div>
             <p>{row.title}</p>
-            <span>{row.type_of_practice}</span>
+            {row.is_specialist ? (
+              <span>Specialization: {row.specialization}</span>
+            ) : (
+              <span>{row.type_of_practice}</span>
+            )}
           </div>
         </TableCell>
         <TableCell align="left">{row.years_of_experience}</TableCell>

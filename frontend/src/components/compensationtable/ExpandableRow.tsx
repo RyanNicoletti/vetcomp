@@ -7,6 +7,7 @@ import {
   Box,
   Tooltip,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -52,28 +53,41 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
         <TableCell align="left" className="type-of-practice-cell">
           <div>
             <p>{row.title}</p>
-            <span>{row.type_of_practice}</span>
+            {row.is_specialist ? (
+              <span>Specialization: {row.specialization}</span>
+            ) : (
+              <span>{row.type_of_practice}</span>
+            )}
           </div>
         </TableCell>
         <TableCell align="center" className="years-of-experience-cell">
           {row.years_of_experience}
         </TableCell>
         <TableCell align="right" className="total-compensation-cell">
-          <div>
-            <p className="total-comp-p">
-              {row.total_compensation
-                ? moneyFormatter.format(row.total_compensation)
-                : moneyFormatter.format(row.hourly_rate!) + "/hr"}
-            </p>
-            <span className="total-comp-span">
-              {row.base_salary
-                ? formatMoneyAbbreviated(row.base_salary)
-                : "n/a"}{" "}
-              |{" "}
-              {row.average_annual_production
-                ? formatMoneyAbbreviated(row.average_annual_production)
-                : "n/a"}
-            </span>
+          <div className="comp-row-container">
+            <div className="comp-data">
+              <p className="total-comp-p">
+                {row.total_compensation
+                  ? moneyFormatter.format(row.total_compensation)
+                  : moneyFormatter.format(row.hourly_rate!) + "/hr"}
+              </p>
+              <span className="total-comp-span">
+                {row.base_salary
+                  ? formatMoneyAbbreviated(row.base_salary)
+                  : "n/a"}{" "}
+                |{" "}
+                {row.average_annual_production
+                  ? formatMoneyAbbreviated(row.average_annual_production)
+                  : "n/a"}
+              </span>
+            </div>
+            <div className="verification-checkmark">
+              {row.is_verified && (
+                <Tooltip title="Verified Compensation" arrow placement="top">
+                  <CheckCircleIcon color="success" fontSize="small" />
+                </Tooltip>
+              )}
+            </div>
           </div>
         </TableCell>
       </TableRow>
