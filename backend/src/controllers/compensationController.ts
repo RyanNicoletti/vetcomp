@@ -307,6 +307,86 @@ const getProfileCompensations = async (req: Request, res: Response) => {
   }
 };
 
+const uploadVerificationDocument = async (req: Request, res: Response) => {
+  const uploadVerificationDocumentSchema = z.object({
+    compId: z.string().uuid(),
+  });
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Error uploading file.",
+        errors: [
+          {
+            field: "verificationDocument",
+            message:
+              "Invalid file. Please use .pdf, .doc, or .docx file types only",
+          },
+        ],
+      });
+    }
+
+    try {
+      const { compId } = uploadVerificationDocumentSchema.parse(
+        req.params.compId
+      );
+
+      if (!req.file) {
+        return res.status(400).json({
+          message: "No file uploaded",
+          errors: [
+            {
+              field: "verificationDocument",
+              message: "Please upload a verification document",
+            },
+          ],
+        });
+      }
+
+      const verificationDocumentKey = await b2Service.uploadFileToB2(
+        req.file.buffer,
+        req.file.originalname
+      );
+
+      if (!verificationDocumentKey) {
+        return res.status(500).json({
+          message: "Failed to upload verification document",
+        });
+      }
+
+      const updatedCompensation =
+        await compensationService.uploadVerificationDocument(
+          db,
+          compId,
+          verificationDocumentKey,
+          req.file.originalname
+        );
+
+      if (!updatedCompensation) {
+        return res.status(404).json({
+          message: `Compensation with id ${compId} not found`,
+        });
+      }
+
+      return res.status(200).json({
+        message:
+          "Verification document uploaded successfully. It will be reviewed as soon as possible.",
+        data: updatedCompensation,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: "Invalid input",
+          errors: error.errors,
+        });
+      }
+      console.error("Error uploading verification document:", error);
+      return res.status(500).json({
+        message: "An error occurred while uploading the verification document",
+      });
+    }
+  });
+};
+
 export default {
   getAllSalaries,
   createCompensation,
@@ -315,4 +395,5 @@ export default {
   verifyCompensationById,
   deleteCompensationById,
   getProfileCompensations,
+  uploadVerificationDocument,
 };

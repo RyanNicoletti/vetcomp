@@ -37,9 +37,9 @@ const salariesService = {
 
     const compensationsWithDocuments = await Promise.all(
       compensations.map(async (comp) => {
-        if (comp.verification_document_url) {
+        if (comp.verification_document_name) {
           comp.verification_document_url = await b2Service.getSignedUrl(
-            comp.verification_document_name!
+            comp.verification_document_name
           );
         }
         return comp;
@@ -102,6 +102,24 @@ const salariesService = {
     } catch (err) {
       throw new Error("Failed to delete comp in compensation service");
     }
+  },
+
+  uploadVerificationDocument: async (
+    db: Knex,
+    compId: string,
+    verificationDocumentKey: string,
+    verificationDocumentName: string
+  ): Promise<ICompensation | null> => {
+    const updatedCompensation = await db("salaries")
+      .where({ id: compId })
+      .update({
+        verification_document_url: verificationDocumentKey,
+        verification_document_name: verificationDocumentName,
+        is_approved: false,
+      })
+      .returning("*");
+
+    return updatedCompensation[0] || null;
   },
 };
 

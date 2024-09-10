@@ -65,3 +65,33 @@ export const getUsersCompensation = async (): Promise<ICompensation[]> => {
   const data = response.json();
   return data;
 };
+
+export const verifyCompensation = async ({
+  compId,
+  file,
+}: {
+  compId: string;
+  file: File;
+}): Promise<ICompensation> => {
+  const formData = new FormData();
+  formData.append("verificationDocument", file);
+
+  const response = await fetch(
+    `${
+      import.meta.env.VITE_API_BASE_URL
+    }/compensations/${compId}/upload-verification`,
+    {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to upload");
+  }
+
+  const data = await response.json();
+  return data.data;
+};

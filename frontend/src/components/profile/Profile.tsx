@@ -1,7 +1,10 @@
-import React from "react";
-import { Box, Typography, Button } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { getUsersCompensation } from "../../queries/compensationQueries";
+import { useState } from "react";
+import { Typography, Button, TextField } from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getUsersCompensation,
+  verifyCompensation,
+} from "../../queries/compensationQueries";
 import { Link } from "react-router-dom";
 import "./Profile.css";
 import {
@@ -10,6 +13,9 @@ import {
 } from "../../utils/moneyFormatter";
 
 export const Profile = () => {
+  const queryClient = useQueryClient();
+  const [verifyingCompId, setVerifyingCompId] = useState<string | null>(null);
+
   const {
     data: compensations,
     isLoading: isCompensationsLoading,
@@ -19,17 +25,34 @@ export const Profile = () => {
     queryFn: () => getUsersCompensation(),
   });
 
+  const verifyCompensationMutation = useMutation({
+    mutationFn: verifyCompensation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userCompensations"] });
+      setVerifyingCompId(null);
+    },
+  });
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    compId: string
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      verifyCompensationMutation.mutate({ compId, file });
+    }
+  };
+
   if (isCompensationsLoading) return <div>Loading...</div>;
   if (isCompensationsError) return <div>Error loading compensations</div>;
-  console.log(compensations);
+
   return (
     <div className="profile-container">
       <div className="construction-message">
         <Typography variant="h6">
-          Veterinarycomp.com is still growing! Once we accumulate enough data,
-          you'll be able to see how your compensation compares to others in your
-          area and if you might be able to earn a higher salary based on your
-          location and experience.
+          Welcome! Veterinarycomp.com is still growing, once we accumulate a
+          sufficient amount data this page will show how your compensation
+          compares to others with similar experience/location.
         </Typography>
       </div>
 
@@ -64,12 +87,14 @@ export const Profile = () => {
                   <span className="label">Years of Experience:</span>
                   <span className="value">{comp.years_of_experience}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="label">Total Compensation:</span>
-                  <span className="value">
-                    {moneyFormatter.format(comp.total_compensation!)}
-                  </span>
-                </div>
+                {comp.payment_frequency === "annually" && (
+                  <div className="detail-item">
+                    <span className="label">Total Compensation:</span>
+                    <span className="value">
+                      {moneyFormatter.format(comp.total_compensation!)}
+                    </span>
+                  </div>
+                )}
                 <div className="detail-item">
                   <span className="label">
                     {comp.payment_frequency === "hourly"
@@ -107,29 +132,63 @@ export const Profile = () => {
                     <span className="value">{comp.percent_production}%</span>
                   </div>
                 )}
-                <div className="detail-item">
-                  <span className="label">Gender:</span>
-                  <span className="value">{comp.gender}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Number of Veterinarians:</span>
-                  <span className="value">{comp.number_of_veterinarians}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Days Worked Per Week:</span>
-                  <span className="value">{comp.days_worked_per_week}</span>
-                </div>
+                {comp.gender && (
+                  <div className="detail-item">
+                    <span className="label">Gender:</span>
+                    <span className="value">{comp.gender}</span>
+                  </div>
+                )}
+                {comp.number_of_veterinarians && (
+                  <div className="detail-item">
+                    <span className="label">Number of Veterinarians:</span>
+                    <span className="value">
+                      {comp.number_of_veterinarians}
+                    </span>
+                  </div>
+                )}
+                {comp.days_worked_per_week && (
+                  <div className="detail-item">
+                    <span className="label">Days Worked Per Week:</span>
+                    <span className="value">{comp.days_worked_per_week}</span>
+                  </div>
+                )}
               </div>
               {comp.is_verified ? (
                 <div className="verified">✓ Verified</div>
               ) : (
-                <Button
-                  component={Link}
-                  to="/add-comp"
-                  variant="outlined"
-                  className="verify-button">
-                  Verify Compensation
-                </Button>
+                <div className="verification-section">
+                  {verifyingCompId === comp.id ? (
+                    <TextField
+                      type="file"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFileChange(e, comp.id)
+                      }
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        endAdornment: (
+                          <Button
+                            onClick={() => setVerifyingCompId(null)}
+                            size="small"
+                            color="secondary">
+                            Cancel
+                          </Button>
+                        ),
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      className="verify-button"
+                      onClick={() => setVerifyingCompId(comp.id)}
+                      disabled={verifyCompensationMutation.isPending}>
+                      {verifyCompensationMutation.isPending
+                        ? "Verifying..."
+                        : "Verify Compensation"}
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           ))}
