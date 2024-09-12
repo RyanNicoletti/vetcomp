@@ -14,10 +14,6 @@ const Footer = () => {
         <NavLink className="footer_nav_link" to="/terms-of-service">
           Terms of Service
         </NavLink>
-        <p>|</p>
-        <NavLink className="footer_nav_link" to="/cookies">
-          Cookies
-        </NavLink>
       </Box>
     </Box>
   );
