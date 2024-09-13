@@ -11,11 +11,19 @@ import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { ICompensation } from "../../../../shared-types/types";
 import "./CompensationTable.css";
-import { Button, TableFooter, Typography } from "@mui/material";
-import { useState } from "react";
+import { Button, TableFooter, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import Pagination from "../pagination/Pagination";
 import { NavLink } from "react-router-dom";
 import { ExpandableRow } from "./ExpandableRow";
+import { SearchAndFilter } from "./SearchAndFilter";
+
+interface FilterState {
+  companySearch: string;
+  locationSearch: string;
+  practiceTypeFilter: string[];
+  specialistsOnly: boolean;
+}
 
 export default function SalaryTable() {
   const [page, setPage] = useState(1);
@@ -23,6 +31,12 @@ export default function SalaryTable() {
   const [sortParams, setSortParams] = useState<SortParams>({
     sortDirection: "asc",
     sortBy: "",
+  });
+  const [filters, setFilters] = useState<FilterState>({
+    companySearch: "",
+    locationSearch: "",
+    practiceTypeFilter: [],
+    specialistsOnly: false,
   });
 
   const handleSortRequest = (column: string): void => {
@@ -40,14 +54,19 @@ export default function SalaryTable() {
     setPage(1);
   };
 
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
+
   const {
     data: compensationData,
     isError: salaryIsError,
     error: salaryError,
     isPending: salaryIsPending,
   } = useQuery({
-    queryKey: ["salaries", page, rowsPerPage, sortParams],
-    queryFn: () => getAllSalaries(page, rowsPerPage, sortParams),
+    queryKey: ["salaries", page, rowsPerPage, sortParams, filters],
+    queryFn: () => getAllSalaries(page, rowsPerPage, sortParams, filters),
     placeholderData: keepPreviousData,
   });
 
@@ -67,6 +86,7 @@ export default function SalaryTable() {
             Add Compensation
           </Button>
         </NavLink>
+        <SearchAndFilter onFilterChange={handleFilterChange} />
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
             <TableRow className="table-row">

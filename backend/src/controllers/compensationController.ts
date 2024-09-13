@@ -7,8 +7,6 @@ import multer from "multer";
 import { SalaryFilter } from "../types";
 import { db } from "../db/connection";
 import b2Service from "../services/b2Service";
-import { ICompensation } from "../../../shared-types/types";
-import { Http2ServerResponse } from "node:http2";
 
 const getAllSalaries = async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
@@ -16,6 +14,7 @@ const getAllSalaries = async (req: Request, res: Response) => {
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
+    specialistsOnly: false,
     isAdminQuery: false,
   };
 
@@ -39,6 +38,28 @@ const getAllSalaries = async (req: Request, res: Response) => {
     salaryFilter.sortBy = req.query.sortBy;
   }
 
+  if (
+    req.query.companySearch !== "" &&
+    typeof req.query.companySearch === "string"
+  ) {
+    salaryFilter.companySearch = req.query.companySearch;
+  }
+  if (
+    req.query.locationSearch !== "" &&
+    typeof req.query.locationSearch === "string"
+  ) {
+    salaryFilter.locationSearch = req.query.locationSearch;
+  }
+
+  if (req.query.specialistsOnly === "true") {
+    salaryFilter.specialistsOnly = true;
+  }
+  if (typeof req.query.practiceType === "string") {
+    salaryFilter.practiceTypeFilter = req.query.practiceType
+      .split(",")
+      .map((type) => type.trim());
+  }
+
   try {
     const compensationsWithPages = await compensationService.getAll(
       db,
@@ -59,6 +80,7 @@ const getAllAdminCompensations = async (req: Request, res: Response) => {
     rowsPerPage: 10,
     sortDirection: "asc",
     sortBy: "",
+    specialistsOnly: false,
     isAdminQuery: true,
   };
 

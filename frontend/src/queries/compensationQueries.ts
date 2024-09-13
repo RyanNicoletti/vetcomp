@@ -5,17 +5,31 @@ import {
 } from "../../../shared-types/types";
 import { SortParams } from "../components/compensationtable/types";
 
+interface FilterState {
+  companySearch: string;
+  locationSearch: string;
+  practiceTypeFilter: string[];
+  specialistsOnly: boolean;
+}
+
 export const getAllSalaries = async (
   page: number,
   rowsPerPage: number,
-  sortParams: SortParams
+  sortParams: SortParams,
+  filters: FilterState
 ): Promise<CompensationDetailsWithPages> => {
   const response = await fetch(
     `${
       import.meta.env.VITE_API_BASE_URL
     }/compensations?page=${page}&rowsPerPage=${rowsPerPage}&sortDirection=${
       sortParams.sortDirection
-    }&sortBy=${sortParams.sortBy}`,
+    }&sortBy=${sortParams.sortBy}&companySearch=${encodeURIComponent(
+      filters.companySearch
+    )}&locationSearch=${encodeURIComponent(
+      filters.locationSearch
+    )}&practiceType=${filters.practiceTypeFilter.join(",")}&specialistsOnly=${
+      filters.specialistsOnly
+    }`,
     { method: "GET", credentials: "include" }
   );
   if (!response.ok) {

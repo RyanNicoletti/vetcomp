@@ -7,59 +7,69 @@ import b2Service from "./b2Service";
 
 const salariesService = {
   getAll: async (db: Knex, salaryFilter: SalaryFilter) => {
-    let query = db<ICompensation>("salaries").select("*");
-
-    if (salaryFilter.sortBy) {
-      query = query.orderBy(
-        salaryFilter.sortBy,
-        salaryFilter.sortDirection,
-        "last"
-      );
-    }
-
-    if (salaryFilter.isAdminQuery) {
-      query = query.where(function () {
-        this.where({ is_approved: false }).orWhere({ needs_review: true });
-      });
-    } else {
-      query = query.where({ is_approved: true });
-    }
-
-    const [{ count }] = await db("salaries")
-      .count("* as count")
-      .modify(function (queryBuilder) {
-        if (salaryFilter.isAdminQuery) {
-          queryBuilder.where(function () {
-            this.where({ is_approved: false }).orWhere({ needs_review: true });
-          });
-        } else {
-          queryBuilder.where({ is_approved: true });
-        }
-      });
-    const total: number = Number(count);
-
-    const offset: number = salaryFilter.page * salaryFilter.rowsPerPage;
-    query = query.offset(offset).limit(salaryFilter.rowsPerPage);
-    const compensations: ICompensation[] = await query;
-
-    const pages: number = Math.ceil(total / salaryFilter.rowsPerPage);
-
-    if (!salaryFilter.isAdminQuery) {
-      return { compensations, pages };
-    }
-
-    const compensationsWithDocuments = await Promise.all(
-      compensations.map(async (comp) => {
-        if (comp.verification_document_name) {
-          comp.verification_document_url = await b2Service.getSignedUrl(
-            comp.verification_document_name
-          );
-        }
-        return comp;
-      })
+    const query = db<ICompensation>("salaries").select(
+      "*",
+      db.raw("COUNT(*) OVER() AS total_count")
     );
 
-    return { compensations: compensationsWithDocuments, pages };
+    if (salaryFilter.companySearch) {
+      query.whereILike("company", `%${salaryFilter.companySearch}%`);
+    }
+    if (salaryFilter.locationSearch) {
+      query.whereILike("location", `%${salaryFilter.locationSearch}%`);
+    }
+
+    if (salaryFilter.specialistsOnly) {
+      query.where("is_specialist", true);
+    }
+
+    if (
+      salaryFilter.practiceTypeFilter &&
+      salaryFilter.practiceTypeFilter.length > 0
+    ) {
+      query.where(function () {
+        this.where((builder) => {
+          salaryFilter.practiceTypeFilter?.forEach((practiceType) => {
+            builder.orWhereLike("type_of_practice", `%${practiceType}%`);
+          });
+        });
+      });
+    }
+
+    salaryFilter.isAdminQuery
+      ? query.where((q) =>
+          q.where({ is_approved: false }).orWhere({ needs_review: true })
+        )
+      : query.where({ is_approved: true });
+
+    if (salaryFilter.sortBy) {
+      query.orderBy(salaryFilter.sortBy, salaryFilter.sortDirection, "last");
+    }
+
+    const offset = salaryFilter.page * salaryFilter.rowsPerPage;
+    query.offset(offset).limit(salaryFilter.rowsPerPage);
+
+    const compensations = await query;
+
+    const total =
+      compensations.length > 0 ? Number(compensations[0].total_count) : 0;
+    const pages = Math.ceil(total / salaryFilter.rowsPerPage);
+
+    if (salaryFilter.isAdminQuery) {
+      const compensationsWithDocuments = await Promise.all(
+        compensations.map(async (comp) => {
+          if (comp.verification_document_name) {
+            comp.verification_document_url = await b2Service.getSignedUrl(
+              comp.verification_document_name
+            );
+          }
+          return comp;
+        })
+      );
+      return { compensations: compensationsWithDocuments, pages };
+    }
+
+    return { compensations, pages };
   },
 
   create: async (knex: Knex, newCompensation: Partial<ICompensation>) => {
