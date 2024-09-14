@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -11,12 +12,34 @@ import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { ICompensation } from "../../../../shared-types/types";
 import "./CompensationTable.css";
-import { Button, TableFooter, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  TableFooter,
+  Typography,
+  IconButton,
+  Popover,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Box,
+} from "@mui/material";
 import Pagination from "../pagination/Pagination";
 import { NavLink } from "react-router-dom";
 import { ExpandableRow } from "./ExpandableRow";
 import { SearchAndFilter } from "./SearchAndFilter";
+import FilterListIcon from "@mui/icons-material/FilterList";
+
+const practiceTypes = [
+  "Small animal",
+  "Large animal",
+  "Equine",
+  "Mixed animal",
+  "Dairy",
+  "Exotics",
+  "Research: industry",
+  "Research: government",
+  "Other",
+];
 
 interface FilterState {
   companySearch: string;
@@ -38,6 +61,7 @@ export default function SalaryTable() {
     practiceTypeFilter: [],
     specialistsOnly: false,
   });
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleSortRequest = (column: string): void => {
     const newSortDirection =
@@ -54,9 +78,32 @@ export default function SalaryTable() {
     setPage(1);
   };
 
-  const handleFilterChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
+  const handleSearch = (
+    searchFilters: Omit<FilterState, "practiceTypeFilter">
+  ) => {
+    setFilters((prev) => ({ ...prev, ...searchFilters }));
     setPage(1);
+  };
+
+  const handlePracticeTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.name;
+    setFilters((prev) => ({
+      ...prev,
+      practiceTypeFilter: prev.practiceTypeFilter.includes(value)
+        ? prev.practiceTypeFilter.filter((item) => item !== value)
+        : [...prev.practiceTypeFilter, value],
+    }));
+    setPage(1);
+  };
+
+  const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setAnchorEl(null);
   };
 
   const {
@@ -78,22 +125,37 @@ export default function SalaryTable() {
     return <div style={{ marginBottom: "300px" }}>Loading...</div>;
   }
 
+  const open = Boolean(anchorEl);
+  const id = open ? "practice-type-popover" : undefined;
+
   return (
     <>
       <TableContainer className="table-container">
-        <NavLink to="/addcomp" className="btn-link">
-          <Button className="add-comp-btn" color="primary" variant="contained">
-            Add Compensation
-          </Button>
-        </NavLink>
-        <SearchAndFilter onFilterChange={handleFilterChange} />
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          <NavLink to="/addcomp" className="btn-link">
+            <Button
+              className="add-comp-btn"
+              color="primary"
+              variant="contained">
+              Add Compensation
+            </Button>
+          </NavLink>
+        </Box>
+        <SearchAndFilter
+          onSearch={handleSearch}
+          initialFilters={{
+            companySearch: filters.companySearch,
+            locationSearch: filters.locationSearch,
+            specialistsOnly: filters.specialistsOnly,
+          }}
+        />
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
             <TableRow className="table-row">
               <TableCell className="expand-cell" />
               <TableCell
                 key="company-location"
-                align={"left"}
+                align="left"
                 className="company-location-cell">
                 <div>
                   <p>Company</p>
@@ -102,16 +164,51 @@ export default function SalaryTable() {
               </TableCell>
               <TableCell
                 key="type-of-practice"
-                align={"left"}
+                align="left"
                 className="type-of-practice-cell">
-                <div>
-                  <p>Job Title</p>
-                  <span className="practice-type-span">Practice Type</span>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <div>
+                    <p>Job Title</p>
+                    <span className="practice-type-span">Practice Type</span>
+                  </div>
+                  <IconButton
+                    aria-describedby={id}
+                    onClick={handleFilterClick}
+                    size="small">
+                    <FilterListIcon />
+                  </IconButton>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleFilterClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}>
+                    <FormGroup sx={{ p: 2 }}>
+                      {practiceTypes.map((type) => (
+                        <FormControlLabel
+                          key={type}
+                          control={
+                            <Checkbox
+                              checked={filters.practiceTypeFilter.includes(
+                                type
+                              )}
+                              onChange={handlePracticeTypeChange}
+                              name={type}
+                            />
+                          }
+                          label={type}
+                        />
+                      ))}
+                    </FormGroup>
+                  </Popover>
                 </div>
               </TableCell>
               <TableCell
                 key="years-of-experience"
-                align={"center"}
+                align="center"
                 className="years-of-experience-cell">
                 <TableSortLabel
                   direction={sortParams.sortDirection}
@@ -126,7 +223,7 @@ export default function SalaryTable() {
               </TableCell>
               <TableCell
                 key="total-compensation"
-                align={"right"}
+                align="right"
                 className="total-compensation-cell">
                 <TableSortLabel
                   direction={sortParams.sortDirection}
