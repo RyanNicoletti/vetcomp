@@ -131,24 +131,31 @@ export default function SalaryTable() {
   return (
     <>
       <TableContainer className="table-container">
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "row-reverse",
+            justifyContent: "space-between",
+            marginBottom: "10px",
+          }}>
           <NavLink to="/addcomp" className="btn-link">
             <Button
+              id="add-compensation"
               className="add-comp-btn"
               color="primary"
               variant="contained">
               Add Compensation
             </Button>
           </NavLink>
+          <SearchAndFilter
+            onSearch={handleSearch}
+            initialFilters={{
+              companySearch: filters.companySearch,
+              locationSearch: filters.locationSearch,
+              specialistsOnly: filters.specialistsOnly,
+            }}
+          />
         </Box>
-        <SearchAndFilter
-          onSearch={handleSearch}
-          initialFilters={{
-            companySearch: filters.companySearch,
-            locationSearch: filters.locationSearch,
-            specialistsOnly: filters.specialistsOnly,
-          }}
-        />
         <Table className="salary-table" aria-labelledby="tableTitle">
           <TableHead className="table-header">
             <TableRow className="table-row">

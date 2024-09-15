@@ -3,7 +3,6 @@ import {
   Button,
   TextField,
   Box,
-  Typography,
   Switch,
   FormControlLabel,
   Collapse,
@@ -67,7 +66,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   };
 
   return (
-    <Box style={{ marginBottom: "10px" }}>
+    <Box>
       <Box
         style={{
           display: "flex",
@@ -77,7 +76,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           onClick={() => setIsExpanded(!isExpanded)}
           startIcon={<SearchIcon />}
           variant="outlined">
-          {isExpanded ? "Hide Search" : "Show Search"}
+          {isExpanded ? "Hide Search" : "Search/Filter"}
         </Button>
         {hasSearched && (
           <Button
@@ -97,9 +96,6 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             borderRadius: "4px",
             display: "inline-block",
           }}>
-          <Typography variant="h6" gutterBottom>
-            Search/Filter
-          </Typography>
           <Box style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
             <TextField
               label="Company"

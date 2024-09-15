@@ -8,11 +8,12 @@ export const AboutPageContent = () => {
       <section className="about-section">
         <h2>Our Story</h2>
         <p>
-          Veterinarycomp.com was born from personal experience. As a
-          veterinarian for about 5 years, I found myself unknowingly underpaid;
-          my wife, also a veterinarian, had similar experiences in the
-          profession. We realized how challenging it was to determine fair
-          compensation when looking for new jobs or assessing our current
+          Veterinarycomp.com was created and is maintained by two veterinarians
+          who experienced significant pay discrepancies in their careers. After
+          finding themselves substantially underpaid, they recognized the
+          widespread nature of this issue in the veterinary profession. This
+          realization highlighted the challenges in determining fair
+          compensation when seeking new employment or evaluating current
           positions.
         </p>
         <p>
@@ -39,7 +40,20 @@ export const AboutPageContent = () => {
         <ul>
           <li>Comprehensive salary data for various veterinary positions</li>
           <li>User-friendly interface to explore and compare compensation</li>
-          <li>Ability to contribute your own salary information anonymously</li>
+          <li>
+            Ability to contribute your own salary information{" "}
+            <span
+              style={{
+                backgroundColor: "#e6f3ff",
+                color: "#0066cc",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontWeight: "bold",
+                whiteSpace: "nowrap",
+              }}>
+              safely and anonymously
+            </span>{" "}
+          </li>
           <li>Verified data to ensure accuracy and reliability</li>
           <li className="coming-soon">
             Insights into how your compensation stacks up against regional pay
@@ -51,12 +65,11 @@ export const AboutPageContent = () => {
       <section className="about-section">
         <h2>How It Works</h2>
         <p>
-          Users can browse our database of veterinary salaries, filtered by
-          factors such as location, experience, and specialization. Registered
-          users can also contribute their own salary information anonymously,
-          which is verified before being added to our database. This
-          collaborative approach helps build a comprehensive and current picture
-          of veterinary compensation.
+          Users can contribute their salary information anonymously, which is
+          verified before being added to our database. This collaborative
+          approach helps build a comprehensive and current picture of veterinary
+          compensation. Users can also freely browse our database of veterinary
+          salaries.
         </p>
       </section>
 
@@ -64,9 +77,9 @@ export const AboutPageContent = () => {
         <h2>Privacy and Security</h2>
         <p>
           We take your privacy seriously. All personal information is encrypted
-          and securely stored. Salary information is anonymized before being
-          displayed in our database, ensuring that individual contributions
-          cannot be traced back to specific users.
+          in transit and securely stored. If and when users submit documents to
+          verify their salary data; the documents are reviewed and then promptly
+          deleted from our system.
         </p>
       </section>
 
