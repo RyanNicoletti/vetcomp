@@ -105,28 +105,32 @@ const salariesService = {
       throw error;
     }
   },
-  approveById: async (knex: Knex, compId: string): Promise<void> => {
-    try {
-      await knex("salaries").where({ id: compId }).update("is_approved", true);
-    } catch (err) {
-      throw new Error("Failed to approve comp in compensation service");
-    }
+  approveById: async (
+    db: Knex,
+    compId: string
+  ): Promise<ICompensation | null> => {
+    const [updatedComp] = await db("salaries")
+      .where({ id: compId })
+      .update({ is_approved: true })
+      .returning("*");
+    return updatedComp || null;
   },
-  verifyById: async (knex: Knex, compId: string): Promise<void> => {
-    try {
-      await knex("salaries")
-        .where({ id: compId })
-        .update({ is_verified: true, needs_review: false });
-    } catch (err) {
-      throw new Error("Failed to verify comp in compensation service");
-    }
+  verifyById: async (
+    knex: Knex,
+    compId: string
+  ): Promise<ICompensation | null> => {
+    const [updatedComp] = await knex("salaries")
+      .where({ id: compId })
+      .update({ is_verified: true, needs_review: false })
+      .returning("*");
+
+    return updatedComp || null;
   },
-  deleteById: async (knex: Knex, compId: string): Promise<void> => {
-    try {
-      await knex("salaries").where({ id: compId }).del();
-    } catch (err) {
-      throw new Error("Failed to delete comp in compensation service");
-    }
+
+  deleteById: async (knex: Knex, compId: string): Promise<boolean> => {
+    const deletedCount = await knex("salaries").where({ id: compId }).del();
+
+    return deletedCount > 0;
   },
 
   uploadVerificationDocument: async (

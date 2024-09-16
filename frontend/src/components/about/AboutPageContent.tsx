@@ -10,10 +10,11 @@ export const AboutPageContent = () => {
         <p>
           Veterinarycomp.com was created and is maintained by two veterinarians
           who experienced significant pay discrepancies in their careers. After
-          finding themselves substantially underpaid, they recognized the
-          widespread nature of this issue in the veterinary profession. This
-          realization highlighted the challenges in determining fair
-          compensation when seeking new employment or evaluating current
+          comparing salaries with colleagues across the country, they realized
+          they were substantially underpaid and recognized the widespread nature
+          of this issue across the profession. This realization highlighted the
+          challenge of determining fair compensation for veterinary
+          professionals seeking new employment or evaluating their current
           positions.
         </p>
         <p>
