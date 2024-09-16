@@ -7,7 +7,7 @@ import multer from "multer";
 import { SalaryFilter } from "../types";
 import { db } from "../db/connection";
 import b2Service from "../services/b2Service";
-import { asyncHandler } from "./asyncHandler";
+import { asyncHandler } from "../middleware/asyncHandler";
 import {
   BadRequestError,
   ConflictError,

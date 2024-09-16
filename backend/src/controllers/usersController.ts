@@ -1,170 +1,124 @@
+import { Request, Response } from "express";
 import { NewUserSchema } from "../schemas/newUserSchema";
 import userService from "../services/userService";
-import { Request, Response } from "express";
-import z from "zod";
 import emailService from "../services/emailService";
 import { loginSchema } from "../schemas/loginSchema";
-import { User } from "../schemas/userSchema";
 import { randomBytes } from "node:crypto";
 import { redisClient } from "../../config/redisConfig";
 import { db } from "../db/connection";
+import {
+  BadRequestError,
+  NotFoundError,
+  InternalServerError,
+} from "../errors/httpErrors";
+import { asyncHandler } from "../middleware/asyncHandler";
 
-const createUser = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = NewUserSchema.parse(req.body);
-    const existingUser: User | undefined = await userService.findByEmail(
-      db,
-      email
-    );
+const createUser = asyncHandler(async (req: Request, res: Response) => {
+  const { email, password } = NewUserSchema.parse(req.body);
+  const existingUser = await userService.findByEmail(db, email);
 
-    let userId: string;
-    let isNewUser: boolean = false;
+  let userId: string;
+  let isNewUser: boolean = false;
 
-    if (existingUser) {
-      if (existingUser.is_verified) {
-        return res.status(400).json({
-          message: "Email already exists",
-          errors: [
-            {
-              field: "email",
-              message: "That email is not available",
-            },
-          ],
-        });
-      }
-      userId = existingUser.id;
-    } else {
-      userId = await userService.createUnverifiedTempUser(db, email, password);
-      isNewUser = true;
+  if (existingUser) {
+    if (existingUser.is_verified) {
+      throw new BadRequestError("That email is not available");
     }
-
-    const verificationCode = await userService.generateVerificationCode(
-      db,
-      userId,
-      email,
-      password
-    );
-    await emailService.sendVerificationEmail(email, verificationCode);
-
-    const token = randomBytes(16).toString("hex");
-
-    await redisClient.set(`verify_token:${token}`, userId, { EX: 15 * 60 }); // 15 minutes expiry
-
-    return res.status(201).json({
-      token,
-      message: "Verification email sent",
-      isNewUser,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const formattedErrors = error.errors.map((err) => ({
-        field: err.path.join("."),
-        message: err.message,
-      }));
-      return res.status(400).json({ errors: formattedErrors });
-    } else {
-      res.status(500).json({
-        message: "An unexpected error occurred, please try again later.",
-      });
-    }
+    userId = existingUser.id;
+  } else {
+    userId = await userService.createUnverifiedTempUser(db, email, password);
+    isNewUser = true;
   }
-};
 
-const verifyEmail = async (req: Request, res: Response) => {
+  const verificationCode = await userService.generateVerificationCode(
+    db,
+    userId,
+    email,
+    password
+  );
+  await emailService.sendVerificationEmail(email, verificationCode);
+
+  const token = randomBytes(16).toString("hex");
+  await redisClient.set(`verify_token:${token}`, userId, { EX: 15 * 60 }); // 15 minutes expiry
+
+  res.status(201).json({
+    token,
+    message: "Verification email sent",
+    isNewUser,
+  });
+});
+
+const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   const { token, verificationCode } = req.body;
   if (typeof token !== "string" || typeof verificationCode !== "string") {
-    return res.status(400).json({ message: "Invalid input." });
+    throw new BadRequestError("Invalid input.");
   }
 
-  try {
-    const result = await userService.verifyEmail(db, token, verificationCode);
-    const user = await userService.getById(db, result.userId!); // needs err handling
+  const result = await userService.verifyEmail(db, token, verificationCode);
+  const user = await userService.getById(db, result.userId!);
 
-    if (result.success) {
-      if (req.session && result.userId) {
-        req.session.userId = result.userId;
-      }
-      return res.status(200).json({
-        message: result.message,
-        isNewUser: result.isNewUser,
-        isAuthenticated: true,
-        isAdmin: user.is_admin,
-      });
-    } else {
-      return res.status(400).json({ message: result.message });
+  if (result.success) {
+    if (req.session && result.userId) {
+      req.session.userId = result.userId;
     }
-  } catch (error) {
-    console.error("Error during email verification:", error);
-    return res
-      .status(500)
-      .json({ message: "An unexpected error occurred during verification." });
+    res.status(200).json({
+      message: result.message,
+      isNewUser: result.isNewUser,
+      isAuthenticated: true,
+      isAdmin: user.is_admin,
+    });
+  } else {
+    throw new BadRequestError(result.message);
   }
-};
+});
 
-const logout = async (req: Request, res: Response) => {
+const logout = asyncHandler(async (req: Request, res: Response) => {
   if (req.session) {
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({
-          message: "Unexpected error when logging out, please try again",
-        });
+        throw new InternalServerError(
+          "Unexpected error when logging out, please try again"
+        );
       }
       res.clearCookie("connect.sid");
-      return res.status(200).json({ message: "Logged out successfully." });
+      res.status(200).json({ message: "Logged out successfully." });
     });
   } else {
     res.end();
   }
-};
+});
 
-const login = async (req: Request, res: Response) => {
-  try {
-    const loginInput = loginSchema.parse(req.body);
-    const user: User | null = await userService.login(db, loginInput);
-    if (!user) {
-      return res.status(400).json({
-        message: "Invalid email or password",
-      });
-    }
-    // should technically never happen
-    if (!user.is_verified) {
-      return res.status(400).json({
-        message: "Please verify your email before logging in",
-        errors: [
-          {
-            field: "email",
-            message: "Please verify your email before logging in",
-          },
-        ],
-      });
-    }
-    if (req.session) {
-      req.session.userId = user.id;
-    }
-    return res.status(200).json({
-      message: "Logged in successfully",
-      userId: user.id,
-      isAuthenticated: true,
-      isAdmin: user.is_admin,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      // if its a ZodError then its an invalid email/password
-      return res.status(400).json({ message: "Invalid email or password" });
-    } else {
-      return res
-        .status(500)
-        .json({ message: "Unexpected server error, please try again later." });
-    }
+const login = asyncHandler(async (req: Request, res: Response) => {
+  const loginInput = loginSchema.parse(req.body);
+  const user = await userService.login(db, loginInput);
+
+  if (!user) {
+    throw new BadRequestError("Invalid email or password");
   }
-};
 
-const forgotPwVerifyEmail = async (req: Request, res: Response) => {
-  const { email } = req.body;
-  try {
+  if (!user.is_verified) {
+    throw new BadRequestError("Please verify your email before logging in");
+  }
+
+  if (req.session) {
+    req.session.userId = user.id;
+  }
+
+  res.status(200).json({
+    message: "Logged in successfully",
+    userId: user.id,
+    isAuthenticated: true,
+    isAdmin: user.is_admin,
+  });
+});
+
+const forgotPwVerifyEmail = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
     const user = await userService.findByEmail(db, email);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw new NotFoundError("User not found");
     }
 
     const resetToken = randomBytes(20).toString("hex");
@@ -176,36 +130,27 @@ const forgotPwVerifyEmail = async (req: Request, res: Response) => {
     await emailService.sendPasswordResetEmail(email, resetLink);
 
     res.json({ message: "Password reset email sent" });
-  } catch (error) {
-    console.error("Password reset error:", error);
-    res.status(500).json({ message: "Error sending password reset email" });
   }
-};
+);
 
-const resetPassword = async (req: Request, res: Response) => {
+const resetPassword = asyncHandler(async (req: Request, res: Response) => {
   const { token, password } = req.body;
-  try {
-    const user = await userService.findByResetToken(db, token);
-    if (
-      !user ||
-      (user.reset_token_expiry !== null &&
-        user.reset_token_expiry.getTime() < Date.now())
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or expired reset token" });
-    }
+  const user = await userService.findByResetToken(db, token);
 
-    await userService.updatePassword(db, user.id, password);
-
-    await userService.clearResetToken(db, user.id);
-
-    res.json({ message: "Password reset successful" });
-  } catch (error) {
-    console.error("Password reset error:", error);
-    res.status(500).json({ message: "Error resetting password" });
+  if (
+    !user ||
+    (user.reset_token_expiry !== null &&
+      user.reset_token_expiry.getTime() < Date.now())
+  ) {
+    throw new BadRequestError("Invalid or expired reset token");
   }
-};
+
+  await userService.updatePassword(db, user.id, password);
+  await userService.clearResetToken(db, user.id);
+
+  res.json({ message: "Password reset successful" });
+});
+
 export default {
   createUser,
   verifyEmail,

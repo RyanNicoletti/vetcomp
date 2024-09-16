@@ -14,6 +14,7 @@ import locationsController from "./controllers/locationsController";
 import usersController from "./controllers/usersController";
 import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app: Express = express();
 
@@ -50,7 +51,11 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(session(sess));
 
-// Routes
+/**
+ *
+ * ROUTES
+ *
+ */
 
 // Admin Routes
 const adminRouter: Router = express.Router();
@@ -105,5 +110,8 @@ compensationsRouter.post(
   compensationController.uploadVerificationDocument
 );
 app.use("/compensations", compensationsRouter);
+
+// error handler middleware
+app.use(errorHandler);
 
 export default app;
