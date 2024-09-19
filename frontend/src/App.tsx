@@ -18,7 +18,7 @@ import LandingPage from "./pages/LandingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
 import { ProfilePage } from "./pages/ProfilePage";
-import { About } from "./pages/About";
+import About from "./pages/About";
 
 function App() {
   return (

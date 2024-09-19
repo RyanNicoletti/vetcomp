@@ -1,5 +1,7 @@
 import { AboutPageContent } from "../components/about/AboutPageContent";
 
-export const About = () => {
+const About = () => {
   return <AboutPageContent />;
 };
+
+export default About;
