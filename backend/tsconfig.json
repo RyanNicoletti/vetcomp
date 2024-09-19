@@ -1,15 +1,31 @@
+// {
+//   "include": ["src/**/*", "src/global.d.ts", "config/", "index.d.ts"],
+//   "exclude": ["node_modules"],
+//   "compilerOptions": {
+//     "outDir": "dist",
+//     "lib": ["esnext"],
+//     "module": "nodenext",
+//     "target": "esnext",
+//     "strict": true,
+//     "esModuleInterop": true,
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "moduleResolution": "nodenext"
+//   }
+// }
 {
-  "include": ["src/**/*", "src/global.d.ts", "config/", "index.d.ts"],
+  "include": ["src/**/*", "src/types/**/*", "config/"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist",
     "lib": ["esnext"],
-    "module": "nodenext",
-    "target": "esnext",
+    "module": "commonjs",
+    "target": "es2018",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "nodenext"
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   }
 }
