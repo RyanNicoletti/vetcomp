@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/server",
     "dev": "nodemon --watch 'src/**/*' --exec 'ts-node --transpile-only' src/server.ts",
     "build": "tsc",
     "prod": "npm run build && npm start",
