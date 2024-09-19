@@ -74,7 +74,7 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
 
 const logout = asyncHandler(async (req: Request, res: Response) => {
   if (req.session) {
-    req.session.destroy((err) => {
+    req.session.destroy((err: any) => {
       if (err) {
         throw new InternalServerError(
           "Unexpected error when logging out, please try again"
