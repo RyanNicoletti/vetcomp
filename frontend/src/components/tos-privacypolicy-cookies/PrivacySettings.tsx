@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const PrivacySettings: React.FC = () => {
-  const [isUCUIReady, setIsUCUIReady] = useState(false);
+  const [_isUCUIReady, setIsUCUIReady] = useState(false);
 
   useEffect(() => {
     const checkUCUI = () => {

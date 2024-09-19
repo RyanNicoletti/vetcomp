@@ -3,7 +3,6 @@ import { TextField, Button, Typography, Box } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { verifyEmail } from "../../queries/usersQueries";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useUserStatus } from "../../hooks/useUserStatus";
 import "./EmailVerification.css";
 
 interface IVerificationFormInput {
@@ -15,7 +14,6 @@ export const EmailVerification = () => {
   const navigate = useNavigate();
   const { email, token } = location.state as { email: string; token: string };
   const queryClient = useQueryClient();
-  const { isAuthenticated } = useUserStatus();
 
   const {
     control,
