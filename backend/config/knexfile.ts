@@ -10,7 +10,7 @@ interface KnexConfig {
     migrations: {
       directory: string;
     };
-    seeds: {
+    seeds?: {
       directory: string;
     };
   };
@@ -27,6 +27,13 @@ const config: KnexConfig = {
       directory: "../src/db/seeds",
     },
   },
+  production: {
+    client: "postgresql",
+    connection: process.env.DB_CONNECTION_URL,
+    migrations: {
+      directory: "../src/db/migrations",
+    },
+  },
 };
 
-export default config;
+module.exports = config;
