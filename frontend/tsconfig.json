@@ -12,9 +12,6 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "paths": {
-      "*": ["src/*"]
-    },
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
