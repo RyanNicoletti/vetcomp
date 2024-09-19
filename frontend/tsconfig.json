@@ -9,7 +9,6 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "baseUrl": "src",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
