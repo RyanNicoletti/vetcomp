@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "src/global.d.ts", "config/knexfile.ts"],
+  "include": ["src/**/*", "src/global.d.ts", "config/"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist",
@@ -10,7 +10,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "nodenext",
-    "allowJs": true
+    "moduleResolution": "nodenext"
   }
 }
