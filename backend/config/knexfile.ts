@@ -1,19 +1,11 @@
 import dotenv from "dotenv";
 import path from "path";
+import type { Knex } from "knex";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 interface KnexConfig {
-  [key: string]: {
-    client: string;
-    connection: string | undefined;
-    migrations: {
-      directory: string;
-    };
-    seeds?: {
-      directory: string;
-    };
-  };
+  [key: string]: Knex.Config;
 }
 
 const config: KnexConfig = {
@@ -36,4 +28,4 @@ const config: KnexConfig = {
   },
 };
 
-module.exports = config;
+export = config;
