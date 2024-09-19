@@ -12,9 +12,9 @@
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "baseUrl": ".",
-    // "paths": {
-    //   "@/*": ["src/*"]
-    // },
+    "paths": {
+      "*": ["src/*"]
+    },
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
