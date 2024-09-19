@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "src/global.d.ts", "config/"],
+  "include": ["src/**/*", "src/global.d.ts", "config/", "index.d.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist",
