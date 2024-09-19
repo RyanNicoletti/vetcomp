@@ -10,7 +10,11 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-
+    "outDir": "dist",
+    // "baseUrl": ".",
+    // "paths": {
+    //   "@/*": ["src/*"]
+    // },
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -25,5 +29,6 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src", "src/**/*.ts", "./env.d.ts"],
+  "exclude": ["node_modules", ".vscode"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
