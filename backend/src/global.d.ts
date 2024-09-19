@@ -5,3 +5,14 @@ declare module "express-session" {
     userId: string;
   }
 }
+
+declare global {
+  namespace Express {
+    interface Request {
+      session: session.Session &
+        Partial<session.SessionData> & {
+          userId?: string;
+        };
+    }
+  }
+}
