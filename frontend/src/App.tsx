@@ -14,7 +14,7 @@ import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 import PolicyPage from "./pages/PolicyPage";
 import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
 import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
-import About from "./pages/About";
+import About from "./pages/About.tsx";
 import LandingPage from "./pages/LandingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
