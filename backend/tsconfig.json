@@ -1,18 +1,3 @@
-// {
-//   "include": ["src/**/*", "src/global.d.ts", "config/", "index.d.ts"],
-//   "exclude": ["node_modules"],
-//   "compilerOptions": {
-//     "outDir": "dist",
-//     "lib": ["esnext"],
-//     "module": "nodenext",
-//     "target": "esnext",
-//     "strict": true,
-//     "esModuleInterop": true,
-//     "skipLibCheck": true,
-//     "forceConsistentCasingInFileNames": true,
-//     "moduleResolution": "nodenext"
-//   }
-// }
 {
   "include": ["src/**/*", "src/types/**/*", "config/"],
   "exclude": ["node_modules"],
