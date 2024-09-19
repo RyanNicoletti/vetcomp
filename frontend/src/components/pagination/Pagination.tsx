@@ -26,6 +26,8 @@ const Pagination = ({
 
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(
+        // @ts-ignore
+
         <li
           key={i}
           className={i === page ? "active" : ""}
