@@ -19,13 +19,26 @@ import { errorHandler } from "./middleware/errorHandler";
 const app: Express = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://veterinarycomp.com"],
+  origin: [
+    "http://localhost:5173",
+    "https://veterinarycomp.com",
+    "https://www.veterinarycomp.com",
+  ],
   credentials: true,
 };
 
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(express.json());
 
 let redisStore = new RedisStore({
@@ -42,7 +55,7 @@ const sess = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    sameSite: false,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : false,
   } as express.CookieOptions,
 };
 if (process.env.NODE_ENV === "production") {
