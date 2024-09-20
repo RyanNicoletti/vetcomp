@@ -5,8 +5,9 @@ export const generalPracticeOptions: string[] = [
   "Mixed animal",
   "Dairy",
   "Exotics",
-  "Research: industry",
-  "Research: government",
+  "Research",
+  "Industry",
+  "Government",
   "Other",
 ];
 
