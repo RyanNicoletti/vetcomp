@@ -42,6 +42,8 @@ const salariesService = {
 
     if (salaryFilter.sortBy) {
       query.orderBy(salaryFilter.sortBy, salaryFilter.sortDirection, "last");
+    } else {
+      query.orderBy("created_at", "desc");
     }
 
     const offset = salaryFilter.page * salaryFilter.rowsPerPage;
