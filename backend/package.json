@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start:prod": "node dist/backend/src/server.js",
+    "copy-assets": "mkdir -p dist/backend/assets && cp -R assets/* dist/backend/assets/",
     "dev": "nodemon --watch 'src/**/*' --exec 'ts-node --transpile-only' src/server.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-assets",
     "migrate:prod": "cd dist/backend/config && npx knex migrate:latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
