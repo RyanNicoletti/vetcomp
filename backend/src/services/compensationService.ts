@@ -21,16 +21,14 @@ const salariesService = {
 
     if (salaryFilter.specialistsOnly) {
       query.where("is_specialist", true);
-    }
-
-    if (
+    } else if (
       salaryFilter.practiceTypeFilter &&
       salaryFilter.practiceTypeFilter.length > 0
     ) {
       query.where(function () {
-        this.where((builder) => {
+        this.where("is_specialist", true).orWhere(function () {
           salaryFilter.practiceTypeFilter?.forEach((practiceType) => {
-            builder.orWhereLike("type_of_practice", `%${practiceType}%`);
+            this.orWhereLike("type_of_practice", `%${practiceType}%`);
           });
         });
       });
