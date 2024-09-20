@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "src/types/**/*", "config/"],
+  "include": ["src/**/*", "src/types/**/*", "config/**/*", "assets/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "dist",
