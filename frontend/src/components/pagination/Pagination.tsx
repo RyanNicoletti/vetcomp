@@ -51,7 +51,9 @@ const Pagination = ({
   return (
     <td className="pagination">
       <div className="rows-per-page">
-        <label htmlFor="rows-per-page">Rows per page:</label>
+        <label htmlFor="rows-per-page" className="rows-per-page-label">
+          Rows per page:
+        </label>
         <select
           id="rows-per-page"
           value={rowsPerPageValue}

@@ -5,9 +5,6 @@
   margin-left: 22vw;
 }
 
-.tos-title {
-}
-
 .tos-text {
   line-height: 1.6rem;
 }
@@ -26,5 +23,10 @@
   list-style: none;
 }
 
-.tos-text li {
+@media (width <= 850px) {
+  .tos-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90vw;
+  }
 }

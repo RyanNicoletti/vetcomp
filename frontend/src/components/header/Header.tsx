@@ -56,18 +56,8 @@ const Header = () => {
   };
 
   const drawerContent = (
-    <Box
-      onClick={toggleDrawer}
-      className="drawer-container"
-      style={{
-        width: "250px",
-        height: "100%",
-        backgroundColor: "lightgrey",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}>
-      <List style={{ padding: 0 }}>
+    <Box onClick={toggleDrawer} id="drawer-container">
+      <List>
         {navItems.map((item) => (
           <ListItem key={item} disablePadding>
             <NavLink
@@ -76,17 +66,7 @@ const Header = () => {
                   ? "/"
                   : `/${item.toLocaleLowerCase().replace(" ", "")}`
               }
-              className="nav_item"
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "12px 24px",
-                color: "#333333",
-                textDecoration: "none",
-                fontSize: "16px",
-                fontWeight: 500,
-                transition: "background-color 0.3s ease",
-              }}>
+              className="mobile_nav_item">
               <ListItemText primary={item} />
             </NavLink>
           </ListItem>
@@ -151,10 +131,9 @@ const Header = () => {
         </AppBar>
         <nav>
           <Drawer
-            variant="temporary"
+            anchor={"top"}
             open={mobileOpen}
             onClose={toggleDrawer}
-            ModalProps={{ keepMounted: true }}
             className="drawer">
             {drawerContent}
           </Drawer>

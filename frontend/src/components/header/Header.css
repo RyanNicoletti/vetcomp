@@ -47,16 +47,33 @@
 }
 
 @media (width <= 850px) {
+  .desktop_nav_items {
+    display: none;
+  }
+
   #burger_menu {
     display: block;
     margin-top: 10px;
   }
 
-  .logo {
-    margin-left: 0;
+  #drawer-container {
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    max-width: 100vw;
   }
 
-  .desktop_nav_items {
-    display: none;
+  .mobile_nav_item .MuiListItemText-primary {
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  .mobile_nav_item {
+    padding: 20px 0px 20px 0px;
+    color: var(--color-primary);
+  }
+
+  .logo {
+    margin-left: 0;
   }
 }
