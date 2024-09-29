@@ -125,8 +125,9 @@
     flex: 1 1 100%;
     font-size: 0.7rem;
   }
-  .payment-frequency-checkboxes .MuiFormControlLabel-label {
-    font-size: 12px;
+
+  .payment-frequency-label {
+    font-size: 1rem;
   }
 
   .payment-frequency-checkboxes .MuiCheckbox-root {

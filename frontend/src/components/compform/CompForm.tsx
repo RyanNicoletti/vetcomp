@@ -397,6 +397,7 @@ export const CompForm = () => {
               <FormGroup row className="payment-frequency-checkboxes">
                 {paymentFrequencyOptions.map((option: string) => (
                   <FormControlLabel
+                    className="payment-frequency-label"
                     key={option}
                     control={
                       <Checkbox
