@@ -26,3 +26,17 @@
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
 }
+
+@media (max-width: 768px) {
+  .footer_container {
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .tos_links {
+    align-items: center;
+    gap: 5px;
+  }
+}
