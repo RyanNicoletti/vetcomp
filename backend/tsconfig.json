@@ -2,16 +2,17 @@
   "include": ["src/**/*", "src/types/**/*", "config/**/*", "assets/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["esnext"],
-    "module": "commonjs",
-    "target": "es2018",
+    "lib": ["ESNext"],
+    "module": "nodenext",
+    "target": "ES6",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "moduleResolution": "NodeNext"
   }
 }

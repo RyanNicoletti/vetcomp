@@ -4,7 +4,7 @@
   "scripts": {
     "start:prod": "node dist/backend/src/server.js",
     "copy-assets": "mkdir -p dist/backend/assets && cp -R assets/* dist/backend/assets/",
-    "dev": "nodemon --watch 'src/**/*' --exec 'ts-node --transpile-only' src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc && npm run copy-assets",
     "migrate:prod": "cd dist/backend/config && npx knex migrate:latest",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -44,6 +44,7 @@
     "@types/nodemailer": "^6.4.16",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1"
   }
 }

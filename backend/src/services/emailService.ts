@@ -13,6 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const logoPath = path.join(__dirname, "../../assets/logo_expanded.png");
+
 const logoBase64 = fs.readFileSync(logoPath).toString("base64");
 
 const emailService = {
