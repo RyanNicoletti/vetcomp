@@ -1,3 +1,4 @@
+import "./instrument.js";
 import * as dotenv from "dotenv";
 import path from "path";
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -15,6 +16,7 @@ import usersController from "./controllers/usersController";
 import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
 import { errorHandler } from "./middleware/errorHandler";
+import * as Sentry from "@sentry/node";
 
 const app: Express = express();
 
@@ -123,6 +125,8 @@ compensationsRouter.post(
   compensationController.uploadVerificationDocument
 );
 app.use("/compensations", compensationsRouter);
+
+Sentry.setupExpressErrorHandler(app);
 
 // error handler middleware
 app.use(errorHandler);

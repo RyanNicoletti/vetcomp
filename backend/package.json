@@ -7,7 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc && npm run copy-assets",
     "migrate:prod": "cd dist/backend/config && npx knex migrate:latest",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org veterinarycompcom --project node-express ./dist && sentry-cli sourcemaps upload --org veterinarycompcom --project node-express ./dist"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,9 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
+    "@sentry/cli": "^2.36.4",
+    "@sentry/node": "^8.32.0",
+    "@sentry/profiling-node": "^8.32.0",
     "@types/multer": "^1.4.12",
     "argon2": "^0.41.1",
     "connect-redis": "^7.1.1",
