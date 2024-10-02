@@ -7,18 +7,20 @@ export const isAdmin = async (
   next: NextFunction
 ) => {
   try {
-    if (!req.session || !req.session.userId) {
+    if (req.session && req.session.userId) {
+      const user = await db("users")
+        .where({ id: req.session.userId, is_admin: true })
+        .first();
+      if (user && user.is_admin) {
+        next();
+      } else {
+        res.status(403).json({
+          message: "Forbidden: you are unauthorized to view this content.",
+        });
+      }
+    } else {
       res.status(401).json({ message: "Unauthorized: Please log in" });
     }
-    const user = await db("users")
-      .where({ id: req.session.userId, is_admin: true })
-      .first();
-    if (!user || !user.is_admin) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: unauthorized to view this content." });
-    }
-    next();
   } catch (error) {
     console.error("Unauthorized: ", error);
     res.status(500).json({ message: "Internal server error" });
