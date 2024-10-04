@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start:prod": "node --env-file=.env dist/backend/src/server.js",
+    "start:prod": "node dist/backend/src/server.js",
     "copy-assets": "mkdir -p dist/backend/assets && cp -R assets/* dist/backend/assets/",
     "dev": "node --env-file=.env src/server.ts",
     "build": "tsc && npm run copy-assets",
