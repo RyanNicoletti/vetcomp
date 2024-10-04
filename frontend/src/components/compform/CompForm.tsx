@@ -676,9 +676,9 @@ export const CompForm = () => {
           variant="caption"
           color="textSecondary"
           id="fileUploadCaption">
-          Upload an offer letter or pay stub to have your compensation details
-          verified. The document is deleted after review and not stored or
-          shared.
+          Upload an offer letter or pay stub for verification. Files are
+          encrypted during transfer to the VeterinaryComp team, then deleted
+          after being reviewed.
         </Typography>
 
         <Typography className="section-title" variant="h6">

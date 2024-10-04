@@ -1,8 +1,4 @@
 import "./instrument.js";
-import * as dotenv from "dotenv";
-import path from "path";
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
-
 import express, { Express, Router } from "express";
 import session from "express-session";
 import RedisStore from "connect-redis";

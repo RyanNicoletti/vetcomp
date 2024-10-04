@@ -1,7 +1,4 @@
-import dotenv from "dotenv";
-import path from "path";
 import type { Knex } from "knex";
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 interface KnexConfig {
   [key: string]: Knex.Config;
