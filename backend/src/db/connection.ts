@@ -1,4 +1,3 @@
-import "dotenv/config";
 import knexConfig from "../../config/knexfile";
 import knex from "knex";
 
