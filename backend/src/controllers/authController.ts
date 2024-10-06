@@ -11,12 +11,15 @@ const getUserStatus = asyncHandler(async (req: Request, res: Response) => {
   const user = await userService.getById(db, req.session.userId);
 
   if (!user) {
-    return res.status(200).json({ isAuthenticated: false, isAdmin: false });
+    return res
+      .status(200)
+      .json({ isAuthenticated: false, isAdmin: false, email: null });
   }
 
   res.status(200).json({
     isAuthenticated: true,
     isAdmin: user.is_admin,
+    email: user.email,
   });
 });
 

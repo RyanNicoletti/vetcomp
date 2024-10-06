@@ -17,6 +17,7 @@ export const useUserStatus = () => {
       queryClient.setQueryData(["userStatus"], {
         isAuthenticated: false,
         isAdmin: false,
+        email: null,
       });
     } catch (error) {
       console.error("Logout failed:", error);
@@ -26,6 +27,7 @@ export const useUserStatus = () => {
   return {
     isAuthenticated: data?.isAuthenticated ?? false,
     isAdmin: data?.isAdmin ?? false,
+    email: data?.email ?? null,
     isLoading,
     logout,
   };

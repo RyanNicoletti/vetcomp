@@ -107,6 +107,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({
     message: "Logged in successfully",
     userId: user.id,
+    userEmail: user.email,
     isAuthenticated: true,
     isAdmin: user.is_admin,
   });

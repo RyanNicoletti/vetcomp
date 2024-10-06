@@ -43,12 +43,14 @@ export const LoginForm = () => {
       queryClient.setQueryData(["userStatus"], {
         isAuthenticated: false,
         isAdmin: false,
+        email: null,
       });
     },
     onSuccess: async (data) => {
       queryClient.setQueryData(["userStatus"], {
         isAuthenticated: data.isAuthenticated,
         isAdmin: data.isAdmin,
+        email: data.userEmail,
       });
       navigate("/");
     },

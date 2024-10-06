@@ -8,7 +8,7 @@
 }
 
 .desktop_nav_items {
-  margin-right: 100px;
+  margin-left: auto;
 }
 
 .desktop_nav_item {
@@ -27,10 +27,12 @@
 
 #logout {
   text-decoration: none;
-  color: black;
   color: var(--color-text-dark);
   padding: 10px 20px;
+  margin-right: 15px;
+  margin-left: 5rem;
 }
+
 #logout:hover {
   color: var(--color-primary);
   cursor: pointer;

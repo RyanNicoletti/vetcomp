@@ -23,12 +23,12 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { openSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { isAuthenticated, isAdmin, logout } = useUserStatus();
+  const { isAuthenticated, isAdmin, email, logout } = useUserStatus();
 
   const navItems: string[] = [
     "Home",
     "About",
-    ...(isAuthenticated ? ["Profile", "Log out"] : ["Sign up", "Log in"]),
+    ...(isAuthenticated ? ["Log out"] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
 
@@ -44,10 +44,9 @@ const Header = () => {
         "error"
       );
     },
-    onSuccess: async (data: any) => {
+    onSuccess: async () => {
       logout();
       navigate("/");
-      openSnackbar(data.message || "Log out successful.", "success");
     },
   });
 
@@ -76,70 +75,69 @@ const Header = () => {
   );
 
   return (
-    <>
-      <Box className="header_container" component="header">
-        <AppBar
-          component="nav"
-          className="appbar"
-          style={{
-            height: "68px",
-            position: "absolute",
-            fontWeight: "500",
-            display: "flex",
-            justifyContent: "center",
-          }}>
-          <Toolbar className="nav_container">
-            <NavLink to="/" className="logo_link">
-              <img src={logo_expanded} alt="Logo" className="logo" />
-            </NavLink>
-            <IconButton
-              id="burger_menu"
-              aria-label="open drawer"
-              edge="start"
-              onClick={toggleDrawer}>
-              <MenuIcon />
-            </IconButton>
-            <Box className="desktop_nav_items">
-              {navItems.map((item) => {
-                if (item === "Log out") {
-                  return (
-                    <Link
-                      onClick={handleLogout}
-                      className="desktop_nav_item"
-                      id="logout"
-                      key={item}>
-                      {item}
-                    </Link>
-                  );
-                } else {
-                  return (
-                    <NavLink
-                      to={
-                        item === "Home"
-                          ? "/"
-                          : `/${item.toLocaleLowerCase().replace(" ", "")}`
-                      }
-                      className="desktop_nav_item"
-                      key={item}>
-                      {item}
-                    </NavLink>
-                  );
-                }
-              })}
-            </Box>
-          </Toolbar>
-        </AppBar>
-        <nav>
-          <Drawer
-            anchor={"top"}
-            open={mobileOpen}
-            onClose={toggleDrawer}
-            className="drawer">
-            {drawerContent}
-          </Drawer>
-        </nav>
-      </Box>
-    </>
+    <Box className="header_container" component="header">
+      <AppBar
+        component="nav"
+        className="appbar"
+        style={{
+          height: "68px",
+          position: "absolute",
+          fontWeight: "500",
+          display: "flex",
+          justifyContent: "center",
+        }}>
+        <Toolbar className="nav_container">
+          <NavLink to="/" className="logo_link">
+            <img src={logo_expanded} alt="Logo" className="logo" />
+          </NavLink>
+          <IconButton
+            id="burger_menu"
+            aria-label="open drawer"
+            edge="start"
+            onClick={toggleDrawer}>
+            <MenuIcon />
+          </IconButton>
+          <Box className="desktop_nav_items">
+            {navItems
+              .filter((item) => item !== "Log out")
+              .map((item) => (
+                <NavLink
+                  to={
+                    item === "Home"
+                      ? "/"
+                      : `/${item.toLowerCase().replace(" ", "")}`
+                  }
+                  className="desktop_nav_item"
+                  key={item}>
+                  {item}
+                </NavLink>
+              ))}
+            {isAuthenticated && email && (
+              <NavLink to="/profile" className="desktop_nav_item">
+                {email}
+              </NavLink>
+            )}
+          </Box>
+          {isAuthenticated && (
+            <Link
+              onClick={handleLogout}
+              className="desktop_nav_item logout-button"
+              id="logout">
+              Log out
+            </Link>
+          )}
+        </Toolbar>
+      </AppBar>
+      <nav>
+        <Drawer
+          anchor="top"
+          open={mobileOpen}
+          onClose={toggleDrawer}
+          className="drawer">
+          {drawerContent}
+        </Drawer>
+      </nav>
+    </Box>
   );
 };
 
