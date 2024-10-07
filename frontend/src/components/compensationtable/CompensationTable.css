@@ -101,13 +101,13 @@
   }
 
   .table-actions {
-    align-items: center;
-    justify-content: space-evenly;
+    display: block;
   }
 
   #add-compensation {
     font-size: 0.7rem;
     width: 160px;
+    margin-bottom: 1rem;
   }
   .table-header {
     font-size: var(--font-size-sm);
