@@ -78,7 +78,7 @@ const Header = () => {
         {isAuthenticated && (
           <Link
             onClick={handleLogout}
-            className="mobile_nav_item logout-button"
+            className="mobile_nav_item logout-button-mobile"
             id="logout">
             <ListItemText primary={"Log out"} />
           </Link>
@@ -132,7 +132,7 @@ const Header = () => {
           {isAuthenticated && (
             <Link
               onClick={handleLogout}
-              className="desktop_nav_item logout-button"
+              className="desktop_nav_item logout-button-desktop"
               id="logout">
               Log out
             </Link>

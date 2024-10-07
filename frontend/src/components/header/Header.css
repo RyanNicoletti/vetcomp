@@ -53,6 +53,10 @@
     display: none;
   }
 
+  .logout-button-desktop {
+    display: none;
+  }
+
   #burger_menu {
     display: block;
     margin-top: 10px;
@@ -78,5 +82,8 @@
 
   .logo {
     margin-left: 0;
+  }
+  #logout {
+    cursor: pointer;
   }
 }
