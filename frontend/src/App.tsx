@@ -19,6 +19,7 @@ import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
 import { ProfilePage } from "./pages/ProfilePage";
 import About from "./pages/About";
+import { JobsPage } from "./pages/JobsPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           </Box>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/jobs" element={<JobsPage />} />
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />

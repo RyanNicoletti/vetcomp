@@ -48,6 +48,39 @@
   color: var(--color-text-dark);
 }
 
+#jobs_link {
+  position: relative;
+  padding: 0 15px;
+  text-decoration: none;
+}
+
+#jobs_link::after {
+  content: "NEW";
+  position: absolute;
+  top: -15px;
+  right: -5px;
+  background-color: #ff4081;
+  color: white;
+  font-size: 0.6em;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transform: rotate(15deg);
+}
+
+#jobs_link:hover::before,
+#jobs_link:hover::after {
+  animation: twinkle 1s infinite alternate;
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
 @media (width <= 850px) {
   .desktop_nav_items {
     display: none;

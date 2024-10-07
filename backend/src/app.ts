@@ -13,6 +13,7 @@ import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
 import { errorHandler } from "./middleware/errorHandler";
 import * as Sentry from "@sentry/node";
+import jobsController from "./controllers/jobsController.js";
 
 const app: Express = express();
 
@@ -121,6 +122,10 @@ compensationsRouter.post(
   compensationController.uploadVerificationDocument
 );
 app.use("/compensations", compensationsRouter);
+
+// Jobs routes
+const jobsRouter: Router = express.Router();
+jobsRouter.get("/", jobsController.getAllJobs);
 
 Sentry.setupExpressErrorHandler(app);
 

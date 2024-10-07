@@ -27,6 +27,7 @@ const Header = () => {
 
   const navItems: string[] = [
     "Home",
+    "Jobs",
     "About",
     ...(isAuthenticated ? [] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
@@ -65,7 +66,8 @@ const Header = () => {
                   ? "/"
                   : `/${item.toLocaleLowerCase().replace(" ", "")}`
               }
-              className="mobile_nav_item">
+              className="mobile_nav_item"
+              id={item === "Jobs" ? "jobs_link" : undefined}>
               <ListItemText primary={item} />
             </NavLink>
           </ListItem>
@@ -119,6 +121,7 @@ const Header = () => {
                     : `/${item.toLowerCase().replace(" ", "")}`
                 }
                 className="desktop_nav_item"
+                id={item === "Jobs" ? "jobs_link" : undefined}
                 key={item}>
                 {item}
               </NavLink>
