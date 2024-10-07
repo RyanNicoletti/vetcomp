@@ -126,6 +126,7 @@ app.use("/compensations", compensationsRouter);
 // Jobs routes
 const jobsRouter: Router = express.Router();
 jobsRouter.get("/", jobsController.getAllJobs);
+app.use("/jobs", jobsRouter);
 
 Sentry.setupExpressErrorHandler(app);
 
