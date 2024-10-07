@@ -11,7 +11,6 @@ import { getAllSalaries } from "../../queries/compensationQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { ICompensation } from "../../../../shared-types/types";
-import "./CompensationTable.css";
 import {
   Button,
   TableFooter,
@@ -28,6 +27,7 @@ import { NavLink } from "react-router-dom";
 import { ExpandableRow } from "./ExpandableRow";
 import { SearchAndFilter } from "./SearchAndFilter";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import "./CompensationTable.css";
 
 const practiceTypes = [
   "Small animal",
@@ -131,13 +131,7 @@ export default function SalaryTable() {
   return (
     <>
       <TableContainer className="table-container">
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "row-reverse",
-            justifyContent: "space-between",
-            marginBottom: "10px",
-          }}>
+        <Box className="table-actions">
           <NavLink to="/addcomp" className="btn-link">
             <Button
               id="add-compensation"
@@ -233,6 +227,7 @@ export default function SalaryTable() {
                 align="right"
                 className="total-compensation-cell">
                 <TableSortLabel
+                  className="total-comp-th"
                   direction={sortParams.sortDirection}
                   onClick={() => handleSortRequest("total_compensation")}>
                   <div>

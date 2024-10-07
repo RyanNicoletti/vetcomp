@@ -5,6 +5,13 @@
   margin: 100px auto 60px auto;
 }
 
+.table-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
 .btn-link {
   margin-left: auto;
   margin-bottom: 5px;
@@ -69,11 +76,6 @@
   width: 35%;
 }
 
-.table-actions {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
 .search-inputs {
   display: flex;
   gap: 20px;
@@ -97,6 +99,12 @@
     padding-left: 5px;
     padding-right: 5px;
   }
+
+  .table-actions {
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
   #add-compensation {
     font-size: 0.7rem;
     width: 160px;
@@ -122,7 +130,11 @@
     width: 30%;
   }
   .total-compensation-cell {
-    width: 40%;
+    width: 35%;
+    padding-right: 5px !important;
+  }
+  .total-comp-th {
+    width: 1rem !important;
   }
   .years-of-experience-cell {
     display: none !important;

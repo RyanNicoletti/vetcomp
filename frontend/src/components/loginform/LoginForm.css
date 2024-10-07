@@ -1,5 +1,5 @@
 .login-container {
-  margin-top: 170px;
+  margin-top: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,6 +36,9 @@
 }
 
 @media (max-width: 515px) {
+  .login-container {
+    margin-bottom: 2rem;
+  }
   .login-form {
     min-width: 90%;
   }

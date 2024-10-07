@@ -28,7 +28,7 @@ const Header = () => {
   const navItems: string[] = [
     "Home",
     "About",
-    ...(isAuthenticated ? ["Log out"] : ["Sign up", "Log in"]),
+    ...(isAuthenticated ? [] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
 
@@ -70,6 +70,19 @@ const Header = () => {
             </NavLink>
           </ListItem>
         ))}
+        {isAuthenticated && email && (
+          <NavLink to="/profile" className="mobile_nav_item">
+            <ListItemText primary={email} />
+          </NavLink>
+        )}
+        {isAuthenticated && (
+          <Link
+            onClick={handleLogout}
+            className="mobile_nav_item logout-button"
+            id="logout">
+            <ListItemText primary={"Log out"} />
+          </Link>
+        )}
       </List>
     </Box>
   );
@@ -98,20 +111,18 @@ const Header = () => {
             <MenuIcon />
           </IconButton>
           <Box className="desktop_nav_items">
-            {navItems
-              .filter((item) => item !== "Log out")
-              .map((item) => (
-                <NavLink
-                  to={
-                    item === "Home"
-                      ? "/"
-                      : `/${item.toLowerCase().replace(" ", "")}`
-                  }
-                  className="desktop_nav_item"
-                  key={item}>
-                  {item}
-                </NavLink>
-              ))}
+            {navItems.map((item) => (
+              <NavLink
+                to={
+                  item === "Home"
+                    ? "/"
+                    : `/${item.toLowerCase().replace(" ", "")}`
+                }
+                className="desktop_nav_item"
+                key={item}>
+                {item}
+              </NavLink>
+            ))}
             {isAuthenticated && email && (
               <NavLink to="/profile" className="desktop_nav_item">
                 {email}

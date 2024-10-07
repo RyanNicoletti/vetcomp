@@ -82,6 +82,10 @@
   .type-of-practice-cell span {
     font-size: 12px;
   }
+  .comp-row-container {
+    margin-left: 1.5rem;
+  }
+
   .expanded-row-title {
     margin-left: 15px;
     font-size: 15px;

@@ -1,5 +1,5 @@
 .sign-up-container {
-  margin-top: 170px;
+  margin-top: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,6 +32,10 @@
 }
 
 @media (max-width: 515px) {
+  .sign-up-container {
+    margin-bottom: 2rem;
+  }
+
   .sign-up-form {
     min-width: 90%;
   }
