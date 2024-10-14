@@ -21,6 +21,7 @@ export const specialistOptions: string[] = [
   "Internal Medicine, large animal",
   "Laboratory Animal Medicine",
   "Microbiology",
+  "Neurology",
   "Nutrition",
   "Oncology",
   "Ophthalmology",
