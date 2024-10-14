@@ -24,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable();
     table.text("application_email");
     table.text("external_website");
+    table.boolean("is_about_to_expire").defaultTo(false);
     table.boolean("is_approved").defaultTo(false);
     table.timestamps(true, true);
   });
