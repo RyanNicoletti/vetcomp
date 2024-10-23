@@ -12,6 +12,7 @@ const numberFromCurrency = (schema: z.ZodNumber) =>
     .transform((val) => (val === null ? null : schema.parse(Number(val))))
     .nullable();
 
+// used for percent production only-must be an int
 const numberFromPercent = (schema: z.ZodNumber) =>
   z
     .string()
@@ -19,7 +20,12 @@ const numberFromPercent = (schema: z.ZodNumber) =>
     .refine((val) => val === null || !isNaN(Number(val)), {
       message: "Invalid number format",
     })
-    .transform((val) => (val === null ? null : schema.parse(Number(val))))
+    .transform((val) => {
+      if (val === null) return null;
+      // Round to nearest integer before validation
+      const roundedValue = Math.round(Number(val));
+      return schema.parse(roundedValue);
+    })
     .nullable();
 
 export const CompFormSchema = z.object({
