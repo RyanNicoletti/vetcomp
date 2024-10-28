@@ -28,6 +28,11 @@ const numberFromPercent = (schema: z.ZodNumber) =>
     })
     .nullable();
 
+const yearOfExperienceTransform = (val: number) => {
+  // Round to nearest integer
+  return Math.round(val);
+};
+
 export const CompFormSchema = z.object({
   company: z.string().min(1, "Company is required"),
   location: z.string().min(1, "Location is required"),
@@ -38,8 +43,13 @@ export const CompFormSchema = z.object({
   isNewGrad: z.boolean(),
   yearsOfExperience: z.coerce
     .number()
-    .int()
-    .nonnegative("Years of experience must be a non-negative integer"),
+    .transform(yearOfExperienceTransform)
+    .pipe(
+      z
+        .number()
+        .int()
+        .nonnegative("Years of experience must be a non-negative integer")
+    ),
   baseSalary: numberFromCurrency(
     z.number().nonnegative("Base salary must be non-negative")
   ),
