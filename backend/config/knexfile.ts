@@ -1,4 +1,5 @@
 import type { Knex } from "knex";
+import path from "path";
 
 interface KnexConfig {
   [key: string]: Knex.Config;
@@ -9,17 +10,17 @@ const config: KnexConfig = {
     client: "postgresql",
     connection: process.env.DB_CONNECTION_URL,
     migrations: {
-      directory: "../src/db/migrations",
+      directory: path.join(__dirname, "../src/db/migrations"),
     },
     seeds: {
-      directory: "../src/db/seeds",
+      directory: path.join(__dirname, "../src/db/seeds"),
     },
   },
   production: {
     client: "postgresql",
     connection: process.env.DB_CONNECTION_URL,
     migrations: {
-      directory: "../src/db/migrations",
+      directory: path.join(__dirname, "../src/db/migrations"),
     },
   },
 };
