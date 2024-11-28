@@ -59,9 +59,7 @@ export const createCompensation = async (data: ICompFormInput) => {
 
   if (!response.ok) {
     throw {
-      status: response.status,
-      message: responseData.message,
-      errors: responseData.errors,
+      error: responseData.error,
     };
   }
 

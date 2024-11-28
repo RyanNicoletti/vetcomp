@@ -98,6 +98,7 @@ export const CompFormSchema = z.object({
       (val) => val === null || (Number.isFinite(val) && val >= 0 && val <= 7),
       "Days worked per week must be between 0 and 7"
     )
+    .transform((val) => (val === null ? null : parseFloat(val.toFixed(1))))
     .nullable(),
   email: z.union([z.string().email(), z.literal("")]).nullable(),
 });

@@ -96,13 +96,15 @@ export const CompForm = () => {
   const addCompensationMutation = useMutation({
     mutationFn: createCompensation,
     onError: (error: any) => {
-      if (error.errors) {
-        error.errors.forEach((err: { field: string; message: string }) => {
-          setError(err.field as keyof ICompFormInput, {
-            type: "manual",
-            message: err.message,
-          });
-        });
+      if (error.error?.details) {
+        error.error.details.forEach(
+          (err: { field: string; message: string }) => {
+            setError(err.field as keyof ICompFormInput, {
+              type: "manual",
+              message: err.message,
+            });
+          }
+        );
       } else {
         setError("root.serverError", {
           type: "manual",
@@ -390,25 +392,36 @@ export const CompForm = () => {
         <Controller
           name="paymentFrequency"
           control={control}
-          rules={{ required: "Please select a payment frequency" }}
-          render={({ field }) => (
-            <Box className="payment-frequency-container">
-              <Typography>Payment Frequency: </Typography>
-              <FormGroup row className="payment-frequency-checkboxes">
-                {paymentFrequencyOptions.map((option: string) => (
-                  <FormControlLabel
-                    className="payment-frequency-label"
-                    key={option}
-                    control={
-                      <Checkbox
-                        checked={field.value === option}
-                        onChange={() => field.onChange(option)}
-                      />
-                    }
-                    label={option}
-                  />
-                ))}
-              </FormGroup>
+          rules={{ required: "Payment frequency is required" }}
+          render={({ field, fieldState }) => (
+            <Box
+              className="payment-frequency-container"
+              style={{
+                display: "flex",
+              }}>
+              <div>
+                <Typography>Payment Frequency: </Typography>
+                <FormGroup row className="payment-frequency-checkboxes">
+                  {paymentFrequencyOptions.map((option: string) => (
+                    <FormControlLabel
+                      className="payment-frequency-label"
+                      key={option}
+                      control={
+                        <Checkbox
+                          checked={field.value === option}
+                          onChange={() => field.onChange(option)}
+                        />
+                      }
+                      label={option}
+                    />
+                  ))}
+                </FormGroup>
+              </div>
+              {fieldState.error && (
+                <Typography color="error" variant="caption">
+                  {fieldState.error.message}
+                </Typography>
+              )}
             </Box>
           )}
         />
