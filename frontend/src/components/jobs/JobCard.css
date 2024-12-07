@@ -1,0 +1,54 @@
+.job-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-title {
+  margin-bottom: 0.5rem !important;
+}
+
+.job-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.job-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+}
+
+.job-salary {
+  margin: 1rem 0;
+}
+
+.job-bonus {
+  margin-bottom: 1rem !important;
+}
+
+.job-divider {
+  margin: 1rem 0 !important;
+}
+
+.job-description {
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.job-apply-btn {
+  text-transform: none !important;
+  background-color: var(--color-primary) !important;
+}

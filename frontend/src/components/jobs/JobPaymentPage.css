@@ -1,0 +1,74 @@
+.payment-container {
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+  max-width: 800px !important;
+}
+
+.pricing-section {
+  margin: 2rem 0;
+}
+
+.pricing-option {
+  margin-bottom: 1rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.pricing-option.selected {
+  border-color: var(--color-primary);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.pricing-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.payment-divider {
+  margin: 2rem 0 !important;
+}
+
+.payment-summary {
+  background-color: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.summary-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.payment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.back-button {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.pay-button {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+@media (max-width: 600px) {
+  .payment-actions {
+    flex-direction: column-reverse;
+  }
+
+  .payment-actions button {
+    width: 100%;
+  }
+
+  .pricing-option-content {
+    gap: 0.25rem;
+  }
+}

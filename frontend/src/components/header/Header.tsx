@@ -28,6 +28,7 @@ const Header = () => {
   const navItems: string[] = [
     "Home",
     "About",
+    "Jobs",
     ...(isAuthenticated ? [] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
@@ -63,7 +64,7 @@ const Header = () => {
               to={
                 item === "Home"
                   ? "/"
-                  : `/${item.toLocaleLowerCase().replace(" ", "")}`
+                  : `/${item.toLowerCase().replace(" ", "")}`
               }
               className="mobile_nav_item">
               <ListItemText primary={item} />

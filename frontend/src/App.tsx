@@ -19,6 +19,8 @@ import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
 import { ProfilePage } from "./pages/ProfilePage";
 import About from "./pages/About";
+import JobsPage from "./pages/JobsPage";
+import JobPaymentPage from "./components/jobs/JobPaymentPage";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
+            <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/jobs/post" element={<JobPaymentPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/addcomp" element={<AddCompForm />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

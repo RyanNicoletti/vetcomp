@@ -1,0 +1,55 @@
+.job-post-container {
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+  max-width: 800px !important;
+}
+
+.job-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.salary-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.submit-button {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+  text-transform: none !important;
+}
+
+.submit-button:hover {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.cancel-button {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  text-transform: none !important;
+}
+
+@media (max-width: 600px) {
+  .salary-range {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
