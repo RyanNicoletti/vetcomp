@@ -6,6 +6,10 @@
     "copy-assets": "mkdir -p dist/backend/assets && cp -R assets/* dist/backend/assets/",
     "dev": "node --env-file=.env src/server.ts",
     "build": "tsc && npm run copy-assets",
+    "seed": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts seed:run",
+    "migrate": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:latest",
+    "migrate:up": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:up",
+    "migrate:down": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:down",
     "migrate:prod": "cd dist/backend/config && npx knex migrate:latest",
     "test": "echo \"Error: no test specified\" && exit 1",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org veterinarycompcom --project node-express ./dist && sentry-cli sourcemaps upload --org veterinarycompcom --project node-express ./dist"

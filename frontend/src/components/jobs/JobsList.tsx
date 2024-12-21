@@ -1,4 +1,8 @@
+// src/components/jobs/JobsList.tsx
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -6,26 +10,48 @@ import {
   Typography,
   Card,
   CardContent,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import { useUserStatus } from "../../hooks/useUserStatus";
-import "./JobsList.css";
-import { mockJobs } from "./mock/fakedata";
+import { getAllJobs } from "../../queries/jobQueries";
+import { JobFilters } from "./types/jobTypes";
 import JobCard from "./JobCard";
+import "./JobsList.css";
 
 const JobsList = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useUserStatus();
-  const jobs: any[] = mockJobs; // Will be replaced with React Query
+  const [filters, setFilters] = useState<JobFilters>({
+    page: 1,
+  });
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["jobs", filters],
+    queryFn: () => getAllJobs(filters),
+  });
 
   const handlePostJob = () => {
-    if (!isAuthenticated) {
-      navigate("/login?redirect=/jobs/post");
-    } else {
-      navigate("/jobs/post");
-    }
+    navigate("/jobs/post");
   };
+
+  if (isLoading) {
+    return (
+      <Box className="loading-container">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Container>
+        <Alert severity="error">
+          Failed to load jobs. Please try again later.
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container className="jobs-container">
@@ -42,7 +68,7 @@ const JobsList = () => {
         </Button>
       </Box>
 
-      {jobs.length === 0 ? (
+      {!data?.jobs || data.jobs.length === 0 ? (
         <Card className="empty-jobs-card">
           <CardContent className="empty-jobs-content">
             <WorkOutlineIcon className="jobs-icon" />
@@ -64,7 +90,7 @@ const JobsList = () => {
         </Card>
       ) : (
         <Box className="jobs-grid">
-          {jobs.map((job) => (
+          {data.jobs.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </Box>

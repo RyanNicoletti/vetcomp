@@ -21,6 +21,7 @@ import { ProfilePage } from "./pages/ProfilePage";
 import About from "./pages/About";
 import JobsPage from "./pages/JobsPage";
 import JobPaymentPage from "./components/jobs/JobPaymentPage";
+import JobsPostPage from "./pages/JobsPostPage";
 
 function App() {
   return (
@@ -37,7 +38,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
             <Route path="/jobs" element={<JobsPage />} />
-            <Route path="/jobs/post" element={<JobPaymentPage />} />
+            <Route path="/jobs/payment" element={<JobPaymentPage />} />
+            <Route path="/jobs/post" element={<JobsPostPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/addcomp" element={<AddCompForm />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
