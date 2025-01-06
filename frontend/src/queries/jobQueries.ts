@@ -1,22 +1,39 @@
 import {
   JobFormData,
-  JobPosting,
+  JobPost,
   JobsResponse,
   JobFilters,
 } from "../components/jobs/types/jobTypes";
 
-export const getAllJobs = async (
-  filters: JobFilters
-): Promise<JobsResponse> => {
-  const queryParams = new URLSearchParams({
-    page: filters.page.toString(),
-    ...(filters.searchTerm && { search: filters.searchTerm }),
-    ...(filters.practiceType && { practiceType: filters.practiceType }),
-    ...(filters.locationType && { locationType: filters.locationType }),
-  });
+interface FilterState {
+  companySearch: string;
+  locationSearch: string;
+  practiceTypeFilter: string[];
+  typeFilter: string[];
+}
+interface SortParams {
+  sortDirection: string;
+  sortBy: string;
+}
 
+export const getAllJobs = async (
+  page: number,
+  rowsPerPage: number,
+  sortParams: SortParams,
+  filters: FilterState
+): Promise<JobsResponse> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/jobs?${queryParams}`,
+    `${
+      import.meta.env.VITE_API_BASE_URL
+    }/jobs?page=${page}&rowsPerPage=${rowsPerPage}&sortDirection=${
+      sortParams.sortDirection
+    }&sortBy=${sortParams.sortBy}&companySearch=${encodeURIComponent(
+      filters.companySearch
+    )}&locationSearch=${encodeURIComponent(
+      filters.locationSearch
+    )}&practiceType=${filters.practiceTypeFilter.join(
+      ","
+    )}&type=${filters.typeFilter.join(",")}`,
     { method: "GET", credentials: "include" }
   );
 
@@ -24,10 +41,11 @@ export const getAllJobs = async (
     throw new Error("Failed to fetch jobs.");
   }
 
-  return response.json();
+  const jobsData: JobsResponse = await response.json();
+  return jobsData;
 };
 
-export const createJob = async (jobData: JobFormData): Promise<JobPosting> => {
+export const createJob = async (jobData: JobFormData): Promise<JobPost> => {
   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`, {
     method: "POST",
     headers: {
@@ -38,7 +56,6 @@ export const createJob = async (jobData: JobFormData): Promise<JobPosting> => {
   });
 
   const responseData = await response.json();
-
   if (!response.ok) {
     throw {
       status: response.status,
@@ -50,7 +67,7 @@ export const createJob = async (jobData: JobFormData): Promise<JobPosting> => {
   return responseData;
 };
 
-export const getJobById = async (id: string): Promise<JobPosting> => {
+export const getJobById = async (id: string): Promise<JobPost> => {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/jobs/${id}`,
     { method: "GET", credentials: "include" }

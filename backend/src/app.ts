@@ -14,6 +14,7 @@ import { isAdmin } from "./middleware/isAdmin";
 import { errorHandler } from "./middleware/errorHandler";
 import * as Sentry from "@sentry/node";
 import jobsController from "./controllers/jobsController.js";
+import stripeController from "./controllers/stripeController.js";
 
 const app: Express = express();
 
@@ -88,6 +89,8 @@ adminRouter.patch(
   "/compensations/:id/approve",
   compensationController.approveCompensationById
 );
+adminRouter.get("/jobs", jobsController.getAllUnapproved);
+adminRouter.patch("/jobs/:id/approve", jobsController.approve);
 app.use("/admin", adminRouter);
 
 // User routes
@@ -125,9 +128,14 @@ app.use("/compensations", compensationsRouter);
 
 // Jobs routes
 const jobsRouter: Router = express.Router();
-jobsRouter.get("/", jobsController.getAllJobs);
+jobsRouter.get("/", jobsController.getAllApproved);
+jobsRouter.get("/:id", jobsController.getJobById);
 jobsRouter.post("/", jobsController.createJob);
 app.use("/jobs", jobsRouter);
+
+const stripeRouter: Router = express.Router();
+stripeRouter.post("/create-checkout", stripeController.createCheckout);
+app.use("/payments", stripeRouter);
 
 Sentry.setupExpressErrorHandler(app);
 

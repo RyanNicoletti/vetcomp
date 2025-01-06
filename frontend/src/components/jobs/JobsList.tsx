@@ -1,5 +1,3 @@
-// src/components/jobs/JobsList.tsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -16,20 +14,47 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { getAllJobs } from "../../queries/jobQueries";
-import { JobFilters } from "./types/jobTypes";
+import { JobFilters, JobsSortParams } from "./types/jobTypes";
 import JobCard from "./JobCard";
+import { SearchAndFilter } from "./SearchAndFilter";
 import "./JobsList.css";
 
 const JobsList = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<JobFilters>({
     page: 1,
+    rowsPerPage: 10,
+    companySearch: "",
+    locationSearch: "",
+    practiceTypeFilter: [],
+    typeFilter: [],
+  });
+
+  const [sortParams, setSortParams] = useState<JobsSortParams>({
+    sortDirection: "asc",
+    sortBy: "",
   });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["jobs", filters],
-    queryFn: () => getAllJobs(filters),
+    queryKey: ["jobs", filters.page, filters.rowsPerPage, sortParams, filters],
+    queryFn: () =>
+      getAllJobs(filters.page, filters.rowsPerPage, sortParams, {
+        companySearch: filters.companySearch ?? "",
+        locationSearch: filters.locationSearch ?? "",
+        practiceTypeFilter: filters.practiceTypeFilter ?? [],
+        typeFilter: filters.typeFilter ?? [],
+      }),
   });
+
+  const handleSearch = (
+    searchFilters: Omit<JobFilters, "page" | "rowsPerPage">
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...searchFilters,
+      page: 1,
+    }));
+  };
 
   const handlePostJob = () => {
     navigate("/jobs/post");
@@ -67,6 +92,16 @@ const JobsList = () => {
           Post a Job
         </Button>
       </Box>
+
+      <SearchAndFilter
+        onSearch={handleSearch}
+        initialFilters={{
+          companySearch: filters.companySearch,
+          locationSearch: filters.locationSearch,
+          practiceTypeFilter: filters.practiceTypeFilter,
+          typeFilter: filters.typeFilter,
+        }}
+      />
 
       {!data?.jobs || data.jobs.length === 0 ? (
         <Card className="empty-jobs-card">

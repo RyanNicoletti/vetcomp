@@ -1,101 +1,80 @@
-.job-form-container {
+.job-posting-page .job-posting-form-container {
   padding: 0.75rem;
-  max-width: 500px;
+  max-width: 900px;
   margin: 84px auto 2rem;
 }
 
-.job-post-form {
+.job-posting-page .job-posting-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.form-row {
+.job-posting-page .job-posting-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
 }
 
-.salary-range {
+.job-posting-page .job-posting-salary-range {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
 }
 
-.form-actions {
+.job-posting-page .job-posting-form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
 }
 
-.submit-button {
+.job-posting-page .job-posting-submit-btn {
   width: auto !important;
   padding: 4px 20px !important;
   margin-left: auto !important;
-  display: inline-flex !important;
-  align-self: flex-end !important;
 }
 
-.cancel-button {
+.job-posting-page .job-posting-cancel-btn {
   width: auto !important;
   padding: 4px 20px !important;
 }
 
-.MuiTextField-root,
-.MuiFormControl-root {
-  margin-bottom: 0 !important;
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-
-.MuiTextField-root textarea {
-  min-height: 45px !important;
-  max-height: 45px !important;
-}
-
-.MuiInputBase-root {
-  font-size: 0.85rem !important;
-}
-
-.MuiInputLabel-root {
-  font-size: 0.85rem !important;
-  transform: translate(14px, 12px) scale(1) !important;
-}
-
-.MuiInputLabel-shrink {
-  transform: translate(14px, -6px) scale(0.85) !important;
-}
-
-.auth-alert {
+.job-posting-page .job-posting-auth-alert {
   margin: 0.75rem 0;
 }
 
-.error-alert {
+.job-posting-page .job-posting-error-alert {
   margin-bottom: 0.75rem;
 }
 
+.job-posting-page .job-posting-description,
+.job-posting-page .job-posting-requirements,
+.job-posting-page .job-posting-benefits,
+.job-posting-page .job-posting-url {
+  width: 100%;
+}
+
 @media (max-width: 600px) {
-  .job-form-container {
+  .job-posting-page .job-posting-form-container {
     padding: 0.75rem;
     margin-top: 74px;
   }
 
-  .form-row,
-  .salary-range {
+  .job-posting-page .job-posting-form-row,
+  .job-posting-page .job-posting-salary-range {
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 
-  .form-actions {
+  .job-posting-page .job-posting-form-actions {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
-  .cancel-button,
-  .submit-button {
+  .job-posting-page .job-posting-cancel-btn,
+  .job-posting-page .job-posting-submit-btn {
     width: 100% !important;
-    margin: 0.25rem 0 !important;
+    margin: 0 !important;
   }
 }

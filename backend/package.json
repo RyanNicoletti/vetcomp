@@ -4,7 +4,7 @@
   "scripts": {
     "start:prod": "node dist/backend/src/server.js",
     "copy-assets": "mkdir -p dist/backend/assets && cp -R assets/* dist/backend/assets/",
-    "dev": "node --env-file=.env src/server.ts",
+    "dev": "nodemon",
     "build": "tsc && npm run copy-assets",
     "seed": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts seed:run",
     "migrate": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:latest",
@@ -37,6 +37,7 @@
     "nodemailer": "^6.9.14",
     "pg": "^8.11.5",
     "redis": "^4.7.0",
+    "stripe": "^17.5.0",
     "typescript": "^5.4.5",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"

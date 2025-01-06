@@ -1,54 +1,101 @@
 .job-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
 }
 
-.job-title {
-  margin-bottom: 0.5rem !important;
+.job-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.job-main-info {
+  flex: 1;
+}
+
+.job-card-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .job-meta {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
-  margin: 1rem 0;
+  margin-top: 0.5rem;
 }
 
 .job-meta-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-text-secondary);
+  gap: 0.25rem;
 }
 
 .job-salary {
-  margin: 1rem 0;
+  text-align: right;
+  min-width: 200px;
 }
 
-.job-bonus {
-  margin-bottom: 1rem !important;
+.job-posted {
+  color: #666;
+  font-size: 0.85rem;
 }
 
 .job-divider {
-  margin: 1rem 0 !important;
+  margin: 1rem 0;
 }
 
-.job-description {
-  margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.job-details {
+  padding: 1rem 0;
 }
 
-.job-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
+.job-section {
+  margin-bottom: 1.5rem;
+}
+
+.job-section strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.job-bonus {
+  margin-top: 0.5rem;
+}
+
+.expand-button {
+  transition: transform 0.3s ease;
+}
+
+.expand-button.expanded {
+  transform: rotate(180deg);
 }
 
 .job-apply-btn {
-  text-transform: none !important;
-  background-color: var(--color-primary) !important;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .job-card-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .job-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .job-salary {
+    text-align: left;
+  }
 }

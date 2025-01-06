@@ -40,20 +40,33 @@ const JobPaymentPage = () => {
       (option) => option.id === selectedOption
     );
 
-    // TODO  call api to create stripe session
-    const session = {
-      id: "dummy_session_id",
-      amount: selectedPricing?.price,
-      currency: "usd",
-    };
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/payments/create-checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jobData,
+            priceOption: selectedPricing,
+          }),
+          credentials: "include",
+        }
+      );
 
-    // TODO comes from api
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: session.id,
-    });
+      const { sessionId } = await response.json();
 
-    if (error) {
-      console.error("Error:", error);
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      if (error) {
+        console.error("Error:", error);
+      }
+    } catch (err) {
+      console.error("Error creating checkout session:", err);
     }
   };
 
@@ -75,7 +88,7 @@ const JobPaymentPage = () => {
               </Typography>
               {option.savings && (
                 <Typography variant="body2" color="success.main">
-                  Save ${option.savings}
+                  {option.savings}
                 </Typography>
               )}
             </Box>

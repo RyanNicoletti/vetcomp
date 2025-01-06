@@ -1,5 +1,3 @@
-// src/components/jobs/types/jobTypes.ts
-
 export interface JobFormData {
   title: string;
   company: string;
@@ -16,8 +14,9 @@ export interface JobFormData {
   contactEmail: string;
 }
 
-export interface JobPosting {
+export interface JobPost {
   id: string;
+  userId: string;
   title: string;
   company: string;
   location: string;
@@ -25,15 +24,16 @@ export interface JobPosting {
   practiceType: string;
   salaryMin: number;
   salaryMax: number;
-  signOnBonus?: number;
+  signOnBonus: number | null;
   description: string;
-  requirements?: string;
-  benefits?: string;
-  applicationUrl?: string;
+  requirements: string | null;
+  benefits: string | null;
+  applicationUrl: string | null;
   contactEmail: string;
   postedDate: string;
   expiresAt: string;
   status: "active" | "expired" | "draft";
+  isApproved: boolean;
 }
 
 export interface PricingOption {
@@ -41,41 +41,52 @@ export interface PricingOption {
   months: number;
   price: number;
   description: string;
-  savings?: number;
+  monthlyEquivalent: number;
+  savings?: string;
 }
 
 export const PRICING_OPTIONS: PricingOption[] = [
   {
     id: "monthly",
     months: 1,
-    price: 199,
-    description: "Monthly posting",
+    price: 49,
+    description: "Monthly",
+    monthlyEquivalent: 49,
   },
   {
     id: "biannual",
     months: 6,
-    price: 999,
-    description: "6 months posting",
-    savings: 195,
+    price: 245,
+    description: "6 months",
+    monthlyEquivalent: 41,
+    savings: "Save 16%",
   },
   {
     id: "annual",
     months: 12,
-    price: 1799,
-    description: "12 months posting",
-    savings: 589,
+    price: 469,
+    description: "12 months",
+    monthlyEquivalent: 39,
+    savings: "Save 20%",
   },
 ];
 
 export interface JobsResponse {
-  jobs: JobPosting[];
+  jobs: JobPost[];
   totalPages: number;
   currentPage: number;
 }
 
 export interface JobFilters {
   page: number;
-  searchTerm?: string;
-  practiceType?: string;
-  locationType?: string;
+  rowsPerPage: number;
+  companySearch?: string;
+  locationSearch?: string;
+  practiceTypeFilter?: string[];
+  typeFilter?: string[];
+}
+
+export interface JobsSortParams {
+  sortDirection: string;
+  sortBy: string;
 }

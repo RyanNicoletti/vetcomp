@@ -21,3 +21,59 @@ export interface JobRecord {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface JobPost {
+  id: string;
+  userId: string;
+  title: string;
+  company: string;
+  location: string;
+  type: "full-time" | "part-time" | "contract" | "relief";
+  practiceType: string;
+  salaryMin: number;
+  salaryMax: number;
+  signOnBonus: number | null;
+  description: string;
+  requirements: string | null;
+  benefits: string | null;
+  applicationUrl: string | null;
+  contactEmail: string;
+  postedDate: string;
+  expiresAt: string;
+  status: "active" | "expired" | "draft";
+  isApproved: boolean;
+}
+
+export interface JobFilters {
+  page: number;
+  rowsPerPage: number;
+  companySearch?: string;
+  locationSearch?: string;
+  practiceTypeFilter?: string[] | undefined;
+  typeFilter?: string[] | undefined;
+}
+
+export interface JobFormData {
+  title: string;
+  company: string;
+  location: string;
+  type: "full-time" | "part-time" | "contract" | "relief";
+  practiceType: string;
+  salaryMin: number;
+  salaryMax: number;
+  signOnBonus?: number;
+  description: string;
+  requirements?: string;
+  benefits?: string;
+  applicationUrl?: string;
+  contactEmail: string;
+}
+
+export interface PricingOption {
+  id: string;
+  months: number;
+  price: number;
+  description: string;
+  savings?: string;
+  monthlyEquivalent?: number;
+}
