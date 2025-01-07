@@ -18,11 +18,11 @@ export async function up(knex: Knex): Promise<void> {
     table.text("requirements");
     table.text("benefits");
     table.text("application_url");
-    table.text("contact_email").notNullable();
     table.timestamp("posted_date").defaultTo(knex.fn.now());
     table.timestamp("expires_at").notNullable();
     table.enum("status", ["active", "expired", "draft"]).defaultTo("active");
-    table.boolean("is_approved").defaultTo(false);
+    table.string("subscription_id").unique();
+    table.string("customer_id");
     table.timestamps(true, true);
   });
 }

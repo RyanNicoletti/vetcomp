@@ -6,29 +6,7 @@ import { BadRequestError } from "../errors/httpErrors";
 import { CreateJobSchema, JobQuerySchema } from "../schemas/jobSchemas";
 import { z } from "zod";
 
-const getAllApproved = asyncHandler(async (req: Request, res: Response) => {
-  const query = JobQuerySchema.parse(req.query);
-  const practiceTypeArray = query.practiceType?.length
-    ? query.practiceType?.split(",")
-    : undefined;
-  const typeFilterArray = query.type?.length
-    ? query.type?.split(",")
-    : undefined;
-  const filters = {
-    page: query.page,
-    rowsPerPage: query.rowsPerPage,
-    companySearch: query.companySearch,
-    locationSearch: query.locationSearch,
-    practiceTypeFilter: practiceTypeArray,
-    typeFilter: typeFilterArray,
-  };
-  console.log("waefawefew");
-
-  const jobsWithPagination = await jobsService.getAllApprovedJobs(db, filters);
-  res.json(jobsWithPagination);
-});
-
-const getAllUnapproved = asyncHandler(async (req: Request, res: Response) => {
+const getAll = asyncHandler(async (req: Request, res: Response) => {
   const query = JobQuerySchema.parse(req.query);
   const practiceTypeArray = query.practiceType?.length
     ? query.practiceType?.split(",")
@@ -45,10 +23,7 @@ const getAllUnapproved = asyncHandler(async (req: Request, res: Response) => {
     typeFilter: typeFilterArray,
   };
 
-  const jobsWithPagination = await jobsService.getAllUnapprovedJobs(
-    db,
-    filters
-  );
+  const jobsWithPagination = await jobsService.getAllJobs(db, filters);
   res.json(jobsWithPagination);
 });
 
@@ -87,8 +62,7 @@ const createJob = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export default {
-  getAllApproved,
-  getAllUnapproved,
+  getAll,
   approve,
   getJobById,
   createJob,

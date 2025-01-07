@@ -17,3 +17,8 @@ export const formatMoneyAbbreviated = (value: number): string => {
 
   return moneyFormatter.format(value);
 };
+
+export const convertCurrencyToNumber = (value: string | number): number => {
+  if (typeof value === "number") return value;
+  return Number(value.replace(/[^0-9.-]+/g, ""));
+};

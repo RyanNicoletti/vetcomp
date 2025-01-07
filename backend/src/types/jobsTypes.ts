@@ -54,6 +54,8 @@ export interface JobFilters {
 }
 
 export interface JobFormData {
+  id?: string;
+  user_id?: string;
   title: string;
   company: string;
   location: string;

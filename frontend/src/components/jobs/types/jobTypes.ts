@@ -11,7 +11,6 @@ export interface JobFormData {
   requirements?: string;
   benefits?: string;
   applicationUrl?: string;
-  contactEmail: string;
 }
 
 export interface JobPost {

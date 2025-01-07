@@ -26,6 +26,7 @@ import { useUserStatus } from "../../hooks/useUserStatus";
 import { useState } from "react";
 import "./JobForm.css";
 import { NumericFormat } from "react-number-format";
+import { convertCurrencyToNumber } from "../../utils/moneyFormatter";
 
 const practiceTypes = [
   "Small animal",
@@ -40,11 +41,14 @@ const JobForm = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useUserStatus();
   const [locationQuery, setLocationQuery] = useState("");
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const {
     control,
     handleSubmit,
     setValue,
+    getValues,
+    setError,
     formState: { errors },
   } = useForm<JobFormData>({
     defaultValues: {
@@ -60,7 +64,6 @@ const JobForm = () => {
       requirements: "",
       benefits: "",
       applicationUrl: "",
-      contactEmail: "",
     },
   });
 
@@ -70,12 +73,13 @@ const JobForm = () => {
     enabled: locationQuery.length > 2,
   });
 
-  const createJobMutation = useMutation({
-    mutationFn: createJob,
-    onSuccess: (data) => {
-      navigate("/jobs/post/payment", { state: { jobData: data } });
-    },
-  });
+  const onSubmit = (data: JobFormData) => {
+    if (!isAuthenticated) {
+      navigate("/login?redirect=/jobs/post");
+      return;
+    }
+    navigate("/jobs/payment", { state: { jobData: data } });
+  };
 
   const handleLocationChange = (_event: any, value: any) => {
     setValue("location", value || "");
@@ -83,14 +87,6 @@ const JobForm = () => {
 
   const handleLocationInputChange = (event: any, newInputValue: string) => {
     setLocationQuery(newInputValue);
-  };
-
-  const onSubmit = (data: JobFormData) => {
-    if (!isAuthenticated) {
-      navigate("/login?redirect=/jobs/post");
-      return;
-    }
-    createJobMutation.mutate(data);
   };
 
   return (
@@ -101,6 +97,14 @@ const JobForm = () => {
             <Typography variant="h5" component="h1" gutterBottom>
               Post a New Job
             </Typography>
+            {generalError && (
+              <Alert
+                severity="error"
+                className="job-posting-error-alert"
+                onClose={() => setGeneralError(null)}>
+                {generalError}
+              </Alert>
+            )}
 
             {!isAuthenticated && (
               <Alert severity="info" className="job-posting-auth-alert">
@@ -117,13 +121,6 @@ const JobForm = () => {
                   create an account
                 </Button>
                 .
-              </Alert>
-            )}
-
-            {createJobMutation.isError && (
-              <Alert severity="error" className="job-posting-error-alert">
-                {createJobMutation.error.message ||
-                  "Failed to create job posting"}
               </Alert>
             )}
 
@@ -302,9 +299,12 @@ const JobForm = () => {
                   control={control}
                   rules={{
                     required: "Maximum salary is required",
-                    validate: (value, formValues) =>
-                      Number(value) >= Number(formValues.salaryMin) ||
-                      "Maximum salary must be greater than minimum salary",
+                    validate: {
+                      greaterThanMin: (value) =>
+                        convertCurrencyToNumber(value) >=
+                          convertCurrencyToNumber(getValues("salaryMin")) ||
+                        "Maximum salary must be greater than minimum salary",
+                    },
                   }}
                   render={({ field: { ref, ...field }, fieldState }) => (
                     <NumericFormat
@@ -414,7 +414,7 @@ const JobForm = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      disabled={createJobMutation.isPending || !isAuthenticated}
+                      disabled={!isAuthenticated}
                       className="job-posting-submit-btn">
                       Continue to Payment
                     </Button>

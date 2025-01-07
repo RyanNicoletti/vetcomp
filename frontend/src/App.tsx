@@ -22,6 +22,8 @@ import About from "./pages/About";
 import JobsPage from "./pages/JobsPage";
 import JobPaymentPage from "./components/jobs/JobPaymentPage";
 import JobsPostPage from "./pages/JobsPostPage";
+import PaymentSuccess from "./components/jobs/PaymentSuccess";
+import PaymentReturn from "./components/jobs/PaymentReturn";
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/jobs/payment" element={<JobPaymentPage />} />
             <Route path="/jobs/post" element={<JobsPostPage />} />
+            <Route path="/jobs/success" element={<PaymentSuccess />} />
+            <Route path="/jobs/payment/return" element={<PaymentReturn />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/addcomp" element={<AddCompForm />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

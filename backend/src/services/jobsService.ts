@@ -24,12 +24,11 @@ const transformRecordToJob = (record: JobRecord): JobPost => ({
 });
 
 const jobsService = {
-  getAllApprovedJobs: async (db: Knex, filters: JobFilters) => {
+  getAllJobs: async (db: Knex, filters: JobFilters) => {
     const query = db<JobRecord>("jobs")
       .select("*", db.raw("COUNT(*) OVER() as total_count"))
       .where({
         status: "active",
-        is_approved: true,
       });
 
     if (filters.companySearch) {
@@ -61,47 +60,6 @@ const jobsService = {
 
     return {
       jobs: jobs.map(transformRecordToJob),
-      currentPage: page,
-      totalPages,
-    };
-  },
-
-  getAllUnapprovedJobs: async (db: Knex, filters: JobFilters) => {
-    const query = db<JobRecord>("jobs")
-      .select("*", db.raw("COUNT(*) OVER() as total_count"))
-      .where({ is_approved: false });
-
-    if (filters.companySearch) {
-      query.whereILike("company", `%${filters.companySearch}%`);
-    }
-
-    if (filters.locationSearch) {
-      query.whereILike("location", `%${filters.locationSearch}%`);
-    }
-
-    if (filters.typeFilter?.length) {
-      query.whereIn("type", filters.typeFilter);
-    }
-
-    if (filters.practiceTypeFilter?.length) {
-      query.whereIn("practice_type", filters.practiceTypeFilter);
-    }
-
-    const page = filters.page || 1;
-    const pageSize = 10;
-    const offset = (page - 1) * pageSize;
-
-    query.orderBy("posted_date", "desc").offset(offset).limit(pageSize);
-    const jobs = await query;
-    const totalCount = jobs.length > 0 ? Number(jobs[0].total_count) : 0;
-    const totalPages = Math.ceil(totalCount / pageSize);
-
-    return {
-      jobs: jobs.map((job) => ({
-        ...job,
-        postedDate: job.posted_date.toISOString(),
-        expiresAt: job.expires_at.toISOString(),
-      })),
       currentPage: page,
       totalPages,
     };

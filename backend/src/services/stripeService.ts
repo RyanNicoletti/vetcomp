@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 import { JobFormData, PricingOption } from "../types/jobsTypes";
+import { redisClient } from "../../config/redisConfig";
+import { Knex } from "knex";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
   telemetry: false,
@@ -12,19 +14,21 @@ const stripeService = {
   ) => {
     try {
       const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
+        ui_mode: "embedded",
         mode: "subscription",
-        success_url: `${process.env.FRONTEND_URL}/jobs/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/jobs/payment`,
         line_items: [
           {
             price_data: {
               currency: "usd",
               product_data: {
-                name: `Job post for ${jobData.title} at ${jobData.company} `,
-                description: `Job post on veterinarycomp.com for ${jobData.title} at ${jobData.company}`,
+                name: `${priceOption.months} veterinarycomp.com job ad`,
+                description: `Job post for ${jobData.title} at ${jobData.company}`,
               },
               unit_amount: priceOption.price * 100,
+              recurring: {
+                interval: "month",
+                interval_count: priceOption.months,
+              },
             },
             quantity: 1,
           },
@@ -32,13 +36,77 @@ const stripeService = {
         metadata: {
           jobTitle: jobData.title,
           company: jobData.company,
-          duration: priceOption.months,
+          priceOptionId: priceOption.id,
         },
+        return_url: `https://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
       });
+
+      await redisClient.set(
+        `pending_job:${session.id}`,
+        JSON.stringify(jobData),
+        { EX: 3600 } // expire in 1 hour
+      );
 
       return session;
     } catch (error) {
       console.error("Error creating checkout session:", error);
+      throw error;
+    }
+  },
+
+  handleWebhookEvent: async (rawBody: Buffer, signature: string, db: Knex) => {
+    const event = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        const jobDataString = await redisClient.get(
+          `pending_job:${session.id}`
+        );
+        if (!jobDataString) {
+          console.error("Job data not found in Redis");
+          return;
+        }
+
+        const jobData = JSON.parse(jobDataString);
+
+        await db.transaction(async (trx) => {
+          await trx("jobs").insert({
+            ...jobData,
+            subscription_id: session.subscription as string,
+            customer_id: session.customer as string,
+            status: "active",
+            expires_at: db.raw("NOW() + INTERVAL '? months'", [
+              session.metadata?.months || 1,
+            ]),
+          });
+        });
+
+        // clean up redis
+        await redisClient.del(`pending_job:${session.id}`);
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        await db("jobs")
+          .where({ subscription_id: subscription.id })
+          .update({ status: "expired" });
+        break;
+      }
+    }
+  },
+
+  retrieveSession: async (sessionId: string) => {
+    try {
+      return await stripe.checkout.sessions.retrieve(sessionId);
+    } catch (error) {
+      console.error("Error retrieving session:", error);
       throw error;
     }
   },

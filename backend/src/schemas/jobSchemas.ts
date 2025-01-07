@@ -17,7 +17,6 @@ export const CreateJobSchema = z
     requirements: z.string().nullable(),
     benefits: z.string().nullable(),
     application_url: z.string().url().nullable(),
-    contact_email: z.string().email("Invalid email address"),
   })
   .refine((data) => data.salary_max > data.salary_min, {
     message: "Maximum salary must be greater than minimum salary",

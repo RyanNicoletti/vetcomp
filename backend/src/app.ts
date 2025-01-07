@@ -27,6 +27,13 @@ const corsOptions = {
   credentials: true,
 };
 
+// stripe middleware
+app.post(
+  "/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  stripeController.handleWebhook
+);
+
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
@@ -89,7 +96,6 @@ adminRouter.patch(
   "/compensations/:id/approve",
   compensationController.approveCompensationById
 );
-adminRouter.get("/jobs", jobsController.getAllUnapproved);
 adminRouter.patch("/jobs/:id/approve", jobsController.approve);
 app.use("/admin", adminRouter);
 
@@ -128,14 +134,15 @@ app.use("/compensations", compensationsRouter);
 
 // Jobs routes
 const jobsRouter: Router = express.Router();
-jobsRouter.get("/", jobsController.getAllApproved);
+jobsRouter.get("/", jobsController.getAll);
 jobsRouter.get("/:id", jobsController.getJobById);
 jobsRouter.post("/", jobsController.createJob);
 app.use("/jobs", jobsRouter);
 
 const stripeRouter: Router = express.Router();
-stripeRouter.post("/create-checkout", stripeController.createCheckout);
-app.use("/payments", stripeRouter);
+stripeRouter.post("/checkout", stripeController.createCheckoutSession);
+stripeRouter.get("/session-status", stripeController.getSession);
+app.use("/stripe", stripeRouter);
 
 Sentry.setupExpressErrorHandler(app);
 
