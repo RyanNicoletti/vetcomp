@@ -57,3 +57,48 @@ export interface ICompFormInput {
   daysWorkedPerWeek?: string;
   email?: string;
 }
+
+export interface BaseJob {
+  title: string;
+  company: string;
+  location: string;
+  type: JobType;
+  practiceType: string;
+  salaryMin: number;
+  salaryMax: number;
+  signOnBonus?: number | null;
+  description: string;
+  requirements?: string | null;
+  benefits?: string | null;
+  applicationMethod: ApplicationMethod;
+  contactEmail?: string | null;
+  applicationUrl?: string | null;
+}
+
+export type JobType = "full-time" | "part-time" | "contract" | "relief";
+export type ApplicationMethod = "email" | "external";
+export type JobStatus = "active" | "expired" | "draft";
+
+export interface JobFormData
+  extends Omit<BaseJob, "signOnBonus" | "requirements" | "benefits"> {
+  signOnBonus?: string | number;
+  requirements?: string;
+  benefits?: string;
+  experienceMin?: string | number;
+  experienceMax?: string | number;
+}
+
+export interface JobRecord extends BaseJob {
+  id: string;
+  user_id: string;
+  status: JobStatus;
+  created_at: Date;
+  subscription_id: string;
+  customer_id: string;
+}
+
+export interface JobResponse {
+  jobs: JobRecord[];
+  totalPages: number;
+  currentPage: number;
+}

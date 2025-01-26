@@ -10,24 +10,29 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
 const stripeService = {
   createCheckoutSession: async (
     jobData: JobFormData,
-    priceOption: PricingOption
+    pricePerMonth: number,
+    userEmail: string
   ) => {
     try {
+      if (!pricePerMonth || isNaN(pricePerMonth)) {
+        throw new Error("Invalid price amount");
+      }
+
       const session = await stripe.checkout.sessions.create({
         ui_mode: "embedded",
         mode: "subscription",
+        customer_email: userEmail,
         line_items: [
           {
             price_data: {
               currency: "usd",
               product_data: {
-                name: `${priceOption.months} veterinarycomp.com job ad`,
+                name: "Monthly Job Posting Subscription",
                 description: `Job post for ${jobData.title} at ${jobData.company}`,
               },
-              unit_amount: priceOption.price * 100,
+              unit_amount: Math.round(pricePerMonth * 100),
               recurring: {
                 interval: "month",
-                interval_count: priceOption.months,
               },
             },
             quantity: 1,
@@ -36,9 +41,8 @@ const stripeService = {
         metadata: {
           jobTitle: jobData.title,
           company: jobData.company,
-          priceOptionId: priceOption.id,
         },
-        return_url: `https://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
+        return_url: `http://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
       });
 
       await redisClient.set(
@@ -63,6 +67,7 @@ const stripeService = {
 
     switch (event.type) {
       case "checkout.session.completed": {
+        console.log("we go there");
         const session = event.data.object as Stripe.Checkout.Session;
 
         const jobDataString = await redisClient.get(

@@ -19,7 +19,6 @@ import {
   Autocomplete,
   CircularProgress,
 } from "@mui/material";
-import { JobFormData } from "./types/jobTypes";
 import { createJob } from "../../queries/jobQueries";
 import { getLocationSuggestions } from "../../queries/locationQueries";
 import { useUserStatus } from "../../hooks/useUserStatus";
@@ -27,6 +26,7 @@ import { useState } from "react";
 import "./JobForm.css";
 import { NumericFormat } from "react-number-format";
 import { convertCurrencyToNumber } from "../../utils/moneyFormatter";
+import { JobFormData } from "../../../../shared-types/types";
 
 const practiceTypes = [
   "Small animal",
@@ -48,7 +48,7 @@ const JobForm = () => {
     handleSubmit,
     setValue,
     getValues,
-    setError,
+    watch,
     formState: { errors },
   } = useForm<JobFormData>({
     defaultValues: {
@@ -63,9 +63,15 @@ const JobForm = () => {
       description: "",
       requirements: "",
       benefits: "",
+      applicationMethod: "email",
       applicationUrl: "",
+      contactEmail: "",
+      experienceMin: undefined,
+      experienceMax: undefined,
     },
   });
+
+  const applicationMethod = watch("applicationMethod");
 
   const { data: locationSuggestions, isLoading: locationIsLoading } = useQuery({
     queryKey: ["locations", locationQuery],
@@ -223,53 +229,7 @@ const JobForm = () => {
                   )}
                 />
               </div>
-
               <div className="job-posting-form-row">
-                <Controller
-                  name="practiceType"
-                  control={control}
-                  rules={{ required: "Practice type is required" }}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.practiceType}>
-                      <InputLabel>Practice Type</InputLabel>
-                      <Select {...field} label="Practice Type">
-                        {practiceTypes.map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.practiceType && (
-                        <FormHelperText>
-                          {errors.practiceType.message}
-                        </FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-                <Controller
-                  name="signOnBonus"
-                  control={control}
-                  render={({ field: { ref, ...field }, fieldState }) => (
-                    <NumericFormat
-                      {...field}
-                      getInputRef={ref}
-                      label="Sign-on Bonus"
-                      fullWidth
-                      placeholder="$0.00"
-                      customInput={TextField}
-                      thousandSeparator={true}
-                      prefix={"$"}
-                      decimalScale={2}
-                      fixedDecimalScale={true}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
-                />
-              </div>
-
-              <div className="job-posting-salary-range">
                 <Controller
                   name="salaryMin"
                   control={control}
@@ -320,6 +280,115 @@ const JobForm = () => {
                       fixedDecimalScale={true}
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="job-posting-form-row">
+                <Controller
+                  name="signOnBonus"
+                  control={control}
+                  render={({ field: { ref, ...field }, fieldState }) => (
+                    <NumericFormat
+                      {...field}
+                      getInputRef={ref}
+                      label="Sign-on Bonus"
+                      fullWidth
+                      placeholder="$0.00"
+                      customInput={TextField}
+                      thousandSeparator={true}
+                      prefix={"$"}
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name="practiceType"
+                  control={control}
+                  rules={{ required: "Practice type is required" }}
+                  render={({ field }) => (
+                    <FormControl fullWidth error={!!errors.practiceType}>
+                      <InputLabel>Practice Type</InputLabel>
+                      <Select {...field} label="Practice Type">
+                        {practiceTypes.map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.practiceType && (
+                        <FormHelperText>
+                          {errors.practiceType.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </div>
+
+              <div className="job-posting-form-row">
+                <Controller
+                  name="experienceMin"
+                  control={control}
+                  rules={{
+                    min: { value: 0, message: "Must be 0 or greater" },
+                    validate: {
+                      lessThanMax: (value) => {
+                        const max = Number(watch("experienceMax"));
+                        const min = Number(value);
+                        if (min && max && min > max) {
+                          return "Minimum experience must be less than maximum";
+                        }
+                        return true;
+                      },
+                    },
+                  }}
+                  render={({ field: { ref, ...field }, fieldState }) => (
+                    <NumericFormat
+                      {...field}
+                      getInputRef={ref}
+                      label="Min. Years Experience"
+                      fullWidth
+                      placeholder="0"
+                      customInput={TextField}
+                      allowNegative={false}
+                      decimalScale={0}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      isAllowed={(values) => {
+                        const { floatValue } = values;
+                        return floatValue === undefined || floatValue >= 0;
+                      }}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="experienceMax"
+                  control={control}
+                  rules={{
+                    min: { value: 1, message: "Must be 1 or more" },
+                  }}
+                  render={({ field: { ref, ...field }, fieldState }) => (
+                    <NumericFormat
+                      {...field}
+                      getInputRef={ref}
+                      label="Max. Years Experience"
+                      fullWidth
+                      placeholder="0"
+                      customInput={TextField}
+                      allowNegative={false}
+                      decimalScale={0}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      isAllowed={(values) => {
+                        const { floatValue } = values;
+                        return floatValue === undefined || floatValue >= 0;
+                      }}
                     />
                   )}
                 />
@@ -380,20 +449,83 @@ const JobForm = () => {
                 />
               </div>
 
-              <div className="job-posting-url">
+              <div className="job-posting-application-method">
                 <Controller
-                  name="applicationUrl"
+                  name="applicationMethod"
                   control={control}
+                  rules={{ required: "Application method is required" }}
                   render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="External Application URL"
-                      fullWidth
-                      error={!!errors.applicationUrl}
-                      helperText={errors.applicationUrl?.message}
-                    />
+                    <FormControl fullWidth error={!!errors.applicationMethod}>
+                      <InputLabel>
+                        How would you like to receive applications?
+                      </InputLabel>
+                      <Select
+                        {...field}
+                        label="How would you like to receive applications?">
+                        <MenuItem value="email">
+                          Receive applications via email
+                        </MenuItem>
+                        <MenuItem value="external">
+                          Link to external application site
+                        </MenuItem>
+                      </Select>
+                      {errors.applicationMethod && (
+                        <FormHelperText>
+                          {errors.applicationMethod.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
                   )}
                 />
+
+                {applicationMethod === "email" && (
+                  <Controller
+                    name="contactEmail"
+                    control={control}
+                    rules={{
+                      required: "Email is required for email applications",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Application Email"
+                        fullWidth
+                        error={!!errors.contactEmail}
+                        helperText={errors.contactEmail?.message}
+                        sx={{ mt: 2 }}
+                      />
+                    )}
+                  />
+                )}
+
+                {applicationMethod === "external" && (
+                  <Controller
+                    name="applicationUrl"
+                    control={control}
+                    rules={{
+                      required: "URL is required for external applications",
+                      pattern: {
+                        value: /^https?:\/\/.+/,
+                        message:
+                          "Please enter a valid URL starting with http:// or https://",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="External Application URL"
+                        fullWidth
+                        error={!!errors.applicationUrl}
+                        helperText={errors.applicationUrl?.message}
+                        sx={{ mt: 2 }}
+                      />
+                    )}
+                  />
+                )}
               </div>
 
               <Box className="job-posting-form-actions">

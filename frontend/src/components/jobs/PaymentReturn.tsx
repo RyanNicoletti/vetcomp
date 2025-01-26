@@ -1,66 +1,86 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { Container, Typography, CircularProgress, Alert } from "@mui/material";
+import { useSearchParams, Navigate } from "react-router-dom";
+import { Container, Typography, CircularProgress, Button } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSession } from "../../queries/stripeQueries";
+import "./PaymentReturn.css";
 
 const PaymentReturn = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const [status, setStatus] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const sessionId = searchParams.get("session_id");
 
-  useEffect(() => {
-    const sessionId = searchParams.get("session_id");
-    if (!sessionId) {
-      setError("No session ID found");
-      return;
-    }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["sessionStatus", sessionId],
+    queryFn: () => fetchSession(sessionId),
+    enabled: !!sessionId,
+  });
 
-    const fetchStatus = async () => {
-      try {
-        const response = await fetch(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/stripe/session-status?session_id=${sessionId}`,
-          { credentials: "include" }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch session status");
-
-        const { status } = await response.json();
-        setStatus(status);
-
-        if (status === "complete") {
-          // Redirect to success page after a brief delay
-          setTimeout(() => {
-            navigate("/jobs/success");
-          }, 2000);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      }
-    };
-
-    fetchStatus();
-  }, [searchParams, navigate]);
-
-  if (error) {
+  if (isLoading) {
     return (
-      <Container maxWidth="sm" sx={{ py: 4 }}>
-        <Alert severity="error">{error}</Alert>
+      <Container className="payment-return-container">
+        <div className="payment-return-loading">
+          <CircularProgress />
+          <Typography>Checking payment status...</Typography>
+        </div>
       </Container>
     );
   }
 
-  return (
-    <Container maxWidth="sm" sx={{ py: 4, textAlign: "center" }}>
-      <CircularProgress />
-      <Typography sx={{ mt: 2 }}>
-        {status === "complete"
-          ? "Payment successful! Redirecting..."
-          : "Processing your payment..."}
-      </Typography>
-    </Container>
-  );
+  if (isError) {
+    return (
+      <Container className="payment-return-container">
+        <div className="payment-return-error">
+          <Typography color="error">
+            An unexpected error occurred, your payment was not processed. Please
+            try again later or reach out to support at{" "}
+            <a href="mailto:support@veterinarycomp.com">
+              support@veterinarycomp.com
+            </a>
+          </Typography>
+          <Button
+            variant="contained"
+            href="/jobs"
+            className="payment-return-button">
+            Return to Jobs
+          </Button>
+        </div>
+      </Container>
+    );
+  }
+
+  if (data?.payment_status === "unpaid") {
+    return <Navigate to="/jobs/payment" />;
+  }
+
+  if (data?.payment_status === "paid") {
+    return (
+      <Container className="payment-return-container">
+        <div className="payment-return-success">
+          <Typography variant="h4" className="payment-return-title">
+            Payment Successful!
+          </Typography>
+          <Typography className="payment-return-message">
+            We appreciate your business!{" "}
+            {data.customer_email &&
+              `A confirmation email will be sent to ${data.customer_email}.`}
+          </Typography>
+          <Typography className="payment-return-support">
+            If you have any questions, please email{" "}
+            <a href="mailto:support@veterinarycomp.com">
+              support@veterinarycomp.com
+            </a>
+          </Typography>
+          <Button
+            variant="contained"
+            href="/jobs"
+            className="payment-return-button">
+            View Job Listings
+          </Button>
+        </div>
+      </Container>
+    );
+  }
+
+  return null;
 };
 
 export default PaymentReturn;

@@ -9,7 +9,6 @@ import {
   Collapse,
   IconButton,
 } from "@mui/material";
-import { JobPost } from "./types/jobTypes";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -17,14 +16,15 @@ import { formatDistance } from "date-fns";
 import { useState } from "react";
 import "./JobCard.css";
 import { moneyFormatter } from "../../utils/moneyFormatter";
+import { JobRecord } from "../../../../shared-types/types";
 
 interface JobCardProps {
-  job: JobPost;
+  job: JobRecord;
 }
 
 const JobCard = ({ job }: JobCardProps) => {
   const [expanded, setExpanded] = useState(false);
-  const daysAgo = formatDistance(new Date(job.postedDate), new Date(), {
+  const daysAgo = formatDistance(new Date(job.created_at), new Date(), {
     addSuffix: true,
   });
 

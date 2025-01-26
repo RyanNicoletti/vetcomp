@@ -1,52 +1,121 @@
-.payment-container {
+.job-payment-page {
   padding: 2rem 0;
   margin-top: 5rem;
   max-width: 800px !important;
 }
 
-.pricing-section {
-  margin: 1rem 0;
+.job-payment-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.pricing-option {
-  margin-bottom: 1rem;
-  transition: all 0.2s ease-in-out;
+.job-payment-title {
+  margin-bottom: 2rem !important;
 }
 
-.pricing-option.selected {
-  border-color: #1976d2;
-  background-color: rgba(25, 118, 210, 0.04);
+.job-payment-price {
+  text-align: center;
+  margin: 2rem 0;
 }
 
-.pricing-option-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.job-payment-price-amount {
+  font-size: 2rem !important;
+  color: #1976d2 !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.5rem !important;
 }
 
-.payment-divider {
-  margin: 1rem 0 !important;
+.job-payment-price-description {
+  color: #666 !important;
 }
 
-.payment-summary {
-  padding: 1.5rem;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+.job-payment-divider {
+  margin: 2rem 0 !important;
 }
 
-.summary-details {
+.job-payment-details {
+  margin: 2rem 0;
+}
+
+.job-payment-detail-row {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
 }
 
-.payment-actions {
+.job-payment-detail-value {
+  font-weight: 500 !important;
+}
+
+.job-payment-features {
+  background-color: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-top: 2rem;
+}
+
+.job-payment-features-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 1rem 0 0;
+}
+
+.job-payment-features-list li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: #666;
+}
+
+.job-payment-features-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #1976d2;
+}
+
+.job-payment-error {
+  background-color: #fdeded;
+  color: #d32f2f;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.job-payment-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 2rem;
   gap: 1rem;
 }
 
-#checkout {
-  margin-top: 1rem;
+.job-payment-button {
+  min-width: 120px;
+}
+
+.job-payment-spinner {
+  margin-right: 8px !important;
+}
+
+.job-payment-checkout {
+  margin-top: 2rem;
+  min-height: 500px;
+}
+
+@media (max-width: 600px) {
+  .job-payment-page {
+    padding: 1rem;
+    margin-top: 4rem;
+  }
+
+  .job-payment-actions {
+    flex-direction: column;
+  }
+
+  .job-payment-button {
+    width: 100%;
+  }
 }

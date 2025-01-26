@@ -3,7 +3,7 @@ import { db } from "../db/connection";
 import jobsService from "../services/jobsService";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { BadRequestError } from "../errors/httpErrors";
-import { CreateJobSchema, JobQuerySchema } from "../schemas/jobSchemas";
+import { JobQuerySchema, JobSchema } from "../schemas/jobSchemas";
 import { z } from "zod";
 
 const getAll = asyncHandler(async (req: Request, res: Response) => {
@@ -27,13 +27,6 @@ const getAll = asyncHandler(async (req: Request, res: Response) => {
   res.json(jobsWithPagination);
 });
 
-const approve = asyncHandler(async (req: Request, res: Response) => {
-  const jobId = z.string().uuid("Invalid job ID").parse(req.params.id);
-
-  const job = await jobsService.approveJob(db, jobId);
-  res.json(job);
-});
-
 const getJobById = asyncHandler(async (req: Request, res: Response) => {
   const jobId = z.string().uuid("Invalid job ID").parse(req.params.id);
 
@@ -50,7 +43,7 @@ const createJob = asyncHandler(async (req: Request, res: Response) => {
     throw new BadRequestError("Must be logged in to post a job");
   }
 
-  const validatedData = CreateJobSchema.parse(req.body);
+  const validatedData = JobSchema.parse(req.body);
 
   const jobData = {
     ...validatedData,
@@ -63,7 +56,6 @@ const createJob = asyncHandler(async (req: Request, res: Response) => {
 
 export default {
   getAll,
-  approve,
   getJobById,
   createJob,
 };

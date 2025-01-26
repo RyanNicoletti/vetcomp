@@ -96,7 +96,6 @@ adminRouter.patch(
   "/compensations/:id/approve",
   compensationController.approveCompensationById
 );
-adminRouter.patch("/jobs/:id/approve", jobsController.approve);
 app.use("/admin", adminRouter);
 
 // User routes
@@ -139,6 +138,7 @@ jobsRouter.get("/:id", jobsController.getJobById);
 jobsRouter.post("/", jobsController.createJob);
 app.use("/jobs", jobsRouter);
 
+// STRIPE routes
 const stripeRouter: Router = express.Router();
 stripeRouter.post("/checkout", stripeController.createCheckoutSession);
 stripeRouter.get("/session-status", stripeController.getSession);
