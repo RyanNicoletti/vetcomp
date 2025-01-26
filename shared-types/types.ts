@@ -79,8 +79,18 @@ export type JobType = "full-time" | "part-time" | "contract" | "relief";
 export type ApplicationMethod = "email" | "external";
 export type JobStatus = "active" | "expired" | "draft";
 
-export interface JobFormData
-  extends Omit<BaseJob, "signOnBonus" | "requirements" | "benefits"> {
+export interface IJobFormData {
+  title: string;
+  company: string;
+  location: string;
+  type: JobType;
+  practiceType: string;
+  salaryMin: number;
+  salaryMax: number;
+  description: string;
+  applicationMethod: ApplicationMethod;
+  contactEmail?: string | null;
+  applicationUrl?: string | null;
   signOnBonus?: string | number;
   requirements?: string;
   benefits?: string;
@@ -88,11 +98,25 @@ export interface JobFormData
   experienceMax?: string | number;
 }
 
-export interface JobRecord extends BaseJob {
-  id: string;
+export interface JobRecord {
+  title: string;
+  company: string;
+  location: string;
+  type: JobType;
+  practice_type: string;
+  experience_min: number;
+  experience_max: number;
+  salary_min: number;
+  salary_max: number;
+  sign_on_bonus?: number | null;
+  description: string;
+  requirements?: string | null;
+  benefits?: string | null;
+  application_method: ApplicationMethod;
+  contact_email?: string | null;
+  application_url?: string | null;
   user_id: string;
   status: JobStatus;
-  created_at: Date;
   subscription_id: string;
   customer_id: string;
 }

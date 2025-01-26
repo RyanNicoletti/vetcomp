@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import { JobFormData, PricingOption } from "../types/jobsTypes";
 import { redisClient } from "../../config/redisConfig";
 import { Knex } from "knex";
+import { IJobFormData } from "../../../shared-types/types";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
   telemetry: false,
@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
 
 const stripeService = {
   createCheckoutSession: async (
-    jobData: JobFormData,
+    jobData: IJobFormData,
     pricePerMonth: number,
     userEmail: string
   ) => {

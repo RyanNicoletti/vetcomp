@@ -19,7 +19,7 @@ import { moneyFormatter } from "../../utils/moneyFormatter";
 import { JobRecord } from "../../../../shared-types/types";
 
 interface JobCardProps {
-  job: JobRecord;
+  job: JobRecord & { created_at: Date };
 }
 
 const JobCard = ({ job }: JobCardProps) => {
@@ -60,12 +60,12 @@ const JobCard = ({ job }: JobCardProps) => {
           <Box className="job-card-right">
             <Box className="job-salary">
               <Typography variant="body1" fontWeight="medium">
-                {moneyFormatter.format(job.salaryMin)} -{" "}
-                {moneyFormatter.format(job.salaryMax)}
+                {moneyFormatter.format(job.salary_min)} -{" "}
+                {moneyFormatter.format(job.salary_max)}
               </Typography>
-              {job.signOnBonus && (
+              {job.sign_on_bonus && (
                 <Chip
-                  label={`Sign-on: ${moneyFormatter.format(job.signOnBonus)}`}
+                  label={`Sign-on: ${moneyFormatter.format(job.sign_on_bonus)}`}
                   color="success"
                   size="small"
                   className="job-bonus"

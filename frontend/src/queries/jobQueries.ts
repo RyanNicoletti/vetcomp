@@ -64,15 +64,16 @@ const formatJobData = (formData: JobFormData) => ({
   applicationUrl: formData.applicationUrl || null,
 });
 
-export const createJob = async (formData: JobFormData): Promise<JobRecord> => {
-  const apiData = formatJobData(formData);
+export const createJob = async (data: JobFormData): Promise<JobRecord> => {
+  const formData = new FormData();
+  formData.append("newJob", JSON.stringify(data));
 
   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(apiData),
+    body: formData,
     credentials: "include",
   });
 

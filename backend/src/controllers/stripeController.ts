@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
 import stripeService from "../services/stripeService";
-import { JobFormData, PricingOption } from "../types/jobsTypes";
 import { db } from "../db/connection";
 import { BadRequestError } from "../errors/httpErrors";
 import jobsService from "../services/jobsService";
-import Stripe from "stripe";
 import { redisClient } from "../../config/redisConfig";
-import { JobSchema, StripeJobSchema } from "../schemas/jobSchemas";
+import { IJobFormInput, JobFormSchema } from "../schemas/jobSchemas";
 import userService from "../services/userService";
+import { IJobFormData, JobRecord } from "../../../shared-types/types";
 
 interface CheckoutRequestBody {
-  jobData: JobFormData;
+  jobData: any;
   pricePerMonth: number;
 }
 
@@ -70,18 +69,40 @@ const getSession = asyncHandler(async (req: Request, res: Response) => {
       const jobDataString = await redisClient.get(`pending_job:${session_id}`);
 
       if (jobDataString) {
-        const formData = JSON.parse(jobDataString);
+        const parsedData: IJobFormInput = JSON.parse(jobDataString);
 
-        const jobData = {
-          ...formData,
-          status: "active" as const,
-          subscription_id: session.subscription as string,
+        const validatedData = await JobFormSchema.parseAsync({
+          ...parsedData,
+          status: "active",
           customer_id: session.customer as string,
+          subscription_id: session.subscription as string,
           user_id: req.session.userId!,
+        });
+
+        const jobData: JobRecord = {
+          user_id: validatedData.user_id,
+          title: validatedData.title,
+          company: validatedData.company,
+          location: validatedData.location,
+          type: validatedData.type,
+          practice_type: validatedData.practiceType,
+          salary_min: validatedData.salaryMin,
+          salary_max: validatedData.salaryMax,
+          sign_on_bonus: validatedData.signOnBonus ?? null,
+          experience_min: validatedData.experienceMin,
+          experience_max: validatedData.experienceMax,
+          description: validatedData.description,
+          requirements: validatedData.requirements ?? null,
+          benefits: validatedData.benefits ?? null,
+          application_method: validatedData.applicationMethod,
+          contact_email: validatedData.contactEmail ?? null,
+          customer_id: validatedData.customer_id,
+          application_url: validatedData.applicationUrl ?? null,
+          status: "active",
+          subscription_id: validatedData.subscription_id,
         };
 
-        const validatedData = await StripeJobSchema.parse(jobData);
-        const newJob = await jobsService.create(db, validatedData);
+        const newJob = await jobsService.create(db, jobData);
 
         await redisClient.del(`pending_job:${session_id}`);
 

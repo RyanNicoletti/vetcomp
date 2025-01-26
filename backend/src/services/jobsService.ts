@@ -1,9 +1,9 @@
 import { Knex } from "knex";
-import { JobFilters, JobPost, JobRecord } from "../types/jobsTypes";
-import { JobSchema, StripeJobInput } from "../schemas/jobSchemas";
+import { JobSchema } from "../schemas/jobSchemas";
+import { JobRecord } from "../../../shared-types/types";
 
 const jobsService = {
-  getAllJobs: async (db: Knex, filters: JobFilters) => {
+  getAllJobs: async (db: Knex, filters: any) => {
     const query = db<JobRecord>("jobs")
       .select("*", db.raw("COUNT(*) OVER() as total_count"))
       .where({
@@ -44,13 +44,13 @@ const jobsService = {
     };
   },
 
-  create: async (db: Knex, jobData: StripeJobInput): Promise<JobRecord> => {
+  create: async (db: Knex, jobData: JobRecord): Promise<JobRecord> => {
     const [job] = await db("jobs").insert(jobData).returning("*");
-    return JobSchema.parse(job);
+    return job;
   },
 
   getById: async (db: Knex, id: string) => {
-    const job = await db<JobRecord>("jobs").where({ id }).first();
+    const job = await db<JobRecord>("jobs").where(id).first();
     if (!job) return null;
 
     return { job };

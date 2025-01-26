@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -26,7 +26,7 @@ import { useState } from "react";
 import "./JobForm.css";
 import { NumericFormat } from "react-number-format";
 import { convertCurrencyToNumber } from "../../utils/moneyFormatter";
-import { JobFormData } from "../../../../shared-types/types";
+import { IJobFormData } from "../../../../shared-types/types";
 
 const practiceTypes = [
   "Small animal",
@@ -50,7 +50,7 @@ const JobForm = () => {
     getValues,
     watch,
     formState: { errors },
-  } = useForm<JobFormData>({
+  } = useForm<IJobFormData>({
     defaultValues: {
       company: "",
       title: "",
@@ -64,7 +64,7 @@ const JobForm = () => {
       requirements: "",
       benefits: "",
       applicationMethod: "email",
-      applicationUrl: "",
+      applicationUrl: null,
       contactEmail: "",
       experienceMin: undefined,
       experienceMax: undefined,
@@ -79,7 +79,7 @@ const JobForm = () => {
     enabled: locationQuery.length > 2,
   });
 
-  const onSubmit = (data: JobFormData) => {
+  const onSubmit = (data: IJobFormData) => {
     if (!isAuthenticated) {
       navigate("/login?redirect=/jobs/post");
       return;

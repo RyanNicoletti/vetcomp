@@ -23,7 +23,6 @@ export async function up(knex: Knex): Promise<void> {
     table.text("contact_email");
     table.string("customer_id");
     table.text("application_url");
-    table.timestamp("posted_date").defaultTo(knex.fn.now());
     table.enum("status", ["active", "expired", "draft"]).defaultTo("active");
     table.string("subscription_id").unique();
     table.timestamps(true, true);

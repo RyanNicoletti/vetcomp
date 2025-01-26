@@ -1,6 +1,20 @@
 import { z } from "zod";
 
-// Base enums
+const cleanString = (val: string) => val.replace(/[^0-9.]+/g, "");
+const yearOfExperienceTransform = (val: number) => {
+  // Round to nearest integer
+  return Math.round(val);
+};
+const numberFromCurrency = (schema: z.ZodNumber) =>
+  z
+    .string()
+    .transform((val) => (val === "" ? null : cleanString(val)))
+    .refine((val) => val === null || !isNaN(Number(val)), {
+      message: "Invalid number format",
+    })
+    .transform((val) => (val === null ? null : schema.parse(Number(val))))
+    .nullable();
+
 const JobType = z.enum(["full-time", "part-time", "contract", "relief"]);
 const JobStatus = z.enum(["active", "expired", "draft"]);
 const ApplicationMethod = z.enum(["email", "external"]);
@@ -23,7 +37,6 @@ const applicationMethodRefinement = (data: any) => {
   return true;
 };
 
-// The schema for job records in the database
 export const JobSchema = z.object({
   id: z.string(),
   user_id: z.string(),
@@ -53,46 +66,52 @@ const convertCurrencyToNumber = (value: string | number): number => {
   return Number(value.replace(/[^0-9.-]+/g, ""));
 };
 
-export const StripeJobSchema = z.object({
+export const JobFormSchema = z.object({
   title: z.string().min(1, "Job title is required"),
   company: z.string().min(1, "Company name is required"),
   location: z.string().min(1, "Location is required"),
   type: JobType,
   practiceType: z.string().min(1, "Practice type is required"),
-  salaryMin: z
-    .union([z.string(), z.number()])
-    .transform((val) =>
-      typeof val === "string" ? convertCurrencyToNumber(val) : val
+  salaryMin: numberFromCurrency(
+    z.number().nonnegative("Must be non-negative")
+  ).refine((val) => val !== null, "This value is required"),
+  salaryMax: numberFromCurrency(
+    z.number().nonnegative("Must be non-negative")
+  ).refine((val) => val !== null, "This value is required"),
+  signOnBonus: numberFromCurrency(
+    z.number().nonnegative("Must be non-negative")
+  ),
+  experienceMin: z.coerce
+    .number()
+    .transform(yearOfExperienceTransform)
+    .pipe(
+      z
+        .number()
+        .int()
+        .nonnegative("Years of experience must be a non-negative integer")
     ),
-  salaryMax: z
-    .union([z.string(), z.number()])
-    .transform((val) =>
-      typeof val === "string" ? convertCurrencyToNumber(val) : val
+  experienceMax: z.coerce
+    .number()
+    .transform(yearOfExperienceTransform)
+    .pipe(
+      z
+        .number()
+        .int()
+        .nonnegative("Years of experience must be a non-negative integer")
     ),
-  signOnBonus: z
-    .union([z.string(), z.number(), z.null()])
-    .optional()
-    .transform((val) =>
-      val
-        ? typeof val === "string"
-          ? convertCurrencyToNumber(val)
-          : val
-        : null
-    ),
-  experienceMin: z
-    .union([z.string(), z.number()])
-    .optional()
-    .transform((val) => (val ? Number(val) : null)),
-  experienceMax: z
-    .union([z.string(), z.number()])
-    .optional()
-    .transform((val) => (val ? Number(val) : null)),
   description: z.string().min(1, "Job description is required"),
   requirements: z.string().optional().nullable(),
   benefits: z.string().optional().nullable(),
   applicationMethod: z.enum(["email", "external"]),
   contactEmail: z.string().email().optional().nullable(),
-  applicationUrl: z.string().url().optional().nullable(),
+  applicationUrl: z
+    .string()
+    .url()
+    .optional()
+    .nullable()
+    .refine((val) => !val || z.string().url().safeParse(val).success, {
+      message: "Invalid URL",
+    }),
   status: z.enum(["active", "expired", "draft"]),
   subscription_id: z.string(),
   customer_id: z.string(),
@@ -118,5 +137,4 @@ export const JobQuerySchema = z.object({
 });
 
 export type JobRecord = z.infer<typeof JobSchema>;
-export type JobQueryParams = z.infer<typeof JobQuerySchema>;
-export type StripeJobInput = Omit<JobRecord, "id" | "posted_date">;
+export type IJobFormInput = z.infer<typeof JobFormSchema>;
