@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { redisClient } from "../../config/redisConfig";
 import { Knex } from "knex";
-import { IJobFormData } from "../../../shared-types/types";
+import { IJobFormData, JobRecord } from "../../../shared-types/types";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
   telemetry: false,
@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
 
 const stripeService = {
   createCheckoutSession: async (
-    jobData: IJobFormData,
+    newJob: Omit<JobRecord, "customer_id" | "subscription_id">,
     pricePerMonth: number,
     userEmail: string
   ) => {
@@ -28,7 +28,7 @@ const stripeService = {
               currency: "usd",
               product_data: {
                 name: "Monthly Job Posting Subscription",
-                description: `Job post for ${jobData.title} at ${jobData.company}`,
+                description: `Job post for ${newJob.title} at ${newJob.company}`,
               },
               unit_amount: Math.round(pricePerMonth * 100),
               recurring: {
@@ -39,15 +39,21 @@ const stripeService = {
           },
         ],
         metadata: {
-          jobTitle: jobData.title,
-          company: jobData.company,
+          jobTitle: newJob.title,
+          company: newJob.company,
         },
         return_url: `http://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
       });
 
+      const validatedJobRecord: JobRecord = {
+        ...newJob,
+        customer_id: session.customer as string,
+        subscription_id: session.subscription as string,
+      };
+
       await redisClient.set(
         `pending_job:${session.id}`,
-        JSON.stringify(jobData),
+        JSON.stringify(validatedJobRecord),
         { EX: 3600 } // expire in 1 hour
       );
 

@@ -10,50 +10,78 @@ import userService from "../services/userService";
 import { IJobFormData, JobRecord } from "../../../shared-types/types";
 
 interface CheckoutRequestBody {
-  jobData: any;
+  jobData: IJobFormData;
   pricePerMonth: number;
 }
 
 const createCheckoutSession = asyncHandler(
   async (req: Request, res: Response) => {
-    const { jobData, pricePerMonth } = req.body as CheckoutRequestBody;
+    try {
+      const { jobData, pricePerMonth } = req.body as CheckoutRequestBody;
 
-    if (!jobData || !pricePerMonth) {
-      throw new BadRequestError(
-        "Unexpected error when processing payment, please try again later, you will not be charged for this transaction"
+      if (!jobData || !pricePerMonth) {
+        throw new BadRequestError(
+          "Unexpected error when processing payment, please try again later, you will not be charged for this transaction"
+        );
+      }
+
+      const user = await userService.getById(db, req.session.userId);
+      if (!user || !user.email) {
+        throw new BadRequestError(
+          "User not found, make sure you are logged in and try again."
+        );
+      }
+      const userEmail = user?.email;
+
+      const validatedData: IJobFormInput = JobFormSchema.parse({
+        ...jobData,
+        status: "active",
+        user_id: req.session.userId!,
+      });
+
+      const partialJobRecord: Omit<
+        JobRecord,
+        "customer_id" | "subscription_id"
+      > = {
+        user_id: validatedData.user_id,
+        title: validatedData.title,
+        company: validatedData.company,
+        location: validatedData.location,
+        type: validatedData.type,
+        practice_type: validatedData.practiceType,
+        salary_min: validatedData.salaryMin,
+        salary_max: validatedData.salaryMax,
+        sign_on_bonus: validatedData.signOnBonus ?? null,
+        experience_min: validatedData.experienceMin,
+        experience_max: validatedData.experienceMax,
+        description: validatedData.description,
+        requirements: validatedData.requirements ?? null,
+        benefits: validatedData.benefits ?? null,
+        application_method: validatedData.applicationMethod,
+        contact_email: validatedData.contactEmail ?? null,
+        application_url: validatedData.applicationUrl ?? null,
+        status: "active",
+      };
+
+      const session = await stripeService.createCheckoutSession(
+        partialJobRecord,
+        pricePerMonth,
+        userEmail
       );
-    }
 
-    const user = await userService.getById(db, req.session.userId);
-    if (!user || !user.email) {
-      throw new BadRequestError(
-        "User not found, make sure you are logged in and try again."
+      res.json({
+        clientSecret: session.client_secret,
+        sessionId: session.id,
+      });
+    } catch (error) {
+      console.error(
+        "Error in stripe controller, possibly with job form validation?: ",
+        error
       );
+      throw new BadRequestError("Error validating job form, please try again");
     }
-    const userEmail = user?.email;
-
-    const session = await stripeService.createCheckoutSession(
-      jobData,
-      pricePerMonth,
-      userEmail
-    );
-
-    res.json({
-      clientSecret: session.client_secret,
-      sessionId: session.id,
-    });
   }
 );
-
-const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
-  const sig = req.headers["stripe-signature"];
-  if (!sig || typeof sig !== "string") {
-    return res.status(400).send("No signature provided");
-  }
-
-  await stripeService.handleWebhookEvent(req.body, sig, db);
-  res.json({ received: true });
-});
 
 const getSession = asyncHandler(async (req: Request, res: Response) => {
   const { session_id } = req.query;
@@ -69,40 +97,9 @@ const getSession = asyncHandler(async (req: Request, res: Response) => {
       const jobDataString = await redisClient.get(`pending_job:${session_id}`);
 
       if (jobDataString) {
-        const parsedData: IJobFormInput = JSON.parse(jobDataString);
+        const validatedNewJob: JobRecord = JSON.parse(jobDataString);
 
-        const validatedData = await JobFormSchema.parseAsync({
-          ...parsedData,
-          status: "active",
-          customer_id: session.customer as string,
-          subscription_id: session.subscription as string,
-          user_id: req.session.userId!,
-        });
-
-        const jobData: JobRecord = {
-          user_id: validatedData.user_id,
-          title: validatedData.title,
-          company: validatedData.company,
-          location: validatedData.location,
-          type: validatedData.type,
-          practice_type: validatedData.practiceType,
-          salary_min: validatedData.salaryMin,
-          salary_max: validatedData.salaryMax,
-          sign_on_bonus: validatedData.signOnBonus ?? null,
-          experience_min: validatedData.experienceMin,
-          experience_max: validatedData.experienceMax,
-          description: validatedData.description,
-          requirements: validatedData.requirements ?? null,
-          benefits: validatedData.benefits ?? null,
-          application_method: validatedData.applicationMethod,
-          contact_email: validatedData.contactEmail ?? null,
-          customer_id: validatedData.customer_id,
-          application_url: validatedData.applicationUrl ?? null,
-          status: "active",
-          subscription_id: validatedData.subscription_id,
-        };
-
-        const newJob = await jobsService.create(db, jobData);
+        const newJob = await jobsService.create(db, validatedNewJob);
 
         await redisClient.del(`pending_job:${session_id}`);
 
@@ -127,6 +124,16 @@ const getSession = asyncHandler(async (req: Request, res: Response) => {
     console.error("Error retrieving session:", error);
     throw new BadRequestError("Error retrieving checkout session");
   }
+});
+
+const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
+  const sig = req.headers["stripe-signature"];
+  if (!sig || typeof sig !== "string") {
+    return res.status(400).send("No signature provided");
+  }
+
+  await stripeService.handleWebhookEvent(req.body, sig, db);
+  res.json({ received: true });
 });
 
 export default { createCheckoutSession, handleWebhook, getSession };

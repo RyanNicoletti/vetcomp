@@ -135,7 +135,6 @@ app.use("/compensations", compensationsRouter);
 const jobsRouter: Router = express.Router();
 jobsRouter.get("/", jobsController.getAll);
 jobsRouter.get("/:id", jobsController.getJobById);
-jobsRouter.post("/", jobsController.createJob);
 app.use("/jobs", jobsRouter);
 
 // STRIPE routes

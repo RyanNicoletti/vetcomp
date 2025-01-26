@@ -3,7 +3,11 @@ import { db } from "../db/connection";
 import jobsService from "../services/jobsService";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { BadRequestError } from "../errors/httpErrors";
-import { JobQuerySchema, JobSchema } from "../schemas/jobSchemas";
+import {
+  JobFormSchema,
+  JobQuerySchema,
+  JobSchema,
+} from "../schemas/jobSchemas";
 import { z } from "zod";
 
 const getAll = asyncHandler(async (req: Request, res: Response) => {
@@ -38,24 +42,25 @@ const getJobById = asyncHandler(async (req: Request, res: Response) => {
   res.json(job);
 });
 
-const createJob = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.session.userId) {
-    throw new BadRequestError("Must be logged in to post a job");
-  }
+// const createJob = asyncHandler(async (req: Request, res: Response) => {
+//   if (!req.session.userId) {
+//     throw new BadRequestError("Must be logged in to post a job");
+//   }
 
-  const validatedData = JobSchema.parse(req.body);
+//   const validatedData = JobFormSchema.parse(req.body);
 
-  const jobData = {
-    ...validatedData,
-    user_id: req.session.userId,
-  };
+//   const jobData = {
+//     ...validatedData,
+//     user_id: req.session.userId,
+//     status: "active",
+//   };
 
-  const newJob = await jobsService.create(db, jobData);
-  res.status(201).json(newJob);
-});
+//   const newJob = await jobsService.create(db, jobData);
+//   res.status(201).json(newJob);
+// });
 
 export default {
   getAll,
   getJobById,
-  createJob,
+  //createJob,
 };

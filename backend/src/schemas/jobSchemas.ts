@@ -80,7 +80,7 @@ export const JobFormSchema = z.object({
   ).refine((val) => val !== null, "This value is required"),
   signOnBonus: numberFromCurrency(
     z.number().nonnegative("Must be non-negative")
-  ),
+  ).nullable(),
   experienceMin: z.coerce
     .number()
     .transform(yearOfExperienceTransform)
@@ -113,8 +113,6 @@ export const JobFormSchema = z.object({
       message: "Invalid URL",
     }),
   status: z.enum(["active", "expired", "draft"]),
-  subscription_id: z.string(),
-  customer_id: z.string(),
   user_id: z.string(),
 });
 
