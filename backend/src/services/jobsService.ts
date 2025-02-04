@@ -1,5 +1,4 @@
 import { Knex } from "knex";
-import { JobSchema } from "../schemas/jobSchemas";
 import { JobRecord } from "../../../shared-types/types";
 
 const jobsService = {
@@ -23,7 +22,6 @@ const jobsService = {
     }
 
     if (filters.practiceTypeFilter?.length) {
-      console.log("here", filters.practiceTypeFilter);
       query.whereIn("practice_type", filters.practiceTypeFilter);
     }
 
@@ -49,11 +47,24 @@ const jobsService = {
     return job;
   },
 
-  getById: async (db: Knex, id: string) => {
-    const job = await db<JobRecord>("jobs").where(id).first();
-    if (!job) return null;
+  getUserJobs: async (db: Knex, userId: string): Promise<JobRecord[]> => {
+    return db<JobRecord>("jobs")
+      .where({ user_id: userId })
+      .where({
+        status: "active",
+      })
+      .orderBy("created_at", "desc");
+  },
 
-    return { job };
+  getById: async (
+    db: Knex,
+    jobId: string,
+    userId: string
+  ): Promise<JobRecord | null> => {
+    const job = await db<JobRecord>("jobs")
+      .where({ id: jobId, user_id: userId })
+      .first();
+    return job || null;
   },
 };
 

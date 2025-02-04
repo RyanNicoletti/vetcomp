@@ -2,13 +2,18 @@ import { Request, Response } from "express";
 import { db } from "../db/connection";
 import jobsService from "../services/jobsService";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { BadRequestError } from "../errors/httpErrors";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../errors/httpErrors";
 import {
   JobFormSchema,
   JobQuerySchema,
   JobSchema,
 } from "../schemas/jobSchemas";
 import { z } from "zod";
+import stripeService from "../services/stripeService";
 
 const getAll = asyncHandler(async (req: Request, res: Response) => {
   const query = JobQuerySchema.parse(req.query);
@@ -34,7 +39,7 @@ const getAll = asyncHandler(async (req: Request, res: Response) => {
 const getJobById = asyncHandler(async (req: Request, res: Response) => {
   const jobId = z.string().uuid("Invalid job ID").parse(req.params.id);
 
-  const job = await jobsService.getById(db, jobId);
+  const job = await jobsService.getById(db, jobId, req.session.userId);
   if (!job) {
     throw new BadRequestError("Job not found");
   }
@@ -42,25 +47,35 @@ const getJobById = asyncHandler(async (req: Request, res: Response) => {
   res.json(job);
 });
 
-// const createJob = asyncHandler(async (req: Request, res: Response) => {
-//   if (!req.session.userId) {
-//     throw new BadRequestError("Must be logged in to post a job");
-//   }
+const getUserJobs = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.session.userId) {
+    throw new UnauthorizedError("Must be logged in to view jobs");
+  }
 
-//   const validatedData = JobFormSchema.parse(req.body);
+  const jobs = await jobsService.getUserJobs(db, req.session.userId);
+  res.json(jobs);
+});
 
-//   const jobData = {
-//     ...validatedData,
-//     user_id: req.session.userId,
-//     status: "active",
-//   };
+const cancelSubscription = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.session.userId) {
+    throw new UnauthorizedError("Must be logged in to cancel jobs");
+  }
 
-//   const newJob = await jobsService.create(db, jobData);
-//   res.status(201).json(newJob);
-// });
+  const jobId = req.params.id;
+  const job = await jobsService.getById(db, jobId, req.session.userId);
+
+  if (!job) {
+    throw new NotFoundError("Job not found");
+  }
+
+  await stripeService.cancelSubscriptionImmediately(job.subscription_id);
+
+  res.json({ message: "Job cancelled successfully" });
+});
 
 export default {
   getAll,
   getJobById,
-  //createJob,
+  getUserJobs,
+  cancelSubscription,
 };

@@ -44,4 +44,10 @@ export class ConflictError extends HttpError {
   }
 }
 
+export class GeneralError extends HttpError {
+  constructor(message: string = "An error occurred", statusCode: number = 500) {
+    super(message, statusCode);
+  }
+}
+
 export { HttpError };

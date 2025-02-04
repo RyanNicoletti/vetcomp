@@ -134,10 +134,12 @@ app.use("/compensations", compensationsRouter);
 // Jobs routes
 const jobsRouter: Router = express.Router();
 jobsRouter.get("/", jobsController.getAll);
+jobsRouter.get("/profile", jobsController.getUserJobs);
 jobsRouter.get("/:id", jobsController.getJobById);
+jobsRouter.delete("/:id/cancel", jobsController.cancelSubscription);
 app.use("/jobs", jobsRouter);
 
-// STRIPE routes
+// Stripe routes
 const stripeRouter: Router = express.Router();
 stripeRouter.post("/checkout", stripeController.createCheckoutSession);
 stripeRouter.get("/session-status", stripeController.getSession);

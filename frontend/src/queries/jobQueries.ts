@@ -1,6 +1,6 @@
 import { convertCurrencyToNumber } from "../utils/moneyFormatter";
 import {
-  JobFormData,
+  IJobFormData,
   JobRecord,
   JobResponse,
 } from "../../../shared-types/types";
@@ -45,26 +45,34 @@ export const getAllJobs = async (
   return jobsData;
 };
 
-const formatJobData = (formData: JobFormData) => ({
-  title: formData.title,
-  company: formData.company,
-  location: formData.location,
-  type: formData.type,
-  practiceType: formData.practiceType,
-  salaryMin: convertCurrencyToNumber(formData.salaryMin),
-  salaryMax: convertCurrencyToNumber(formData.salaryMax),
-  signOnBonus: formData.signOnBonus
-    ? convertCurrencyToNumber(formData.signOnBonus)
-    : null,
-  description: formData.description,
-  requirements: formData.requirements || null,
-  benefits: formData.benefits || null,
-  applicationMethod: formData.applicationMethod,
-  contactEmail: formData.contactEmail || null,
-  applicationUrl: formData.applicationUrl || null,
-});
+export const getUserJobs = async (): Promise<JobRecord[]> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/jobs/profile`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch user jobs");
+  }
+  return response.json();
+};
 
-export const createJob = async (data: JobFormData): Promise<JobRecord> => {
+export const deleteJobPost = async (jobId: string): Promise<void> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/jobs/${jobId}/cancel`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to delete job post");
+  }
+};
+
+export const createJob = async (data: IJobFormData): Promise<JobRecord> => {
   const formData = new FormData();
   formData.append("newJob", JSON.stringify(data));
 

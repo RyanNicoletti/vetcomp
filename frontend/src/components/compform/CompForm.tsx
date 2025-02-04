@@ -98,8 +98,8 @@ export const CompForm = () => {
     onError: (error: any) => {
       if (error.error?.details) {
         error.error.details.forEach(
-          (err: { field: string; message: string }) => {
-            setError(err.field as keyof ICompFormInput, {
+          (err: { path: string; message: string }) => {
+            setError(err.path[0] as keyof ICompFormInput, {
               type: "manual",
               message: err.message,
             });
@@ -196,7 +196,11 @@ export const CompForm = () => {
         <Controller
           name="company"
           control={control}
-          rules={{ required: "Company is required" }}
+          rules={{
+            required: "Company is required",
+            validate: (value) =>
+              value.trim().length > 0 || "Company is required",
+          }}
           render={({ field, fieldState }) => (
             <Box>
               <Typography>Company or Hospital Name</Typography>

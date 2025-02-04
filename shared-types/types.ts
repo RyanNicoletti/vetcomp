@@ -99,6 +99,7 @@ export interface IJobFormData {
 }
 
 export interface JobRecord {
+  id: string;
   title: string;
   company: string;
   location: string;

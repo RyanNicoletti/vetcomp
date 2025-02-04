@@ -34,9 +34,9 @@ const yearOfExperienceTransform = (val: number) => {
 };
 
 export const CompFormSchema = z.object({
-  company: z.string().min(1, "Company is required"),
+  company: z.string().trim().min(1, "Company is required"),
   location: z.string().min(1, "Location is required"),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().trim().min(1, "Title is required"),
   isSpecialist: z.boolean(),
   specialization: z.string().optional(),
   typeOfPractice: z.string().optional(),

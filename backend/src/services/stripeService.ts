@@ -2,6 +2,8 @@ import Stripe from "stripe";
 import { redisClient } from "../../config/redisConfig";
 import { Knex } from "knex";
 import { IJobFormData, JobRecord } from "../../../shared-types/types";
+import { IJobFormInput } from "../schemas/jobSchemas";
+import emailService from "./emailService";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
   telemetry: false,
@@ -9,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY || "api_key_placeholder", {
 
 const stripeService = {
   createCheckoutSession: async (
-    newJob: Omit<JobRecord, "customer_id" | "subscription_id">,
+    newJob: Omit<JobRecord, "customer_id" | "subscription_id" | "id">,
     pricePerMonth: number,
     userEmail: string
   ) => {
@@ -45,7 +47,7 @@ const stripeService = {
         return_url: `http://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
       });
 
-      const validatedJobRecord: JobRecord = {
+      const validatedJobRecord: Omit<JobRecord, "id"> = {
         ...newJob,
         customer_id: session.customer as string,
         subscription_id: session.subscription as string,
@@ -65,51 +67,98 @@ const stripeService = {
   },
 
   handleWebhookEvent: async (rawBody: Buffer, signature: string, db: Knex) => {
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    let event: Stripe.Event;
 
-    switch (event.type) {
-      case "checkout.session.completed": {
-        console.log("we go there");
-        const session = event.data.object as Stripe.Checkout.Session;
+    try {
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+    } catch (err) {
+      console.error("Webhook signature verification failed:", err);
+      throw new Error("Invalid signature");
+    }
 
-        const jobDataString = await redisClient.get(
-          `pending_job:${session.id}`
-        );
-        if (!jobDataString) {
-          console.error("Job data not found in Redis");
-          return;
+    try {
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as Stripe.Checkout.Session;
+
+          const existingJob = await db("jobs")
+            .where({ subscription_id: session.subscription as string })
+            .first();
+
+          if (!existingJob) {
+            const jobDataString = await redisClient.get(
+              `pending_job:${session.id}`
+            );
+            if (!jobDataString) {
+              console.error("Job data not found for session:", session.id);
+              return;
+            }
+
+            const jobData = JSON.parse(jobDataString);
+
+            const [newJob] = await db.transaction(async (trx) => {
+              return await trx("jobs")
+                .insert({
+                  ...jobData,
+                  subscription_id: session.subscription as string,
+                  customer_id: session.customer as string,
+                })
+                .returning("*");
+            });
+
+            await emailService.sendJobPostConfirmationEmail({
+              email: session.customer_details?.email || "",
+              jobDetails: newJob,
+              subscriptionDetails: {
+                amount: session.amount_total ? session.amount_total / 100 : 99,
+                interval: "month",
+              },
+            });
+
+            await redisClient.del(`pending_job:${session.id}`);
+          }
+          break;
         }
 
-        const jobData = JSON.parse(jobDataString);
+        case "invoice.payment_failed": {
+          const invoice = event.data.object as Stripe.Invoice;
+          await db("jobs")
+            .where({ subscription_id: invoice.subscription })
+            .update({ status: "payment_failed" });
 
-        await db.transaction(async (trx) => {
-          await trx("jobs").insert({
-            ...jobData,
-            subscription_id: session.subscription as string,
-            customer_id: session.customer as string,
-            status: "active",
-            expires_at: db.raw("NOW() + INTERVAL '? months'", [
-              session.metadata?.months || 1,
-            ]),
+          // TODO: Send email notification to user
+          break;
+        }
+
+        case "customer.subscription.deleted": {
+          const subscription = event.data.object as Stripe.Subscription;
+          await db.transaction(async (trx) => {
+            await trx("jobs")
+              .where({ subscription_id: subscription.id })
+              .update({
+                status: "expired",
+              });
           });
-        });
+          break;
+        }
 
-        // clean up redis
-        await redisClient.del(`pending_job:${session.id}`);
-        break;
+        case "customer.subscription.updated": {
+          const subscription = event.data.object as Stripe.Subscription;
+          await db("jobs")
+            .where({ subscription_id: subscription.id })
+            .update({
+              status: subscription.status === "active" ? "active" : "inactive",
+            });
+          break;
+        }
       }
-
-      case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription;
-        await db("jobs")
-          .where({ subscription_id: subscription.id })
-          .update({ status: "expired" });
-        break;
-      }
+    } catch (err) {
+      console.error("Error processing webhook:", err);
+      throw err;
     }
   },
 
@@ -119,6 +168,17 @@ const stripeService = {
     } catch (error) {
       console.error("Error retrieving session:", error);
       throw error;
+    }
+  },
+
+  cancelSubscriptionImmediately: async (subscriptionId: string) => {
+    try {
+      await stripe.subscriptions.cancel(subscriptionId, {
+        prorate: true,
+      });
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      throw new Error("Failed to cancel subscription");
     }
   },
 };

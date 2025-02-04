@@ -1,7 +1,7 @@
-import { JobFormData } from "../../../shared-types/types";
+import { IJobFormData } from "../../../shared-types/types";
 
 interface CreateCheckoutSessionParams {
-  jobData: JobFormData;
+  jobData: IJobFormData;
   pricePerMonth: number;
 }
 
@@ -35,14 +35,11 @@ export const createCheckoutSession = async ({
   );
 
   const data = await response.json();
-
   if (!response.ok) {
-    throw new Error(
-      data.error?.message || data.message || "Failed to create checkout session"
-    );
+    throw new Error(data.error?.message || "Failed to create checkout session");
   }
 
-  return data;
+  return { clientSecret: data.clientSecret };
 };
 
 export const fetchSession = async (
