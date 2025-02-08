@@ -23,13 +23,13 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { openSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { isAuthenticated, isAdmin, email, logout } = useUserStatus();
+  const { isAuthenticated, isAdmin, logout } = useUserStatus();
 
   const navItems: string[] = [
     "Home",
     "About",
     "Jobs",
-    ...(isAuthenticated ? [] : ["Sign up", "Log in"]),
+    ...(isAuthenticated ? ["Profile"] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
 
@@ -71,11 +71,6 @@ const Header = () => {
             </NavLink>
           </ListItem>
         ))}
-        {isAuthenticated && email && (
-          <NavLink to="/profile" className="mobile_nav_item">
-            <ListItemText primary={email} />
-          </NavLink>
-        )}
         {isAuthenticated && (
           <Link
             onClick={handleLogout}
@@ -124,11 +119,6 @@ const Header = () => {
                 {item}
               </NavLink>
             ))}
-            {isAuthenticated && email && (
-              <NavLink to="/profile" className="desktop_nav_item">
-                {email}
-              </NavLink>
-            )}
           </Box>
           {isAuthenticated && (
             <Link

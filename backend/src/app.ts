@@ -15,6 +15,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import * as Sentry from "@sentry/node";
 import jobsController from "./controllers/jobsController.js";
 import stripeController from "./controllers/stripeController.js";
+import jobApplicationsController from "./controllers/jobApplicationController.js";
 
 const app: Express = express();
 
@@ -133,10 +134,26 @@ app.use("/compensations", compensationsRouter);
 
 // Jobs routes
 const jobsRouter: Router = express.Router();
+// General job routes
 jobsRouter.get("/", jobsController.getAll);
 jobsRouter.get("/profile", jobsController.getUserJobs);
+
+// Job applications routes (grouped together and before /:id)
+jobsRouter.get("/applications", jobApplicationsController.getUserApplications);
+jobsRouter.patch(
+  "/applications/:applicationId/status",
+  jobApplicationsController.updateApplicationStatus
+);
+jobsRouter.post("/:jobId/apply", jobApplicationsController.submitApplication);
+jobsRouter.get(
+  "/:jobId/applications",
+  jobApplicationsController.getApplicationsForJob
+);
+
+// Individual job routes (come last because of the :id parameter)
 jobsRouter.get("/:id", jobsController.getJobById);
 jobsRouter.delete("/:id/cancel", jobsController.cancelSubscription);
+
 app.use("/jobs", jobsRouter);
 
 // Stripe routes

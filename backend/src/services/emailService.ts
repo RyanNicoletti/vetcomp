@@ -12,6 +12,20 @@ interface JobPostConfirmationParams {
   };
 }
 
+interface ApplicationEmailParams {
+  to: string;
+  jobTitle: string;
+  companyName: string;
+  applicantName: string;
+}
+
+interface NotificationEmailParams {
+  to: string;
+  jobTitle: string;
+  applicantName: string;
+  applicantEmail: string;
+}
+
 const transporter = nodemailer.createTransport({
   host: "smtp.purelymail.com",
   port: process.env.NODE_ENV === "production" ? 465 : 587,
@@ -265,6 +279,152 @@ const emailService = {
     } catch (error) {
       console.error("Failed to send job post confirmation email:", error);
       throw new Error("Failed to send confirmation email");
+    }
+  },
+  sendApplicationConfirmationEmail: async ({
+    to,
+    jobTitle,
+    companyName,
+    applicantName,
+  }: ApplicationEmailParams) => {
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to,
+      subject: `Application Confirmation - ${jobTitle} at ${companyName}`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Application Confirmation</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Application Submitted Successfully</h2>
+          <p>Dear ${applicantName},</p>
+          <p>Thank you for applying to the ${jobTitle} position at ${companyName} through Veterinarycomp.com.</p>
+          <p>Your application has been received and will be reviewed by the hiring team. They will contact you directly if they wish to proceed with your application.</p>
+          <p>Best of luck with your application!</p>
+          <p>The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send application confirmation email:", error);
+      throw new Error("Failed to send application confirmation email");
+    }
+  },
+
+  sendApplicationNotificationEmail: async ({
+    to,
+    jobTitle,
+    applicantName,
+    applicantEmail,
+  }: NotificationEmailParams) => {
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to,
+      subject: `New Application Received - ${jobTitle}`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Application Notification</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>New Application Received</h2>
+          <p>You have received a new application for the ${jobTitle} position.</p>
+          <p>Applicant Details:</p>
+          <ul>
+            <li>Name: ${applicantName}</li>
+            <li>Email: ${applicantEmail}</li>
+          </ul>
+          <p>You can view the full application and manage all your job applications by visiting your profile page: <a href="${
+            process.env.FRONTEND_URL
+          }/profile">View Applications</a></p>
+          <p>The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send application notification email:", error);
+      throw new Error("Failed to send application notification email");
     }
   },
 };

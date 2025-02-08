@@ -58,23 +58,6 @@ export interface ICompFormInput {
   email?: string;
 }
 
-export interface BaseJob {
-  title: string;
-  company: string;
-  location: string;
-  type: JobType;
-  practiceType: string;
-  salaryMin: number;
-  salaryMax: number;
-  signOnBonus?: number | null;
-  description: string;
-  requirements?: string | null;
-  benefits?: string | null;
-  applicationMethod: ApplicationMethod;
-  contactEmail?: string | null;
-  applicationUrl?: string | null;
-}
-
 export type JobType = "full-time" | "part-time" | "contract" | "relief";
 export type ApplicationMethod = "email" | "external";
 export type JobStatus = "active" | "expired" | "draft";
@@ -120,6 +103,7 @@ export interface JobRecord {
   status: JobStatus;
   subscription_id: string;
   customer_id: string;
+  created_at?: Date;
 }
 
 export interface JobResponse {

@@ -101,7 +101,82 @@
   margin-bottom: 20px;
 }
 
+.applications-title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.applications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.application-card {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  padding: 1rem;
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.application-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.application-info {
+  flex: 1;
+}
+
+.status-select {
+  min-width: 150px;
+}
+
+.resume-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.resume-link:hover {
+  text-decoration: underline;
+}
+
+.no-applications {
+  color: var(--color-text-dark);
+  opacity: 0.7;
+  text-align: center;
+  padding: 1rem;
+}
+
 @media (max-width: 600px) {
+  .application-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .application-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .status-select {
+    width: 100%;
+  }
   .compensations-grid {
     grid-template-columns: 1fr;
   }

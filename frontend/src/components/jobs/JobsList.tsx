@@ -14,10 +14,23 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { getAllJobs } from "../../queries/jobQueries";
-import { JobFilters, JobsSortParams } from "./types/jobTypes";
 import JobCard from "./JobCard";
 import { SearchAndFilter } from "./SearchAndFilter";
 import "./JobsList.css";
+
+export interface JobFilters {
+  page: number;
+  rowsPerPage: number;
+  companySearch?: string;
+  locationSearch?: string;
+  practiceTypeFilter?: string[];
+  typeFilter?: string[];
+}
+
+export interface JobsSortParams {
+  sortDirection: "asc" | "desc";
+  sortBy: string;
+}
 
 const JobsList = () => {
   const navigate = useNavigate();
@@ -30,7 +43,7 @@ const JobsList = () => {
     typeFilter: [],
   });
 
-  const [sortParams, setSortParams] = useState<JobsSortParams>({
+  const [sortParams, _setSortParams] = useState<JobsSortParams>({
     sortDirection: "asc",
     sortBy: "",
   });

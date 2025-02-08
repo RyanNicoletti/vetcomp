@@ -7,13 +7,22 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getUsersCompensation,
   uploadVerificationDocument,
 } from "../../queries/compensationQueries";
-import { getUserJobs, deleteJobPost } from "../../queries/jobQueries";
+import {
+  getUserJobs,
+  deleteJobPost,
+  updateApplicationStatus,
+  getApplicationsForJob,
+} from "../../queries/jobQueries";
 import { Link } from "react-router-dom";
 import "./Profile.css";
 import {
@@ -22,6 +31,7 @@ import {
 } from "../../utils/moneyFormatter";
 import { ICompensation, JobRecord } from "../../../../shared-types/types";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { format } from "date-fns";
 
 export const Profile = () => {
   const queryClient = useQueryClient();
@@ -74,7 +84,7 @@ export const Profile = () => {
 
       return { previousJobs };
     },
-    onError: (err, _, context) => {
+    onError: (_err, _, context) => {
       if (context?.previousJobs) {
         queryClient.setQueryData(["userJobs"], context.previousJobs);
       }
@@ -313,6 +323,12 @@ export const Profile = () => {
                     <span className="value">{job.type}</span>
                   </div>
                 </div>
+
+                <Typography variant="h6" className="applications-title">
+                  Applicants:
+                </Typography>
+                <JobApplications jobId={job.id} />
+
                 <Button
                   variant="contained"
                   color="error"
@@ -373,6 +389,105 @@ export const Profile = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    </div>
+  );
+};
+
+interface Application {
+  id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  resume_url?: string;
+  status: "pending" | "viewed" | "contacted";
+  created_at: string;
+}
+
+const JobApplications = ({ jobId }: { jobId: string }) => {
+  const { openSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
+
+  const { data: applications, isLoading } = useQuery({
+    queryKey: ["jobApplications", jobId],
+    queryFn: () => getApplicationsForJob(jobId),
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({
+      applicationId,
+      status,
+    }: {
+      applicationId: string;
+      status: string;
+    }) => updateApplicationStatus(applicationId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobApplications", jobId] });
+      openSnackbar("Application status updated successfully", "success");
+    },
+    onError: () => {
+      openSnackbar("Failed to update application status", "error");
+    },
+  });
+
+  if (isLoading) return <Typography>Loading applications...</Typography>;
+
+  if (!applications?.length) {
+    return (
+      <Typography className="no-applications">
+        No applications received yet
+      </Typography>
+    );
+  }
+
+  return (
+    <div className="applications-container">
+      {applications.map((application: Application) => (
+        <div key={application.id} className="application-card">
+          <div className="application-header">
+            <Typography variant="h6">{application.full_name}</Typography>
+            <Typography variant="caption">
+              Applied {format(new Date(application.created_at), "MMM d, yyyy")}
+            </Typography>
+          </div>
+
+          <div className="application-content">
+            <div className="application-info">
+              <Typography>
+                <strong>Email:</strong> {application.email}
+              </Typography>
+              <Typography>
+                <strong>Phone:</strong> {application.phone_number}
+              </Typography>
+              {application.resume_url && (
+                <a
+                  href={application.resume_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="resume-link">
+                  View Resume
+                </a>
+              )}
+            </div>
+
+            <FormControl size="small" className="status-select">
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={application.status}
+                label="Status"
+                onChange={(e) =>
+                  updateStatusMutation.mutate({
+                    applicationId: application.id,
+                    status: e.target.value,
+                  })
+                }>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="viewed">Viewed</MenuItem>
+                <MenuItem value="contacted">Contacted</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

@@ -14,19 +14,31 @@ import WorkIcon from "@mui/icons-material/Work";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { formatDistance } from "date-fns";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./JobCard.css";
 import { moneyFormatter } from "../../utils/moneyFormatter";
 import { JobRecord } from "../../../../shared-types/types";
 
 interface JobCardProps {
-  job: JobRecord & { created_at: Date };
+  job: JobRecord;
 }
 
 const JobCard = ({ job }: JobCardProps) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
-  const daysAgo = formatDistance(new Date(job.created_at), new Date(), {
+
+  const daysAgo = formatDistance(new Date(job.created_at!), new Date(), {
     addSuffix: true,
   });
+
+  const handleApplyClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (job.application_method === "external" && job.application_url) {
+      window.location.href = job.application_url;
+    } else {
+      navigate(`/jobs/${job.id}/apply`);
+    }
+  };
 
   return (
     <Card className="job-card" onClick={() => setExpanded(!expanded)}>
@@ -106,10 +118,7 @@ const JobCard = ({ job }: JobCardProps) => {
               variant="contained"
               color="primary"
               className="job-apply-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Handle apply logic
-              }}>
+              onClick={handleApplyClick}>
               Apply Now
             </Button>
           </Box>

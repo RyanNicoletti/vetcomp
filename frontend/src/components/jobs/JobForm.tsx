@@ -19,7 +19,6 @@ import {
   Autocomplete,
   CircularProgress,
 } from "@mui/material";
-import { createJob } from "../../queries/jobQueries";
 import { getLocationSuggestions } from "../../queries/locationQueries";
 import { useUserStatus } from "../../hooks/useUserStatus";
 import { useState } from "react";
@@ -91,7 +90,7 @@ const JobForm = () => {
     setValue("location", value || "");
   };
 
-  const handleLocationInputChange = (event: any, newInputValue: string) => {
+  const handleLocationInputChange = (_event: any, newInputValue: string) => {
     setLocationQuery(newInputValue);
   };
 

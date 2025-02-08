@@ -1,4 +1,3 @@
-import { convertCurrencyToNumber } from "../utils/moneyFormatter";
 import {
   IJobFormData,
   JobRecord,
@@ -101,6 +100,46 @@ export const getJobById = async (id: string): Promise<JobRecord> => {
 
   if (!response.ok) {
     throw new Error("Failed to fetch job details.");
+  }
+
+  return response.json();
+};
+
+export const getApplicationsForJob = async (jobId: string) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/jobs/${jobId}/applications`,
+    {
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch applications");
+  }
+
+  return response.json();
+};
+
+export const updateApplicationStatus = async (
+  applicationId: string,
+  status: string
+) => {
+  const response = await fetch(
+    `${
+      import.meta.env.VITE_API_BASE_URL
+    }/jobs/applications/${applicationId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update application status");
   }
 
   return response.json();
