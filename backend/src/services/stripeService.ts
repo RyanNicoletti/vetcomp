@@ -29,7 +29,7 @@ const stripeService = {
             price_data: {
               currency: "usd",
               product_data: {
-                name: "Monthly Job Posting Subscription",
+                name: "Veterinarycomp.com Job Advertisement",
                 description: `Job post for ${newJob.title} at ${newJob.company}`,
               },
               unit_amount: Math.round(pricePerMonth * 100),

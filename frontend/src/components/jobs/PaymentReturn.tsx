@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Typography } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import "./PaymentReturn.css";
 
 const PaymentReturn = () => {
@@ -9,15 +10,16 @@ const PaymentReturn = () => {
     <Container className="payment-return-container">
       <div className="payment-return-success">
         <Typography variant="h4" className="payment-return-title">
-          Payment processed and job post successfully created!
+          Payment Successful
         </Typography>
+        <CheckCircleIcon className="checkmark-icon" />
         <Typography className="payment-return-message">
           Thank you for posting a job on veterinarycomp.com! A confirmation
-          email has been sent to your email address with the details of your
-          post and subscription.
+          email has been sent to your email address with the details of your job
+          listing and subscription.
         </Typography>
         <Typography className="payment-return-support">
-          If you have any questions, please email{" "}
+          For questions related to your subscription, please contact{" "}
           <a href="mailto:support@veterinarycomp.com">
             support@veterinarycomp.com
           </a>

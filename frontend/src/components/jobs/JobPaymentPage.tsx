@@ -26,6 +26,7 @@ const JobPaymentPage = () => {
   const location = useLocation();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const jobData = location.state?.jobData;
+  const shouldShowFeatures = jobData.applicationMethod === "email";
   const MONTHLY_PRICE = 99;
 
   const checkoutMutation = useMutation({
@@ -43,72 +44,66 @@ const JobPaymentPage = () => {
   };
 
   return (
-    <Container className="job-payment-page">
+    <Container className="job-payment-container">
       {!clientSecret ? (
         <Box>
-          <Card className="job-payment-card">
-            <CardContent>
-              <Typography
-                variant="h4"
-                align="center"
-                className="job-payment-title">
-                Subscription Summary
-              </Typography>
+          <div className="job-payment-card">
+            <h2 className="job-payment-title">Payment Summary</h2>
 
-              <div className="job-payment-price">
-                <Typography className="job-payment-price-amount">
-                  ${MONTHLY_PRICE}/month
-                </Typography>
-                <Typography className="job-payment-price-description">
-                  Monthly subscription, cancel anytime
-                </Typography>
-              </div>
+            <div className="job-payment-price">
+              <span className="job-payment-price-amount">
+                ${MONTHLY_PRICE}/month
+              </span>
+              <span className="job-payment-price-description">
+                Monthly subscription, cancel anytime
+              </span>
+            </div>
 
-              <Divider className="job-payment-divider" />
+            <Divider className="job-payment-divider" />
 
+            <div className="job-payment-content">
               <div className="job-payment-details">
                 <div className="job-payment-detail-row">
-                  <Typography>Job Title:</Typography>
-                  <Typography className="job-payment-detail-value">
+                  <span>Job Title</span>
+                  <span className="job-payment-detail-value">
                     {jobData.title}
-                  </Typography>
+                  </span>
                 </div>
-
                 <div className="job-payment-detail-row">
-                  <Typography>Company:</Typography>
-                  <Typography className="job-payment-detail-value">
+                  <span>Hospital Name</span>
+                  <span className="job-payment-detail-value">
                     {jobData.company}
-                  </Typography>
+                  </span>
                 </div>
-
                 <div className="job-payment-detail-row">
-                  <Typography>Location:</Typography>
-                  <Typography className="job-payment-detail-value">
+                  <span>Location</span>
+                  <span className="job-payment-detail-value">
                     {jobData.location}
-                  </Typography>
+                  </span>
                 </div>
-
                 <div className="job-payment-detail-row">
-                  <Typography>Practice Type:</Typography>
-                  <Typography className="job-payment-detail-value">
+                  <span>Practice Type</span>
+                  <span className="job-payment-detail-value">
                     {jobData.practiceType}
-                  </Typography>
+                  </span>
                 </div>
               </div>
 
-              <div className="job-payment-features">
-                <Typography variant="body2" color="text.secondary">
-                  Your job post includes:
-                </Typography>
-                <ul className="job-payment-features-list">
-                  <li>Access to applicant management dashboard</li>
-                  <li>Email notifications for new applications</li>
-                  <li>Edit job posting anytime</li>
-                  <li>Cancel subscription anytime</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+              {shouldShowFeatures && (
+                <div className="job-payment-features">
+                  <span className="features-title">
+                    Your job post includes:
+                  </span>
+                  <ul className="job-payment-features-list">
+                    <li>Access to applicant management dashboard</li>
+                    <li>Email notifications for new applications</li>
+                    <li>Edit job posting anytime</li>
+                    <li>Cancel subscription anytime</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
 
           {checkoutMutation.error && (
             <div className="job-payment-error">
@@ -122,16 +117,13 @@ const JobPaymentPage = () => {
             <Button
               variant="outlined"
               onClick={() => navigate("/jobs/post")}
-              disabled={checkoutMutation.isPending}
-              className="job-payment-button">
+              disabled={checkoutMutation.isPending}>
               Back
             </Button>
-
             <Button
               variant="contained"
               onClick={handlePaymentSubmit}
-              disabled={checkoutMutation.isPending}
-              className="job-payment-button">
+              disabled={checkoutMutation.isPending}>
               {checkoutMutation.isPending ? (
                 <>
                   <CircularProgress size={20} className="job-payment-spinner" />
