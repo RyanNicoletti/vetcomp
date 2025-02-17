@@ -73,6 +73,38 @@ const jobApplicationsService = {
       .returning("*");
     return updatedApplication;
   },
+
+  deleteApplication: async (
+    db: Knex,
+    applicationId: string,
+    userId: string
+  ): Promise<boolean> => {
+    const application = await db("job_applications")
+      .where({ id: applicationId, user_id: userId })
+      .first();
+
+    if (!application) {
+      return false;
+    }
+
+    const deletedCount = await db("job_applications")
+      .where({ id: applicationId })
+      .del();
+
+    return deletedCount > 0;
+  },
+
+  verifyApplicationOwnership: async (
+    db: Knex,
+    applicationId: string,
+    userId: string
+  ): Promise<boolean> => {
+    const application = await db("job_applications")
+      .where({ id: applicationId, user_id: userId })
+      .first();
+
+    return !!application;
+  },
 };
 
 export default jobApplicationsService;

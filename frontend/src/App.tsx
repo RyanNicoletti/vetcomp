@@ -24,6 +24,7 @@ import JobPaymentPage from "./components/jobs/JobPaymentPage";
 import JobsPostPage from "./pages/JobsPostPage";
 import PaymentReturn from "./components/jobs/PaymentReturn";
 import JobApplicationPage from "./pages/JobApplicationPage";
+import ApplicationsListPage from "./pages/ApplicationsListPage";
 
 function App() {
   return (
@@ -44,6 +45,10 @@ function App() {
             <Route path="/jobs/post" element={<JobsPostPage />} />
             <Route path="/jobs/payment/return" element={<PaymentReturn />} />
             <Route path="/jobs/:jobId/apply" element={<JobApplicationPage />} />
+            <Route
+              path="/jobs/:jobId/applications"
+              element={<ApplicationsListPage />}
+            />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/addcomp" element={<AddCompForm />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

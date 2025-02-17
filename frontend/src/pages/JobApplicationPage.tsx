@@ -19,20 +19,13 @@ const JobApplicationPage = () => {
       return getJobById(jobId);
     },
     enabled: !!jobId,
+    retry: false,
   });
 
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box m={4}>
-        <Alert severity="error">Failed to load job details</Alert>
       </Box>
     );
   }
@@ -48,6 +41,14 @@ const JobApplicationPage = () => {
   if (job.application_method === "external" && job.application_url) {
     window.location.href = job.application_url;
     return null;
+  }
+
+  if (error) {
+    return (
+      <Box m={4}>
+        <Alert severity="error">Failed to load job details</Alert>
+      </Box>
+    );
   }
 
   return (

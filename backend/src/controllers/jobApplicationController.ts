@@ -11,6 +11,7 @@ import b2Service from "../services/b2Service";
 import emailService from "../services/emailService";
 import { JobApplicationFormSchema } from "../schemas/jobApplicationSchema";
 import jobApplicationsService from "../services/jobApplicationsService";
+import jobsService from "../services/jobsService";
 
 const upload = multer().single("resume");
 
@@ -31,7 +32,7 @@ const jobApplicationsController = {
       });
     });
 
-    const job = await db("jobs").where({ id: jobId }).first();
+    const job = await jobsService.getById(db, jobId);
     if (!job) {
       throw new NotFoundError("Job not found");
     }
@@ -97,10 +98,8 @@ const jobApplicationsController = {
     }
 
     // Verify the user owns this job post
-    const job = await db("jobs")
-      .where({ id: jobId, user_id: req.session.userId })
-      .first();
-    if (!job) {
+    const job = await jobsService.getById(db, jobId);
+    if (!job || job.user_id !== req.session.userId) {
       throw new NotFoundError("Job not found or access denied");
     }
 
@@ -156,6 +155,26 @@ const jobApplicationsController = {
       );
 
     res.json(updatedApplication);
+  }),
+
+  deleteApplication: asyncHandler(async (req: Request, res: Response) => {
+    const { applicationId } = req.params;
+
+    if (!req.session.userId) {
+      throw new UnauthorizedError("Must be logged in to delete applications");
+    }
+
+    const deleted = await jobApplicationsService.deleteApplication(
+      db,
+      applicationId,
+      req.session.userId
+    );
+
+    if (!deleted) {
+      throw new NotFoundError("Application not found or access denied");
+    }
+
+    res.json({ message: "Application deleted successfully" });
   }),
 };
 

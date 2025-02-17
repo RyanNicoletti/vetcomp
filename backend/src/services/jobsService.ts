@@ -56,15 +56,19 @@ const jobsService = {
       .orderBy("created_at", "desc");
   },
 
-  getById: async (
-    db: Knex,
-    jobId: string,
-    userId: string
-  ): Promise<JobRecord | null> => {
-    const job = await db<JobRecord>("jobs")
-      .where({ id: jobId, user_id: userId })
-      .first();
-    return job || null;
+  getById: async (db: Knex, jobId: string): Promise<JobRecord | null> => {
+    try {
+      const job = await db<JobRecord>("jobs")
+        .where({
+          id: jobId,
+          status: "active",
+        })
+        .first();
+      return job || null;
+    } catch (error) {
+      console.error("Unable to find job: ", error);
+      throw error;
+    }
   },
 };
 

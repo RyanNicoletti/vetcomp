@@ -33,3 +33,19 @@ export const getUserApplications = async () => {
 
   return response.json();
 };
+
+export const deleteApplication = async (
+  applicationId: string
+): Promise<void> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/jobs/applications/${applicationId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete application");
+  }
+};

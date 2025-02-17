@@ -39,9 +39,9 @@ const getAll = asyncHandler(async (req: Request, res: Response) => {
 const getJobById = asyncHandler(async (req: Request, res: Response) => {
   const jobId = z.string().uuid("Invalid job ID").parse(req.params.id);
 
-  const job = await jobsService.getById(db, jobId, req.session.userId);
+  const job = await jobsService.getById(db, jobId);
   if (!job) {
-    throw new BadRequestError("Job not found");
+    throw new BadRequestError("Job not found or no longer active");
   }
 
   res.json(job);
@@ -62,7 +62,7 @@ const cancelSubscription = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const jobId = req.params.id;
-  const job = await jobsService.getById(db, jobId, req.session.userId);
+  const job = await jobsService.getById(db, jobId);
 
   if (!job) {
     throw new NotFoundError("Job not found");

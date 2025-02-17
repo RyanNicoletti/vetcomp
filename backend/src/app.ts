@@ -149,6 +149,10 @@ jobsRouter.get(
   "/:jobId/applications",
   jobApplicationsController.getApplicationsForJob
 );
+jobsRouter.delete(
+  "/applications/:applicationId",
+  jobApplicationsController.deleteApplication
+);
 
 // Individual job routes (come last because of the :id parameter)
 jobsRouter.get("/:id", jobsController.getJobById);

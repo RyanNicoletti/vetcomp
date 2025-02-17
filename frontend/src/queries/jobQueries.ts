@@ -99,7 +99,8 @@ export const getJobById = async (id: string): Promise<JobRecord> => {
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch job details.");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch job details.");
   }
 
   return response.json();
