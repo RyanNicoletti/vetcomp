@@ -17,6 +17,8 @@ import { getAllJobs } from "../../queries/jobQueries";
 import JobCard from "./JobCard";
 import { SearchAndFilter } from "./SearchAndFilter";
 import "./JobsList.css";
+import { JobRecord } from "../../../../shared-types/types";
+import JobDetailsPanel from "./JobDetailsPanel";
 
 export interface JobFilters {
   page: number;
@@ -34,6 +36,7 @@ export interface JobsSortParams {
 
 const JobsList = () => {
   const navigate = useNavigate();
+  const [selectedJob, setSelectedJob] = useState<JobRecord | null>(null);
   const [filters, setFilters] = useState<JobFilters>({
     page: 1,
     rowsPerPage: 10,
@@ -58,6 +61,10 @@ const JobsList = () => {
         typeFilter: filters.typeFilter ?? [],
       }),
   });
+
+  const handleJobSelect = (job: JobRecord) => {
+    setSelectedJob(job === selectedJob ? null : job);
+  };
 
   const handleSearch = (
     searchFilters: Omit<JobFilters, "page" | "rowsPerPage">
@@ -92,10 +99,10 @@ const JobsList = () => {
   }
 
   return (
-    <Container className="jobs-container">
+    <Container className="jobs-container" maxWidth={false}>
       <Box className="jobs-header">
         <Typography variant="h4" component="h1">
-          Veterinary Jobs
+          Job Listings
         </Typography>
         <Button
           variant="contained"
@@ -116,33 +123,27 @@ const JobsList = () => {
         }}
       />
 
-      {!data?.jobs || data.jobs.length === 0 ? (
-        <Card className="empty-jobs-card">
-          <CardContent className="empty-jobs-content">
-            <WorkOutlineIcon className="jobs-icon" />
-            <Typography variant="h5" component="h2">
-              No Jobs Posted
-            </Typography>
-            <Typography variant="body1" className="empty-jobs-message">
-              There are currently no job listings available. Check back later or
-              be the first to post a position.
-            </Typography>
-            <Button
-              variant="outlined"
-              onClick={handlePostJob}
-              startIcon={<AddCircleOutlineIcon />}
-              className="post-job-button-secondary">
-              Post a Job
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <Box className="jobs-grid">
-          {data.jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+      <Box className="jobs-layout">
+        <Box className="jobs-list">
+          {data?.jobs.map((job) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              isSelected={selectedJob?.id === job.id}
+              onSelect={() => handleJobSelect(job)}
+            />
           ))}
         </Box>
-      )}
+
+        {selectedJob && (
+          <Box className="job-details-panel">
+            <JobDetailsPanel
+              job={selectedJob}
+              onClose={() => setSelectedJob(null)}
+            />
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 };

@@ -31,6 +31,7 @@
   align-items: center;
   gap: 1.5rem;
   margin-top: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .job-meta-item {

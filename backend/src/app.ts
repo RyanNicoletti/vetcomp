@@ -20,11 +20,7 @@ import jobApplicationsController from "./controllers/jobApplicationController.js
 const app: Express = express();
 
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "https://veterinarycomp.com",
-    "https://www.veterinarycomp.com",
-  ],
+  origin: [process.env.FRONTEND_URL],
   credentials: true,
 };
 
@@ -35,7 +31,14 @@ app.post(
   stripeController.handleWebhook
 );
 
-app.use(helmet());
+app.use(
+  helmet({
+    hidePoweredBy: true,
+    frameguard: { action: "deny" },
+    noSniff: true,
+    xssFilter: true,
+  })
+);
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
@@ -51,7 +54,8 @@ app.use(express.json());
 
 let redisStore = new RedisStore({
   client: redisClient,
-  prefix: "veterinarycomp:",
+  prefix: "veterinarycomp:session:",
+  ttl: 24 * 60 * 60,
 });
 
 const sess = {

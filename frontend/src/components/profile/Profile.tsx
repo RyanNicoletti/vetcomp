@@ -123,7 +123,10 @@ export const Profile = () => {
     <div className="profile-container">
       {compensations && compensations.length > 0 && (
         <>
-          <Typography variant="h4" className="page-title">
+          <Typography
+            variant="h5"
+            className="page-title"
+            style={{ fontSize: "1.8rem" }}>
             Compensations
           </Typography>
           <div className="compensations-grid">
@@ -271,11 +274,11 @@ export const Profile = () => {
       )}
 
       {jobs && jobs.length > 0 && (
-        <>
+        <div className="job-posts-container">
           <Typography
-            variant="h4"
+            variant="h5"
             className="page-title"
-            style={{ marginTop: "2rem" }}>
+            style={{ marginTop: "2rem", fontSize: "1.8rem" }}>
             Job Posts
           </Typography>
           <div className="jobs-grid">
@@ -317,7 +320,7 @@ export const Profile = () => {
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
 
       {hasNoData && (

@@ -1,0 +1,85 @@
+.job-details-panel-container {
+  position: sticky;
+  top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  height: calc(100vh - 180px);
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.job-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.job-details-title {
+  margin-right: 15px;
+}
+
+.job-details-company {
+  margin-bottom: 15px;
+}
+
+.job-details-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.job-details-type-chip {
+  background-color: #e3f2fd;
+}
+
+.job-details-practice-chip {
+  background-color: #e8f5e9;
+}
+
+.job-details-salary {
+  margin-bottom: 15px;
+}
+
+.job-details-divider {
+  margin: 15px 0;
+}
+
+.job-details-section {
+  margin-bottom: 20px;
+}
+
+.job-details-section-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.job-details-description,
+.job-details-requirements,
+.job-details-benefits {
+  white-space: pre-line;
+}
+
+.job-details-actions {
+  margin-top: 25px;
+}
+
+.job-details-apply-btn {
+  width: 100%;
+}
+
+.job-details-mobile-actions {
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .job-details-mobile-actions {
+    display: block;
+  }
+}

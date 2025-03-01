@@ -1,47 +1,26 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Collapse,
-  IconButton,
-} from "@mui/material";
+import { Card, CardContent, Typography, Box, Chip } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { formatDistance } from "date-fns";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./JobCard.css";
 import { moneyFormatter } from "../../utils/moneyFormatter";
 import { JobRecord } from "../../../../shared-types/types";
 
 interface JobCardProps {
   job: JobRecord;
+  isSelected?: boolean;
+  onSelect: () => void;
 }
 
-const JobCard = ({ job }: JobCardProps) => {
-  const navigate = useNavigate();
-  const [expanded, setExpanded] = useState(false);
-
+const JobCard = ({ job, isSelected = false, onSelect }: JobCardProps) => {
   const daysAgo = formatDistance(new Date(job.created_at!), new Date(), {
     addSuffix: true,
   });
 
-  const handleApplyClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (job.application_method === "external" && job.application_url) {
-      window.location.href = job.application_url;
-    } else {
-      navigate(`/jobs/${job.id}/apply`);
-    }
-  };
-
   return (
-    <Card className="job-card" onClick={() => setExpanded(!expanded)}>
+    <Card
+      className={`job-card ${isSelected ? "job-card-selected" : ""}`}
+      onClick={onSelect}>
       <CardContent>
         <Box className="job-card-header">
           <Box className="job-main-info">
@@ -84,45 +63,8 @@ const JobCard = ({ job }: JobCardProps) => {
                 />
               )}
             </Box>
-            <IconButton
-              className={`expand-button ${expanded ? "expanded" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpanded(!expanded);
-              }}>
-              <ExpandMoreIcon />
-            </IconButton>
           </Box>
         </Box>
-
-        <Collapse in={expanded}>
-          <Divider className="job-divider" />
-          <Box className="job-details">
-            <Typography variant="body1" className="job-section">
-              <strong>Description</strong>
-              <p>{job.description}</p>
-            </Typography>
-            {job.requirements && (
-              <Typography variant="body1" className="job-section">
-                <strong>Requirements</strong>
-                <p>{job.requirements}</p>
-              </Typography>
-            )}
-            {job.benefits && (
-              <Typography variant="body1" className="job-section">
-                <strong>Benefits</strong>
-                <p>{job.benefits}</p>
-              </Typography>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              className="job-apply-btn"
-              onClick={handleApplyClick}>
-              Apply Now
-            </Button>
-          </Box>
-        </Collapse>
       </CardContent>
     </Card>
   );

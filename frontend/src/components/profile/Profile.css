@@ -15,7 +15,8 @@
   margin: 0 auto 2rem;
 }
 
-.jobs-grid {
+.job-posts-container {
+  margin-bottom: 2rem;
 }
 
 .comp-card,

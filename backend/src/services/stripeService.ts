@@ -44,7 +44,7 @@ const stripeService = {
           jobTitle: newJob.title,
           company: newJob.company,
         },
-        return_url: `http://${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
+        return_url: `${process.env.FRONTEND_URL}/jobs/payment/return?session_id={CHECKOUT_SESSION_ID}`,
       });
 
       const validatedJobRecord: Omit<JobRecord, "id"> = {
