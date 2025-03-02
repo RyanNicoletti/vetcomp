@@ -48,6 +48,7 @@ const JobForm = () => {
     setValue,
     getValues,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<IJobFormData>({
     defaultValues: {
@@ -78,12 +79,17 @@ const JobForm = () => {
     enabled: locationQuery.length > 2,
   });
 
-  const onSubmit = (data: IJobFormData) => {
+  const onSubmit = async (jobFormData: IJobFormData) => {
     if (!isAuthenticated) {
       navigate("/login?redirect=/jobs/post");
       return;
     }
-    navigate("/jobs/payment", { state: { jobData: data } });
+
+    const isValid = await trigger();
+
+    if (isValid) {
+      navigate("/jobs/payment", { state: { jobData: jobFormData } });
+    }
   };
 
   const handleLocationChange = (_event: any, value: any) => {
@@ -482,7 +488,7 @@ const JobForm = () => {
                     name="contactEmail"
                     control={control}
                     rules={{
-                      required: "Email is required",
+                      required: "email is required",
                       pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                         message: "Invalid email address",
@@ -506,7 +512,7 @@ const JobForm = () => {
                     name="applicationUrl"
                     control={control}
                     rules={{
-                      required: "URL is required for external applications",
+                      required: "URL to external application is required",
                       pattern: {
                         value: /^https?:\/\/.+/,
                         message:

@@ -66,57 +66,74 @@ const convertCurrencyToNumber = (value: string | number): number => {
   return Number(value.replace(/[^0-9.-]+/g, ""));
 };
 
-export const JobFormSchema = z.object({
-  title: z.string().min(1, "Job title is required"),
-  company: z.string().min(1, "Company name is required"),
-  location: z.string().min(1, "Location is required"),
-  type: JobType,
-  practiceType: z.string().min(1, "Practice type is required"),
-  salaryMin: numberFromCurrency(
-    z.number().nonnegative("Must be non-negative")
-  ).refine((val) => val !== null, "This value is required"),
-  salaryMax: numberFromCurrency(
-    z.number().nonnegative("Must be non-negative")
-  ).refine((val) => val !== null, "This value is required"),
-  signOnBonus: numberFromCurrency(
-    z.number().nonnegative("Must be non-negative")
-  ).nullable(),
-  experienceMin: z.coerce
-    .number()
-    .transform(yearOfExperienceTransform)
-    .pipe(
-      z
-        .number()
-        .int()
-        .nonnegative("Years of experience must be a non-negative integer")
+export const JobFormSchema = z
+  .object({
+    title: z.string().min(1, "Job title is required"),
+    company: z.string().min(1, "Company name is required"),
+    location: z.string().min(1, "Location is required"),
+    type: JobType,
+    practiceType: z.string().min(1, "Practice type is required"),
+    salaryMin: numberFromCurrency(
+      z.number().nonnegative("Must be non-negative")
+    ).refine((val) => val !== null, "This value is required"),
+    salaryMax: numberFromCurrency(
+      z.number().nonnegative("Must be non-negative")
+    ).refine((val) => val !== null, "This value is required"),
+    signOnBonus: numberFromCurrency(
+      z.number().nonnegative("Must be non-negative")
+    )
+      .nullable()
+      .default(null),
+    experienceMin: z.coerce
+      .number()
+      .transform(yearOfExperienceTransform)
+      .pipe(
+        z
+          .number()
+          .int()
+          .nonnegative("Years of experience must be a non-negative integer")
+      ),
+    experienceMax: z.coerce
+      .number()
+      .transform(yearOfExperienceTransform)
+      .pipe(
+        z
+          .number()
+          .int()
+          .nonnegative("Years of experience must be a non-negative integer")
+      ),
+    description: z.string().min(1, "Job description is required"),
+    requirements: z.string().optional().nullable(),
+    benefits: z.string().optional().nullable(),
+    applicationMethod: z.enum(["email", "external"]),
+    contactEmail: z.preprocess(
+      (arg) => (arg === "" ? undefined : arg),
+      z.string().email().optional()
     ),
-  experienceMax: z.coerce
-    .number()
-    .transform(yearOfExperienceTransform)
-    .pipe(
-      z
-        .number()
-        .int()
-        .nonnegative("Years of experience must be a non-negative integer")
+    applicationUrl: z.preprocess(
+      (arg) => (arg === "" ? undefined : arg),
+      z.string().url().optional().nullable()
     ),
-  description: z.string().min(1, "Job description is required"),
-  requirements: z.string().optional().nullable(),
-  benefits: z.string().optional().nullable(),
-  applicationMethod: z.enum(["email", "external"]),
-  contactEmail: z.string().email().optional().nullable(),
-  applicationUrl: z
-    .string()
-    .url()
-    .optional()
-    .nullable()
-    .refine((val) => !val || z.string().url().safeParse(val).success, {
-      message: "Invalid URL",
-    }),
-  status: z.enum(["active", "expired", "draft"]),
-  user_id: z.string(),
-});
+    status: z.enum(["active", "expired", "draft"]),
+    user_id: z.string(),
+  })
+  .refine(
+    (data) => {
+      if (data.applicationMethod === "email") {
+        return !!data.contactEmail;
+      }
+      if (data.applicationMethod === "external") {
+        return !!data.applicationUrl;
+      }
+      return true;
+    },
+    {
+      message:
+        "You must provide an email address for email applications or a URL for external applications",
+      path: ["applicationMethod"],
+    }
+  );
 
-// Query parameters schema
 export const JobQuerySchema = z.object({
   page: z
     .string()

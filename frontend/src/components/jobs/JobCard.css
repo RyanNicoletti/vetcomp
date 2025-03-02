@@ -18,6 +18,16 @@
 
 .job-main-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-title {
+  margin-bottom: 0.25rem;
+}
+
+.job-company {
+  margin-bottom: 0.5rem;
 }
 
 .job-card-right {
@@ -29,9 +39,9 @@
 .job-meta {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+  color: #666;
+  font-size: 0.85rem;
 }
 
 .job-meta-item {
@@ -40,9 +50,17 @@
   gap: 0.25rem;
 }
 
+.job-meta-item svg {
+  font-size: 1rem;
+  color: #888;
+}
+
 .job-salary {
   text-align: right;
   min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .job-posted {
@@ -50,38 +68,8 @@
   font-size: 0.85rem;
 }
 
-.job-divider {
-  margin: 1rem 0;
-}
-
-.job-details {
-  padding: 1rem 0;
-}
-
-.job-section {
-  margin-bottom: 1.5rem;
-}
-
-.job-section strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
 .job-bonus {
   margin-top: 0.5rem;
-}
-
-.expand-button {
-  transition: transform 0.3s ease;
-}
-
-.expand-button.expanded {
-  transform: rotate(180deg);
-}
-
-.job-apply-btn {
-  margin-top: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -98,5 +86,8 @@
 
   .job-salary {
     text-align: left;
+    align-items: flex-start;
+    width: 100%;
+    min-width: auto;
   }
 }

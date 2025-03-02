@@ -27,27 +27,13 @@ const JobCard = ({ job, isSelected = false, onSelect }: JobCardProps) => {
             <Typography variant="h6" className="job-title">
               {job.title}
             </Typography>
-            <Typography variant="subtitle1" color="primary">
+            <Typography
+              variant="subtitle1"
+              color="primary"
+              className="job-company">
               {job.company}
             </Typography>
-            <Box className="job-meta">
-              <Box className="job-meta-item">
-                <LocationOnIcon fontSize="small" />
-                <Typography variant="body2">{job.location}</Typography>
-              </Box>
-              <Box className="job-meta-item">
-                <WorkIcon fontSize="small" />
-                <Typography variant="body2">{job.type}</Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                className="job-posted">
-                Posted {daysAgo}
-              </Typography>
-            </Box>
           </Box>
-
           <Box className="job-card-right">
             <Box className="job-salary">
               <Typography variant="body1" fontWeight="medium">
@@ -64,6 +50,22 @@ const JobCard = ({ job, isSelected = false, onSelect }: JobCardProps) => {
               )}
             </Box>
           </Box>
+        </Box>
+        <Box className="job-meta">
+          <Box className="job-meta-item">
+            <LocationOnIcon fontSize="small" />
+            <Typography variant="body2">{job.location}</Typography>
+          </Box>
+          <Box className="job-meta-item">
+            <WorkIcon fontSize="small" />
+            <Typography variant="body2">{job.type}</Typography>
+          </Box>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            className="job-posted">
+            Posted {daysAgo}
+          </Typography>
         </Box>
       </CardContent>
     </Card>
