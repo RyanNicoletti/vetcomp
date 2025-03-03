@@ -17,7 +17,7 @@ export const JobApplicationSchema = z.object({
 export const JobApplicationFormSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(1, "Phone number is required"),
+  phoneNumber: z.string().optional().nullable(),
 });
 
 export type JobApplication = z.infer<typeof JobApplicationSchema>;

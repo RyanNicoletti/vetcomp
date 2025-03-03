@@ -46,6 +46,7 @@ const JobApplicationForm = ({
   const { isAuthenticated, email } = useUserStatus();
   const { openSnackbar } = useSnackbar();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [resumeError, setResumeError] = useState<string | null>(null);
 
   const {
     control,
@@ -86,6 +87,7 @@ const JobApplicationForm = ({
     if (file) {
       setUploadedFile(file);
       setValue("resume", event.target.files);
+      setResumeError(null);
     }
   };
 
@@ -95,6 +97,10 @@ const JobApplicationForm = ({
   };
 
   const onSubmit = (data: ApplicationFormData) => {
+    if (!uploadedFile) {
+      setResumeError("Resume is required");
+      return;
+    }
     applicationMutation.mutate(data);
   };
 
@@ -122,7 +128,7 @@ const JobApplicationForm = ({
               <Controller
                 name="fullName"
                 control={control}
-                rules={{ required: "Full name is required" }}
+                rules={{ required: "Name is required" }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -162,7 +168,6 @@ const JobApplicationForm = ({
               <Controller
                 name="phoneNumber"
                 control={control}
-                rules={{ required: "Phone number is required" }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -194,6 +199,14 @@ const JobApplicationForm = ({
                     Upload Resume
                   </Button>
                 </label>
+                {resumeError && (
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    style={{ display: "block", marginTop: "8px" }}>
+                    {resumeError}
+                  </Typography>
+                )}
 
                 {uploadedFile && (
                   <Box className="uploaded-file-info">
