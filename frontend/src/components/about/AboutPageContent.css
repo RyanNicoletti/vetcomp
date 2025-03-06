@@ -1,9 +1,9 @@
 .about-container {
-  margin: 125px auto 0 auto;
+  margin: 125px auto 40px auto;
   font-family: Arial, sans-serif;
   line-height: 1.6;
   color: #333;
-  max-width: 800px;
+  max-width: 900px;
   padding: 0 20px;
   box-sizing: border-box;
 }
@@ -11,62 +11,104 @@
 .about-title {
   color: #2c3e50;
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 2.5em;
+  margin-bottom: 35px;
+  font-size: 2.6em;
+  font-weight: 600;
 }
 
 .about-section {
   margin-bottom: 40px;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .about-section h2 {
-  color: #3498db;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-  font-size: 1.8em;
+  color: #1894ad; /* Using the --color-primary from your variables */
+  border-bottom: 2px solid #1894ad;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  font-size: 1.9em;
+  font-weight: 600;
+}
+
+.about-section h3 {
+  color: #3a3a3a;
+  margin-bottom: 12px;
+  font-size: 1.4em;
+  font-weight: 600;
 }
 
 .about-section p {
   margin-bottom: 15px;
+  font-size: 1.05em;
+  line-height: 1.7;
 }
 
-.about-section ul {
-  list-style-type: disc;
-  padding-left: 20px;
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.feature-item {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #1894ad;
+}
+
+.benefits-list {
+  list-style-type: none;
+  padding-left: 5px;
   margin-bottom: 15px;
 }
 
-.about-section li {
-  margin-bottom: 10px;
-}
-
-.about-section li.coming-soon {
+.benefits-list li {
+  margin-bottom: 15px;
   position: relative;
-  padding-right: 110px;
+  padding-left: 25px;
 }
 
-.coming-soon-tag {
+.benefits-list li:before {
+  content: "✓";
   position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #f39c12;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.8em;
+  left: 0;
+  color: #1894ad;
   font-weight: bold;
-  text-transform: uppercase;
 }
 
-#add-btn {
+.highlight {
+  font-weight: 600;
+  color: #1894ad;
+}
+
+.highlight-section {
+  background-color: #f7f9fc;
+  border-left: 4px solid #1894ad;
+}
+
+.cta-container {
   display: flex;
   justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.cta-button {
+  min-width: 200px !important;
+  padding: 10px 24px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  font-size: 1.05rem !important;
 }
 
 @media (max-width: 768px) {
@@ -75,27 +117,37 @@
   }
 
   .about-title {
-    font-size: 2em;
+    font-size: 2.2em;
   }
 
+  .about-section {
+    padding: 20px;
+  }
+
+  .about-section h2 {
+    font-size: 1.6em;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .cta-button {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
   .about-section {
     padding: 15px;
   }
 
-  .about-section h2 {
-    font-size: 1.5em;
-  }
-
-  .about-section li.coming-soon {
-    padding-right: 0;
-    padding-bottom: 25px;
-  }
-
-  .coming-soon-tag {
-    right: auto;
-    left: 0;
-    top: auto;
-    bottom: 0;
-    transform: none;
+  .about-title {
+    font-size: 2em;
   }
 }

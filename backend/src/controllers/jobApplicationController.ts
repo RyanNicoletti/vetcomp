@@ -4,6 +4,7 @@ import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
+  InternalServerError,
 } from "../errors/httpErrors";
 import { db } from "../db/connection";
 import multer from "multer";
@@ -12,6 +13,8 @@ import emailService from "../services/emailService";
 import { JobApplicationFormSchema } from "../schemas/jobApplicationSchema";
 import jobApplicationsService from "../services/jobApplicationsService";
 import jobsService from "../services/jobsService";
+import { b2Client } from "../../config/b2Client";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 const upload = multer().single("resume");
 
@@ -51,11 +54,20 @@ const jobApplicationsController = {
     const validatedData = JobApplicationFormSchema.parse(formData);
 
     let resumeKey: string | undefined;
+    let resumeOriginalName: string | undefined;
+
     if (req.file) {
-      resumeKey = await b2Service.uploadFileToB2(
+      const uploadResult = await b2Service.uploadFileToB2(
         req.file.buffer,
-        req.file.originalname
+        req.file.originalname,
+        "resume",
+        req.session.userId
       );
+
+      if (uploadResult) {
+        resumeKey = uploadResult.key;
+        resumeOriginalName = uploadResult.originalName;
+      }
     }
 
     const application = await jobApplicationsService.create(db, {
@@ -63,8 +75,9 @@ const jobApplicationsController = {
       user_id: req.session.userId,
       full_name: validatedData.fullName,
       email: validatedData.email,
-      phone_number: validatedData.phoneNumber,
+      phone_number: validatedData.phoneNumber ?? null,
       resume_name: resumeKey,
+      resume_original_name: resumeOriginalName,
       status: "pending",
     });
 
@@ -175,6 +188,65 @@ const jobApplicationsController = {
     }
 
     res.json({ message: "Application deleted successfully" });
+  }),
+
+  downloadResume: asyncHandler(async (req: Request, res: Response) => {
+    const { resumeId } = req.params;
+
+    if (!req.session.userId) {
+      throw new UnauthorizedError("Must be logged in to download resumes");
+    }
+
+    const application = await db("job_applications")
+      .where({ resume_name: resumeId })
+      .first();
+
+    if (!application) {
+      throw new NotFoundError("Resume not found");
+    }
+
+    const job = await jobsService.getById(db, application.job_id);
+    if (!job) {
+      throw new NotFoundError("Job not found");
+    }
+
+    const isJobPoster = job.user_id === req.session.userId;
+    const isApplicant = application.user_id === req.session.userId;
+
+    if (!isJobPoster && !isApplicant) {
+      throw new UnauthorizedError("Not authorized to download this resume");
+    }
+
+    try {
+      const command = new GetObjectCommand({
+        Bucket: process.env.B2_RESUME_BUCKET_NAME,
+        Key: resumeId,
+      });
+
+      const data = await b2Client.send(command);
+
+      const downloadFilename = application.resume_original_name || resumeId;
+
+      // Set the headers for file download
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${downloadFilename}"`
+      );
+      if (data.ContentType) {
+        res.setHeader("Content-Type", data.ContentType);
+      }
+
+      // Stream the file to the client
+      if (data.Body) {
+        // @ts-ignore - TypeScript doesn't recognize the pipe method on this type
+        data.Body.pipe(res);
+      } else {
+        throw new Error("Empty file body");
+      }
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      throw new InternalServerError("Error downloading file");
+    }
   }),
 };
 

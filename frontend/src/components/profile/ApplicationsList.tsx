@@ -190,9 +190,11 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
                 <TableCell>
                   {application.resume_url ? (
                     <IconButton
-                      href={application.resume_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      component="a"
+                      href={`${import.meta.env.VITE_API_BASE_URL}${
+                        application.resume_url
+                      }`}
+                      download
                       className="download-button">
                       <DownloadIcon />
                     </IconButton>

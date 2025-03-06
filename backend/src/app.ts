@@ -143,6 +143,10 @@ jobsRouter.get("/", jobsController.getAll);
 jobsRouter.get("/profile", jobsController.getUserJobs);
 
 // Job applications routes (grouped together and before /:id)
+jobsRouter.get(
+  "/applications/resume/:resumeId",
+  jobApplicationsController.downloadResume
+);
 jobsRouter.get("/applications", jobApplicationsController.getUserApplications);
 jobsRouter.patch(
   "/applications/:applicationId/status",

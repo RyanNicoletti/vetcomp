@@ -9,6 +9,7 @@ export const JobApplicationSchema = z.object({
   phone_number: z.string().min(1, "Phone number is required"),
   resume_url: z.string().optional(),
   resume_name: z.string().optional(),
+  resume_original_name: z.string().optional(),
   status: z.enum(["pending", "viewed", "contacted"]),
   created_at: z.date().optional(),
   updated_at: z.date().optional(),

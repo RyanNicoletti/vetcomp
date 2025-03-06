@@ -165,12 +165,15 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
-  let verificationDocumentKey: string | undefined = undefined;
+  let verificationDocument: { key: string; originalName: string } | undefined =
+    undefined;
   let needsReview: boolean = false;
   if (req.file) {
-    verificationDocumentKey = await b2Service.uploadFileToB2(
+    verificationDocument = await b2Service.uploadFileToB2(
       req.file.buffer,
-      req.file.originalname
+      req.file.originalname,
+      "verification",
+      req.session.userId
     );
     needsReview = true;
   }
@@ -199,7 +202,8 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
     is_verified: false,
     is_approved: false,
     verification_document_url: undefined,
-    verification_document_name: verificationDocumentKey,
+    verification_document_name: verificationDocument?.key,
+    verification_original_document_name: verificationDocument?.originalName,
     needs_review: needsReview,
   };
 
@@ -292,12 +296,14 @@ const uploadVerificationDocument = asyncHandler(
       throw new BadRequestError("Invalid file, please try again.");
     }
 
-    const verificationDocumentKey = await b2Service.uploadFileToB2(
+    const uploadResult = await b2Service.uploadFileToB2(
       req.file.buffer,
-      req.file.originalname
+      req.file.originalname,
+      "verification",
+      req.session.userId
     );
 
-    if (!verificationDocumentKey) {
+    if (!uploadResult) {
       throw new InternalServerError("Failed to upload verification document");
     }
 
@@ -305,8 +311,8 @@ const uploadVerificationDocument = asyncHandler(
       await compensationService.uploadVerificationDocument(
         db,
         compId,
-        verificationDocumentKey,
-        req.file.originalname
+        uploadResult.key,
+        uploadResult.originalName
       );
 
     if (!updatedCompensation) {

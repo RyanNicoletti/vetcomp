@@ -14,6 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("phone_number").notNullable();
     table.text("resume_url");
     table.text("resume_name");
+    table.text("resume_original_name");
     table
       .enum("status", ["pending", "viewed", "contacted"])
       .defaultTo("pending");

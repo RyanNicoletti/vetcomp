@@ -7,7 +7,8 @@ interface JobApplication {
   user_id: string;
   full_name: string;
   email: string;
-  phone_number: string;
+  phone_number: string | null;
+  resume_original_name: string | undefined;
   resume_url?: string;
   resume_name?: string;
   status: "pending" | "viewed" | "contacted";
@@ -37,7 +38,7 @@ const jobApplicationsService = {
     return Promise.all(
       applications.map(async (app) => {
         if (app.resume_name) {
-          app.resume_url = await b2Service.getSignedUrl(app.resume_name);
+          app.resume_url = `/jobs/applications/resume/${app.resume_name}`;
         }
         return app;
       })
@@ -55,13 +56,12 @@ const jobApplicationsService = {
     return Promise.all(
       applications.map(async (app) => {
         if (app.resume_name) {
-          app.resume_url = await b2Service.getSignedUrl(app.resume_name);
+          app.resume_url = `/jobs/applications/resume/${app.resume_name}`;
         }
         return app;
       })
     );
   },
-
   updateApplicationStatus: async (
     db: Knex,
     applicationId: string,
