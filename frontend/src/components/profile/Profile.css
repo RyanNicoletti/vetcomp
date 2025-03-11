@@ -80,3 +80,21 @@
   gap: 0.5rem;
   font-weight: 500;
 }
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 1200px) {
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-job-card {
+  width: 100%;
+  max-width: none;
+}

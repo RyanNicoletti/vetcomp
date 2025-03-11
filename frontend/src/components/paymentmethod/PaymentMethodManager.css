@@ -1,0 +1,17 @@
+.payment-method-container {
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+}
+
+.payment-method-button {
+  width: 100%;
+}
+
+.payment-features-list {
+  padding-left: 20px;
+  margin: 1rem 0;
+}
+
+.payment-features-list li {
+  margin-bottom: 8px;
+}

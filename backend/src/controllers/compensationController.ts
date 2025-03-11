@@ -203,7 +203,7 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
     is_approved: false,
     verification_document_url: undefined,
     verification_document_name: verificationDocument?.key,
-    verification_original_document_name: verificationDocument?.originalName,
+    verification_document_original_name: verificationDocument?.originalName,
     needs_review: needsReview,
   };
 

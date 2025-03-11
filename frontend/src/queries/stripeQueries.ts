@@ -63,3 +63,28 @@ export const fetchSession = async (
 
   return response.json();
 };
+
+export const createCustomerPortalSession = async (
+  jobId: string
+): Promise<{ url: string }> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/stripe/customer-portal`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ jobId }),
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(
+      error.message || "Failed to create customer portal session"
+    );
+  }
+
+  return response.json();
+};

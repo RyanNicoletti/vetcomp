@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
 import stripeService from "../services/stripeService";
 import { db } from "../db/connection";
-import { BadRequestError } from "../errors/httpErrors";
+import { BadRequestError, UnauthorizedError } from "../errors/httpErrors";
 import jobsService from "../services/jobsService";
 import { redisClient } from "../../config/redisConfig";
 import { IJobFormData, JobRecord } from "../../../shared-types/types";
@@ -120,4 +120,31 @@ const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
   res.json({ received: true });
 });
 
-export default { createCheckoutSession, handleWebhook, getSession };
+const createCustomerPortalSession = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { jobId } = req.body;
+
+    if (!req.session.userId) {
+      throw new UnauthorizedError("You must be logged in to access this page");
+    }
+
+    if (!jobId) {
+      throw new BadRequestError("Job ID is required");
+    }
+
+    const portalSession = await stripeService.createCustomerPortalSession(
+      db,
+      jobId,
+      req.session.userId
+    );
+
+    res.json(portalSession);
+  }
+);
+
+export default {
+  createCheckoutSession,
+  handleWebhook,
+  getSession,
+  createCustomerPortalSession,
+};

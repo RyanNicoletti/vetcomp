@@ -130,7 +130,100 @@ const stripeService = {
             .where({ subscription_id: invoice.subscription })
             .update({ status: "payment_failed" });
 
-          // TODO: Send email notification to user
+          const job = await db("jobs")
+            .where({ subscription_id: invoice.subscription as string })
+            .first();
+
+          if (job && invoice.customer_email) {
+            await emailService.sendPaymentFailedEmail({
+              email: invoice.customer_email,
+              jobTitle: job.title,
+              company: job.company,
+              invoiceUrl: invoice.hosted_invoice_url,
+            });
+          }
+
+          break;
+        }
+
+        case "invoice.upcoming": {
+          const invoice = event.data.object as Stripe.Invoice;
+          if (invoice.customer_email) {
+            const job = await db("jobs")
+              .where({ subscription_id: invoice.subscription as string })
+              .first();
+
+            if (job) {
+              await emailService.sendUpcomingInvoiceEmail({
+                email: invoice.customer_email,
+                jobTitle: job.title,
+                amount: invoice.amount_due / 100,
+                dueDate: new Date(invoice.period_end * 1000),
+              });
+            }
+          }
+          break;
+        }
+
+        case "invoice.paid": {
+          const invoice = event.data.object as Stripe.Invoice;
+
+          await db("jobs")
+            .where({ subscription_id: invoice.subscription as string })
+            .update({ status: "active" });
+
+          if (
+            invoice.billing_reason === "subscription_cycle" &&
+            invoice.customer_email
+          ) {
+            const job = await db("jobs")
+              .where({ subscription_id: invoice.subscription as string })
+              .first();
+
+            if (job) {
+              await emailService.sendRenewalConfirmationEmail({
+                email: invoice.customer_email,
+                jobTitle: job.title,
+                amount: invoice.amount_paid / 100,
+                nextRenewal: new Date(invoice.period_end * 1000),
+              });
+            }
+          }
+          break;
+        }
+
+        case "payment_intent.payment_failed": {
+          const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+          console.error(
+            "Payment failed details:",
+            paymentIntent.last_payment_error
+          );
+
+          break;
+        }
+
+        case "payment_method.attached": {
+          const paymentMethod = event.data.object as Stripe.PaymentMethod;
+          const customerId = paymentMethod.customer as string;
+
+          // Find jobs associated with this customer
+          const jobs = await db("jobs")
+            .where({ customer_id: customerId })
+            .where("status", "active")
+            .select();
+
+          // You might want to track this or notify the customer
+          // that their payment method was updated successfully
+          break;
+        }
+
+        case "payment_method.detached": {
+          const paymentMethod = event.data.object as Stripe.PaymentMethod;
+
+          // If you need to track that a payment method was removed
+          // You could store the last_4 digits somewhere for reference
+          // This is useful if users remove their default payment method
           break;
         }
 
@@ -179,6 +272,33 @@ const stripeService = {
     } catch (error) {
       console.error("Error canceling subscription:", error);
       throw new Error("Failed to cancel subscription");
+    }
+  },
+
+  createCustomerPortalSession: async (
+    db: Knex,
+    jobId: string,
+    userId: string
+  ) => {
+    try {
+      // get the job to find the customer ID
+      const job = await db("jobs")
+        .where({ id: jobId, user_id: userId })
+        .first();
+
+      if (!job) {
+        throw new Error("Job not found or you don't have permission");
+      }
+
+      const session = await stripe.billingPortal.sessions.create({
+        customer: job.customer_id,
+        return_url: `${process.env.FRONTEND_URL}/profile`,
+      });
+
+      return { url: session.url };
+    } catch (error) {
+      console.error("Error creating customer portal session:", error);
+      throw error;
     }
   },
 };

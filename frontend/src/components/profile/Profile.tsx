@@ -23,6 +23,7 @@ import { ICompensation, JobRecord } from "../../../../shared-types/types";
 import { useSnackbar } from "../../context/SnackbarContext";
 import JobApplications from "./JobApplications";
 import "./Profile.css";
+import PaymentMethodManager from "../paymentmethod/PaymentMethodManager";
 
 export const Profile = () => {
   const queryClient = useQueryClient();
@@ -309,6 +310,11 @@ export const Profile = () => {
                     <span className="value">{job.type}</span>
                   </div>
                 </div>
+
+                <JobApplications jobId={job.id} />
+
+                <PaymentMethodManager jobId={job.id} />
+
                 <Button
                   variant="outlined"
                   color="error"
@@ -316,7 +322,6 @@ export const Profile = () => {
                   onClick={() => handleCancelJob(job)}>
                   Delete Job Post
                 </Button>
-                <JobApplications jobId={job.id} />
               </div>
             ))}
           </div>

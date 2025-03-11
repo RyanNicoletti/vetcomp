@@ -78,11 +78,9 @@ app.use(session(sess));
 
 /**
  *
- * ROUTES
+ * ADMIN
  *
  */
-
-// Admin Routes
 const adminRouter: Router = express.Router();
 adminRouter.use(isAdmin);
 adminRouter.get(
@@ -103,7 +101,11 @@ adminRouter.patch(
 );
 app.use("/admin", adminRouter);
 
-// User routes
+/**
+ *
+ * USERS
+ *
+ */
 const usersRouter: Router = express.Router();
 usersRouter.post("/", usersController.createUser);
 usersRouter.post(
@@ -122,7 +124,11 @@ app.get("/userStatus", authController.getUserStatus);
 // Location routes
 app.get("/locations", locationsController.getLocations);
 
-// Compensation routes
+/**
+ *
+ * COMPENSATION
+ *
+ */
 const compensationsRouter: Router = express.Router();
 compensationsRouter.get("/", compensationController.getAllSalaries);
 compensationsRouter.get(
@@ -136,7 +142,11 @@ compensationsRouter.post(
 );
 app.use("/compensations", compensationsRouter);
 
-// Jobs routes
+/**
+ *
+ * JOBS
+ *
+ */
 const jobsRouter: Router = express.Router();
 // General job routes
 jobsRouter.get("/", jobsController.getAll);
@@ -168,10 +178,18 @@ jobsRouter.delete("/:id/cancel", jobsController.cancelSubscription);
 
 app.use("/jobs", jobsRouter);
 
-// Stripe routes
+/**
+ *
+ * STRIPE
+ *
+ */
 const stripeRouter: Router = express.Router();
 stripeRouter.post("/checkout", stripeController.createCheckoutSession);
 stripeRouter.get("/session-status", stripeController.getSession);
+stripeRouter.post(
+  "/customer-portal",
+  stripeController.createCustomerPortalSession
+);
 app.use("/stripe", stripeRouter);
 
 Sentry.setupExpressErrorHandler(app);

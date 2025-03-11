@@ -7,11 +7,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "../errors/httpErrors";
-import {
-  JobFormSchema,
-  JobQuerySchema,
-  JobSchema,
-} from "../schemas/jobSchemas";
+import { JobQuerySchema } from "../schemas/jobSchemas";
 import { z } from "zod";
 import stripeService from "../services/stripeService";
 

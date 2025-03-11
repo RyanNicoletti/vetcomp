@@ -1,30 +1,14 @@
 import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
-import { JobRecord } from "../../../shared-types/types";
-
-interface JobPostConfirmationParams {
-  email: string;
-  jobDetails: JobRecord;
-  subscriptionDetails: {
-    amount: number;
-    interval: string;
-  };
-}
-
-interface ApplicationEmailParams {
-  to: string;
-  jobTitle: string;
-  companyName: string;
-  applicantName: string;
-}
-
-interface NotificationEmailParams {
-  to: string;
-  jobTitle: string;
-  applicantName: string;
-  applicantEmail: string;
-}
+import {
+  ApplicationEmailParams,
+  JobPostConfirmationParams,
+  NotificationEmailParams,
+  PaymentFailedParams,
+  RenewalConfirmationParams,
+  UpcomingInvoiceParams,
+} from "./types/emailServiceTypes";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.purelymail.com",
@@ -425,6 +409,284 @@ const emailService = {
     } catch (error) {
       console.error("Failed to send application notification email:", error);
       throw new Error("Failed to send application notification email");
+    }
+  },
+
+  sendPaymentFailedEmail: async ({
+    email,
+    jobTitle,
+    company,
+    invoiceUrl,
+  }: PaymentFailedParams) => {
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: `Payment Failed - ${jobTitle} Job Post`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Payment Failed</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .action-button {
+              display: inline-block;
+              padding: 10px 20px;
+              background-color: #1976d2;
+              color: white;
+              text-decoration: none;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Payment Failed for Your Job Post</h2>
+          <p>We were unable to process your payment for the following job post:</p>
+          <p><strong>Job Title:</strong> ${jobTitle}</p>
+          <p><strong>Company:</strong> ${company}</p>
+          
+          <p>To keep your job post active, please update your payment method or resolve any issues with your payment method.</p>
+          
+          ${
+            invoiceUrl
+              ? `<p><a href="${invoiceUrl}" class="action-button">View Invoice</a></p>`
+              : ""
+          }
+          
+          <p>Alternatively, you can update your payment information by logging into your account and visiting your profile page.</p>
+          
+          <p>If you need any assistance, please contact our support team at support@veterinarycomp.com.</p>
+          
+          <p>Best regards,<br>The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send payment failed email:", error);
+      throw new Error("Failed to send payment failed email");
+    }
+  },
+
+  sendUpcomingInvoiceEmail: async ({
+    email,
+    jobTitle,
+    amount,
+    dueDate,
+  }: UpcomingInvoiceParams) => {
+    const formattedDate = new Date(dueDate).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: `Upcoming Payment for ${jobTitle} Job Post`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Upcoming Payment</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .payment-info {
+              background-color: #f5f5f5;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Upcoming Payment Reminder</h2>
+          <p>This is a friendly reminder about your upcoming subscription payment for your job post:</p>
+          <p><strong>Job Title:</strong> ${jobTitle}</p>
+          
+          <div class="payment-info">
+            <p><strong>Amount:</strong> $${amount.toFixed(2)}</p>
+            <p><strong>Next Billing Date:</strong> ${formattedDate}</p>
+          </div>
+          
+          <p>The payment will be automatically processed using your current payment method.</p>
+          
+          <p>If you need to update your payment method, please log in to your account and visit your profile page.</p>
+          
+          <p>If you have any questions or need assistance, please contact our support team at support@veterinarycomp.com.</p>
+          
+          <p>Best regards,<br>The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send upcoming invoice email:", error);
+      throw new Error("Failed to send upcoming invoice email");
+    }
+  },
+
+  sendRenewalConfirmationEmail: async ({
+    email,
+    jobTitle,
+    amount,
+    nextRenewal,
+  }: RenewalConfirmationParams) => {
+    const formattedDate = new Date(nextRenewal).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const msg = {
+      from: `"Veterinarycomp" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: `Subscription Renewed - ${jobTitle} Job Post`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Subscription Renewed</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .logo {
+              display: block;
+              margin: 0 auto 20px;
+              max-width: 200px;
+            }
+            .renewal-info {
+              background-color: #f5f5f5;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Subscription Renewal Confirmation</h2>
+          <p>Your subscription for the following job post has been successfully renewed:</p>
+          <p><strong>Job Title:</strong> ${jobTitle}</p>
+          
+          <div class="renewal-info">
+            <p><strong>Amount Charged:</strong> $${amount.toFixed(2)}</p>
+            <p><strong>Next Renewal Date:</strong> ${formattedDate}</p>
+          </div>
+          
+          <p>Your job post will remain active and visible to potential candidates.</p>
+          
+          <p>If you wish to make any changes to your subscription or need to update your payment information, please log in to your account and visit your profile page.</p>
+          
+          <p>Thank you for continuing to use Veterinarycomp.com for your recruiting needs!</p>
+          
+          <p>Best regards,<br>The Veterinarycomp.com Team</p>
+          <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Veterinarycomp.com All rights reserved.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBase64,
+          encoding: "base64",
+          cid: "logo",
+        },
+      ],
+    };
+
+    try {
+      await transporter.sendMail(msg);
+    } catch (error) {
+      console.error("Failed to send renewal confirmation email:", error);
+      throw new Error("Failed to send renewal confirmation email");
     }
   },
 };
