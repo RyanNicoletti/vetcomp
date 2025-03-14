@@ -12,6 +12,7 @@
 }
 
 .empty-state {
+  margin-top: 80px;
   padding: 3rem;
   text-align: center;
 }
