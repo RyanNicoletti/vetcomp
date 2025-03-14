@@ -6,13 +6,10 @@ import {
   Button,
   Container,
   Typography,
-  Card,
-  CardContent,
   Alert,
   CircularProgress,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { getAllJobs } from "../../queries/jobQueries";
 import JobCard from "./JobCard";
 import { SearchAndFilter } from "./SearchAndFilter";

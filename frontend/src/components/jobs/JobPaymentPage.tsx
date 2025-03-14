@@ -7,10 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import {
   Box,
-  Card,
-  CardContent,
   Container,
-  Typography,
   Button,
   Divider,
   CircularProgress,
