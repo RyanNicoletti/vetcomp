@@ -14,7 +14,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org veterinarycompcom --project node-express ./dist && sentry-cli sourcemaps upload --org veterinarycompcom --project node-express ./dist"
   },
-  "typings": "dist/src/index.d.ts",
   "keywords": [],
   "author": "",
   "license": "ISC",

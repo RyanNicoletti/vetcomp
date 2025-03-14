@@ -2,6 +2,7 @@ import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { b2Client } from "../../config/b2Client";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
+declare module "uuid";
 
 const b2Service = {
   getSignedUrl: async (
