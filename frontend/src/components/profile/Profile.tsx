@@ -58,6 +58,11 @@ export const Profile = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userCompensations"] });
       setUploadingCompId(null);
+      openSnackbar("Verification document uploaded successfully", "success");
+    },
+    onError: () => {
+      openSnackbar("Failed to upload document", "error");
+      setUploadingCompId(null);
     },
   });
 
@@ -112,9 +117,19 @@ export const Profile = () => {
     }
   };
 
-  if (isCompensationsLoading || isJobsLoading) return <div>Loading...</div>;
-  if (isCompensationsError || isJobsError)
-    return <div>Error loading profile data</div>;
+  if (isCompensationsLoading || isJobsLoading) {
+    return (
+      <div className="loading-container">Loading your profile data...</div>
+    );
+  }
+
+  if (isCompensationsError || isJobsError) {
+    return (
+      <div className="error-container">
+        Error loading profile data. Please try refreshing the page.
+      </div>
+    );
+  }
 
   const hasNoData =
     (!compensations || compensations.length === 0) &&
@@ -139,88 +154,88 @@ export const Profile = () => {
                 <Typography className="location">{comp.location}</Typography>
                 <div className="comp-details">
                   <div className="detail-item">
-                    <span className="label">Title:</span>
-                    <span className="value">{comp.title}</span>
+                    <div className="label">Title:</div>
+                    <div className="value">{comp.title}</div>
                   </div>
                   <div className="detail-item">
-                    <span className="label">
+                    <div className="label">
                       {comp.is_specialist
                         ? "Specialization:"
                         : "Practice Type:"}
-                    </span>
-                    <span className="value">
+                    </div>
+                    <div className="value">
                       {comp.is_specialist
                         ? comp.specialization
                         : comp.type_of_practice}
-                    </span>
+                    </div>
                   </div>
                   <div className="detail-item">
-                    <span className="label">Years of Experience:</span>
-                    <span className="value">{comp.years_of_experience}</span>
+                    <div className="label">Years of Experience:</div>
+                    <div className="value">{comp.years_of_experience}</div>
                   </div>
                   {comp.payment_frequency === "annually" && (
                     <div className="detail-item">
-                      <span className="label">Total Compensation:</span>
-                      <span className="value">
+                      <div className="label">Total Compensation:</div>
+                      <div className="value">
                         {moneyFormatter.format(comp.total_compensation!)}
-                      </span>
+                      </div>
                     </div>
                   )}
                   <div className="detail-item">
-                    <span className="label">
+                    <div className="label">
                       {comp.payment_frequency === "hourly"
                         ? "Hourly Rate:"
                         : "Base Salary:"}
-                    </span>
-                    <span className="value">
+                    </div>
+                    <div className="value">
                       {comp.payment_frequency === "hourly"
                         ? moneyFormatter.format(comp.hourly_rate!)
                         : moneyFormatter.format(comp.base_salary!)}
-                    </span>
+                    </div>
                   </div>
                   {comp.average_annual_production && (
                     <div className="detail-item">
-                      <span className="label">Avg. Annual Production:</span>
-                      <span className="value">
+                      <div className="label">Avg. Annual Production:</div>
+                      <div className="value">
                         {formatNullableMoneyValue(
                           comp.average_annual_production
                         ) ?? "not provided"}
-                      </span>
+                      </div>
                     </div>
                   )}
                   {comp.sign_on_bonus && (
                     <div className="detail-item">
-                      <span className="label">Sign-on Bonus:</span>
-                      <span className="value">
+                      <div className="label">Sign-on Bonus:</div>
+                      <div className="value">
                         {formatNullableMoneyValue(comp.sign_on_bonus) ??
                           "not provided"}
-                      </span>
+                      </div>
                     </div>
                   )}
                   {comp.percent_production && (
                     <div className="detail-item">
-                      <span className="label">% Production:</span>
-                      <span className="value">{comp.percent_production}%</span>
+                      <div className="label">% Production:</div>
+                      <div className="value">{comp.percent_production}%</div>
                     </div>
                   )}
                   {comp.gender && (
                     <div className="detail-item">
-                      <span className="label">Gender:</span>
-                      <span className="value">{comp.gender}</span>
+                      <div className="label">Gender:</div>
+                      <div className="value">{comp.gender}</div>
                     </div>
                   )}
                   {comp.number_of_veterinarians && (
                     <div className="detail-item">
-                      <span className="label">Number of Veterinarians:</span>
-                      <span className="value">
+                      <div className="label">Number of Veterinarians:</div>
+                      <div className="value">
                         {comp.number_of_veterinarians}
-                      </span>
+                      </div>
                     </div>
                   )}
                   {comp.days_worked_per_week && (
                     <div className="detail-item">
-                      <span className="label">Days Worked Per Week:</span>
-                      <span className="value">{comp.days_worked_per_week}</span>
+                      <div className="label">Days Worked Per Week:</div>
+                      <div className="value">{comp.days_worked_per_week}</div>
                     </div>
                   )}
                 </div>
@@ -230,13 +245,7 @@ export const Profile = () => {
                   )}
                   {!comp.is_verified && (
                     <div>
-                      <Typography
-                        variant="h6"
-                        className="verify-header"
-                        style={{
-                          marginTop: "20px",
-                          textAlign: "center",
-                        }}>
+                      <Typography variant="h6" className="verify-header">
                         Verify Compensation
                       </Typography>
                       <Typography component="p">
@@ -291,23 +300,23 @@ export const Profile = () => {
                 <Typography className="location">{job.company}</Typography>
                 <div className="job-details">
                   <div className="detail-item">
-                    <span className="label">Location:</span>
-                    <span className="value">{job.location}</span>
+                    <div className="label">Location:</div>
+                    <div className="value">{job.location}</div>
                   </div>
                   <div className="detail-item">
-                    <span className="label">Status:</span>
-                    <span className="value">{job.status}</span>
+                    <div className="label">Status:</div>
+                    <div className="value">{job.status}</div>
                   </div>
                   <div className="detail-item">
-                    <span className="label">Salary Range:</span>
-                    <span className="value">
+                    <div className="label">Salary Range:</div>
+                    <div className="value">
                       {moneyFormatter.format(job.salary_min)} -{" "}
                       {moneyFormatter.format(job.salary_max)}
-                    </span>
+                    </div>
                   </div>
                   <div className="detail-item">
-                    <span className="label">Type:</span>
-                    <span className="value">{job.type}</span>
+                    <div className="label">Type:</div>
+                    <div className="value">{job.type}</div>
                   </div>
                 </div>
 

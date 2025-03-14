@@ -88,13 +88,63 @@
   margin: 0 auto 2rem;
 }
 
-@media (max-width: 1200px) {
-  .jobs-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .profile-job-card {
   width: 100%;
   max-width: none;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0 1rem;
+    margin-top: 80px;
+  }
+
+  .page-title {
+    font-size: 1.5rem !important;
+    text-align: center;
+  }
+
+  .compensations-grid,
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comp-card,
+  .profile-job-card {
+    width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    padding: 0.5rem 0;
+  }
+
+  .label {
+    margin-bottom: 0.25rem;
+  }
+
+  .value {
+    width: 100%;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 0 0.75rem;
+    margin-top: 70px;
+  }
+
+  .verify-header {
+    font-size: 1.1rem !important;
+  }
 }
