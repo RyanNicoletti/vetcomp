@@ -37,7 +37,7 @@ const b2Service = {
   ): Promise<{ key: string; originalName: string } | undefined> => {
     try {
       const timestamp = Date.now();
-      const uniqueId = uuidv4();
+      const uniqueId = uuidv4() as string;
       const userIdPrefix = `${userId}-`;
 
       // Extract file extension
