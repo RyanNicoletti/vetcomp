@@ -1,0 +1,40 @@
+.no-jobs-message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-top: 2.2rem;
+}
+
+.no-jobs-content {
+  text-align: center;
+  padding: 40px;
+  max-width: 500px;
+}
+
+.no-jobs-title {
+  margin-bottom: 16px;
+  color: #444;
+}
+
+.no-jobs-subtitle {
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.post-job-cta {
+  padding: 10px 20px;
+}
+
+@media (max-width: 768px) {
+  .no-jobs-message-container {
+    min-height: 300px;
+  }
+
+  .no-jobs-content {
+    padding: 30px 20px;
+  }
+}

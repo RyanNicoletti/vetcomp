@@ -15,11 +15,10 @@ const PaymentReturn = () => {
         <CheckCircleIcon className="checkmark-icon" />
         <Typography className="payment-return-message">
           Thank you for posting a job on veterinarycomp.com! A confirmation
-          email has been sent to your email address with the details of your job
-          listing and subscription.
+          email has been sent with details of your job listing and subscription.
         </Typography>
         <Typography className="payment-return-support">
-          For questions related to your subscription, please contact{" "}
+          For questions related to your job post or subscription, please contact{" "}
           <a href="mailto:support@veterinarycomp.com">
             support@veterinarycomp.com
           </a>

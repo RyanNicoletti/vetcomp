@@ -16,6 +16,7 @@ import { SearchAndFilter } from "./SearchAndFilter";
 import "./JobsList.css";
 import { JobRecord } from "../../../../shared-types/types";
 import JobDetailsPanel from "./JobDetailsPanel";
+import NoJobsMessage from "./NoJobsMessage";
 
 export interface JobFilters {
   page: number;
@@ -95,6 +96,8 @@ const JobsList = () => {
     );
   }
 
+  const hasJobs = data?.jobs.length ?? 0 > 0;
+
   return (
     <Container className="jobs-container" maxWidth={false}>
       <Box className="jobs-header">
@@ -120,27 +123,31 @@ const JobsList = () => {
         }}
       />
 
-      <Box className="jobs-layout">
-        <Box className="jobs-list">
-          {data?.jobs.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              isSelected={selectedJob?.id === job.id}
-              onSelect={() => handleJobSelect(job)}
-            />
-          ))}
-        </Box>
-
-        {selectedJob && (
-          <Box className="job-details-panel">
-            <JobDetailsPanel
-              job={selectedJob}
-              onClose={() => setSelectedJob(null)}
-            />
+      {hasJobs ? (
+        <Box className="jobs-layout">
+          <Box className="jobs-list">
+            {data?.jobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                isSelected={selectedJob?.id === job.id}
+                onSelect={() => handleJobSelect(job)}
+              />
+            ))}
           </Box>
-        )}
-      </Box>
+
+          {selectedJob && (
+            <Box className="job-details-panel">
+              <JobDetailsPanel
+                job={selectedJob}
+                onClose={() => setSelectedJob(null)}
+              />
+            </Box>
+          )}
+        </Box>
+      ) : (
+        <NoJobsMessage />
+      )}
     </Container>
   );
 };
