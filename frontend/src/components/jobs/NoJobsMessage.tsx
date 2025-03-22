@@ -14,10 +14,13 @@ const NoJobsMessage = () => {
     <Box className="no-jobs-message-container">
       <Box className="no-jobs-content">
         <Typography variant="h5" className="no-jobs-title">
-          No Job Listings Available
+          Hiring? Post a job ad for only $45/month
         </Typography>
         <Typography variant="body1" className="no-jobs-subtitle">
-          Be the first to post a job or check back later.
+          Cancel anytime.
+        </Typography>
+        <Typography variant="body1" className="no-jobs-subtitle">
+          Looking for work? Check back later when there are more jobs!
         </Typography>
         <Button
           variant="contained"

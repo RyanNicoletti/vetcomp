@@ -114,7 +114,7 @@ const stripeService = {
               email: session.customer_details?.email || "",
               jobDetails: newJob,
               subscriptionDetails: {
-                amount: session.amount_total ? session.amount_total / 100 : 99,
+                amount: session.amount_total ? session.amount_total / 100 : 45,
                 interval: "month",
               },
             });

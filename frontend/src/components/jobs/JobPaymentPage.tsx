@@ -24,7 +24,7 @@ const JobPaymentPage = () => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const jobData = location.state?.jobData;
   const shouldShowFeatures = jobData.applicationMethod === "email";
-  const MONTHLY_PRICE = 99;
+  const MONTHLY_PRICE = 45;
 
   const checkoutMutation = useMutation({
     mutationFn: createCheckoutSession,
