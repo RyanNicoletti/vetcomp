@@ -12,6 +12,11 @@ import {
   TableSortLabel,
   IconButton,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { format } from "date-fns";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -44,6 +49,7 @@ type SortDirection = "asc" | "desc";
 const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
   const [sortBy, setSortBy] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const { openSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
 
@@ -66,6 +72,11 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["jobApplications", jobId] });
       openSnackbar("Application deleted successfully", "success");
+      setConfirmDeleteId(null);
+    },
+    onError: (error) => {
+      openSnackbar("Failed to delete application", "error");
+      console.error(error);
     },
   });
 
@@ -126,6 +137,35 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
 
   return (
     <div className="applications-list">
+      <Dialog
+        open={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">Delete Application</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this application? This action cannot
+            be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteId(null)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (confirmDeleteId) {
+                deleteApplicationMutation.mutate(confirmDeleteId);
+              }
+            }}
+            color="error"
+            autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <div className="applications-header-container">
         <Button
           component={Link}
@@ -234,15 +274,7 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
                       </Button>
                     )}
                     <IconButton
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this application?"
-                          )
-                        ) {
-                          deleteApplicationMutation.mutate(application.id);
-                        }
-                      }}
+                      onClick={() => setConfirmDeleteId(application.id)}
                       color="error"
                       className="delete-button">
                       <DeleteIcon />
