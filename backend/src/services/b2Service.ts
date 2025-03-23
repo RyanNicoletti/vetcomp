@@ -51,7 +51,7 @@ const b2Service = {
       const bucketName =
         bucketType === "resume"
           ? process.env.B2_RESUME_BUCKET_NAME
-          : process.env.B2_BUCKET_NAME;
+          : process.env.B2_VERIFICATION_BUCKET_NAME;
 
       await b2Client.send(
         new PutObjectCommand({
