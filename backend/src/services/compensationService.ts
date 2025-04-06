@@ -26,11 +26,9 @@ const salariesService = {
       salaryFilter.practiceTypeFilter.length > 0
     ) {
       query.where(function () {
-        this.where("is_specialist", true).orWhere(function () {
-          salaryFilter.practiceTypeFilter?.forEach((practiceType) => {
-            this.orWhereLike("type_of_practice", `%${practiceType}%`);
-          });
-        });
+        for (const practiceType of salaryFilter.practiceTypeFilter!) {
+          this.orWhereLike("type_of_practice", `%${practiceType}%`);
+        }
       });
     }
 
