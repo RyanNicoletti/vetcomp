@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -28,6 +28,7 @@ import { ExpandableRow } from "./ExpandableRow";
 import { SearchAndFilter } from "./SearchAndFilter";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import "./CompensationTable.css";
+import TableBlocker from "./TableBlocker";
 
 const practiceTypes = [
   "Small animal",
@@ -62,6 +63,19 @@ export default function SalaryTable() {
     specialistsOnly: false,
   });
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [showBlocker, setShowBlocker] = useState(true);
+
+  useEffect(() => {
+    const hasContributed = localStorage.getItem("hasContributedSalary");
+    if (hasContributed === "true") {
+      setShowBlocker(false);
+    }
+  }, []);
+
+  const handleDismissBlocker = () => {
+    setShowBlocker(false);
+    localStorage.setItem("hasContributedSalary", "true");
+  };
 
   const handleSortRequest = (column: string): void => {
     const newSortDirection =
@@ -150,111 +164,114 @@ export default function SalaryTable() {
             }}
           />
         </Box>
-        <Table className="salary-table" aria-labelledby="tableTitle">
-          <TableHead className="table-header">
-            <TableRow className="table-row">
-              <TableCell className="expand-cell" />
-              <TableCell
-                key="company-location"
-                align="left"
-                className="company-location-cell">
-                <div>
-                  <p>Company</p>
-                  <span>Location | Date</span>
-                </div>
-              </TableCell>
-              <TableCell
-                key="type-of-practice"
-                align="left"
-                className="type-of-practice-cell">
-                <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ position: "relative" }}>
+          <Table className="salary-table" aria-labelledby="tableTitle">
+            <TableHead className="table-header">
+              <TableRow className="table-row">
+                <TableCell className="expand-cell" />
+                <TableCell
+                  key="company-location"
+                  align="left"
+                  className="company-location-cell">
                   <div>
-                    <p>Job Title</p>
-                    <span className="practice-type-span">Practice Type</span>
+                    <p>Company</p>
+                    <span>Location | Date</span>
                   </div>
-                  <IconButton
-                    aria-describedby={id}
-                    onClick={handleFilterClick}
-                    size="small">
-                    <FilterListIcon />
-                  </IconButton>
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleFilterClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}>
-                    <FormGroup sx={{ p: 2 }}>
-                      {practiceTypes.map((type) => (
-                        <FormControlLabel
-                          key={type}
-                          control={
-                            <Checkbox
-                              checked={filters.practiceTypeFilter.includes(
-                                type
-                              )}
-                              onChange={handlePracticeTypeChange}
-                              name={type}
-                            />
-                          }
-                          label={type}
-                        />
-                      ))}
-                    </FormGroup>
-                  </Popover>
-                </div>
-              </TableCell>
-              <TableCell
-                key="years-of-experience"
-                align="center"
-                className="years-of-experience-cell">
-                <TableSortLabel
-                  direction={sortParams.sortDirection}
-                  onClick={() => handleSortRequest("years_of_experience")}>
-                  <div>
-                    <Typography className="years-of-experience-label">
-                      Years of Experience
-                    </Typography>
-                    <span className="empty-span"></span>
+                </TableCell>
+                <TableCell
+                  key="type-of-practice"
+                  align="left"
+                  className="type-of-practice-cell">
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div>
+                      <p>Job Title</p>
+                      <span className="practice-type-span">Practice Type</span>
+                    </div>
+                    <IconButton
+                      aria-describedby={id}
+                      onClick={handleFilterClick}
+                      size="small">
+                      <FilterListIcon />
+                    </IconButton>
+                    <Popover
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleFilterClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}>
+                      <FormGroup sx={{ p: 2 }}>
+                        {practiceTypes.map((type) => (
+                          <FormControlLabel
+                            key={type}
+                            control={
+                              <Checkbox
+                                checked={filters.practiceTypeFilter.includes(
+                                  type
+                                )}
+                                onChange={handlePracticeTypeChange}
+                                name={type}
+                              />
+                            }
+                            label={type}
+                          />
+                        ))}
+                      </FormGroup>
+                    </Popover>
                   </div>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell
-                key="total-compensation"
-                align="right"
-                className="total-compensation-cell">
-                <TableSortLabel
-                  className="total-comp-th"
-                  direction={sortParams.sortDirection}
-                  onClick={() => handleSortRequest("total_compensation")}>
-                  <div>
-                    <p>Total Compensation (USD)</p>
-                    <span>Base salary | Production</span>
-                  </div>
-                </TableSortLabel>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody className="tbody">
-            {compensationData?.compensations?.map((row: ICompensation) => (
-              <ExpandableRow key={row.id} row={row} />
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <Pagination
-                page={page}
-                totalPages={compensationData.pages}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
+                </TableCell>
+                <TableCell
+                  key="years-of-experience"
+                  align="center"
+                  className="years-of-experience-cell">
+                  <TableSortLabel
+                    direction={sortParams.sortDirection}
+                    onClick={() => handleSortRequest("years_of_experience")}>
+                    <div>
+                      <Typography className="years-of-experience-label">
+                        Years of Experience
+                      </Typography>
+                      <span className="empty-span"></span>
+                    </div>
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell
+                  key="total-compensation"
+                  align="right"
+                  className="total-compensation-cell">
+                  <TableSortLabel
+                    className="total-comp-th"
+                    direction={sortParams.sortDirection}
+                    onClick={() => handleSortRequest("total_compensation")}>
+                    <div>
+                      <p>Total Compensation (USD)</p>
+                      <span>Base salary | Production</span>
+                    </div>
+                  </TableSortLabel>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody className="tbody">
+              {compensationData?.compensations?.map((row: ICompensation) => (
+                <ExpandableRow key={row.id} row={row} />
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <Pagination
+                  page={page}
+                  totalPages={compensationData.pages}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+          {showBlocker && <TableBlocker onClose={handleDismissBlocker} />}
+        </div>
       </TableContainer>
     </>
   );
