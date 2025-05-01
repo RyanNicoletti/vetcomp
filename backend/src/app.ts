@@ -60,6 +60,10 @@ const sess = {
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
     sameSite: process.env.NODE_ENV === "production" ? "lax" : false,
+    domain:
+      process.env.NODE_ENV === "production"
+        ? process.env.COOKIE_DOMAIN
+        : undefined,
   } as express.CookieOptions,
 };
 if (process.env.NODE_ENV === "production") {
