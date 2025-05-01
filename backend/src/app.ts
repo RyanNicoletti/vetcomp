@@ -59,7 +59,7 @@ const sess = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    sameSite: process.env.NODE_ENV === "production" ? "none" : false,
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : false,
   } as express.CookieOptions,
 };
 if (process.env.NODE_ENV === "production") {
