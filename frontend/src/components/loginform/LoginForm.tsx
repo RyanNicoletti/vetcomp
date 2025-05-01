@@ -1,11 +1,11 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import "./LoginForm.css";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ILoginFormInput } from "./types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../queries/usersQueries";
-import { useUserStatus } from "../../hooks/useUserStatus";
+import { useAuth } from "../../context/AuthContext";
 
 export const LoginForm = () => {
   const {
@@ -20,9 +20,7 @@ export const LoginForm = () => {
     },
   });
 
-  const navigate = useNavigate();
-  const { isAuthenticated } = useUserStatus();
-  const queryClient = useQueryClient();
+  const { isAuthenticated, login } = useAuth();
 
   const loginUserMutation = useMutation({
     mutationFn: loginUser,
@@ -40,19 +38,13 @@ export const LoginForm = () => {
           message: error.message || "Invalid email or password.",
         });
       }
-      queryClient.setQueryData(["userStatus"], {
-        isAuthenticated: false,
-        isAdmin: false,
-        email: null,
-      });
     },
     onSuccess: async (data) => {
-      queryClient.setQueryData(["userStatus"], {
+      login({
         isAuthenticated: data.isAuthenticated,
         isAdmin: data.isAdmin,
         email: data.userEmail,
       });
-      navigate("/");
     },
   });
 

@@ -14,16 +14,12 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import "./Header.css";
-import { useMutation } from "@tanstack/react-query";
-import { logoutUser } from "../../queries/usersQueries";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useUserStatus } from "../../hooks/useUserStatus";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const { openSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const { isAuthenticated, isAdmin, logout } = useUserStatus();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   const navItems: string[] = [
     "Home",
@@ -37,22 +33,10 @@ const Header = () => {
     setMobileOpen((prev) => !prev);
   };
 
-  const logoutUserMutation = useMutation({
-    mutationFn: logoutUser,
-    onError: (error: any) => {
-      openSnackbar(
-        error.message || "Logout failed. Please try again.",
-        "error"
-      );
-    },
-    onSuccess: async () => {
-      logout();
-      navigate("/");
-    },
-  });
-
   const handleLogout = () => {
-    logoutUserMutation.mutate();
+    logout().then(() => {
+      navigate("/");
+    });
   };
 
   const drawerContent = (

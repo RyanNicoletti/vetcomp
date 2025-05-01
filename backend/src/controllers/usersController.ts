@@ -73,19 +73,32 @@ const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const logout = asyncHandler(async (req: Request, res: Response) => {
-  if (req.session) {
-    req.session.destroy((err: any) => {
-      if (err) {
-        throw new InternalServerError(
-          "Unexpected error when logging out, please try again"
-        );
-      }
-      res.clearCookie("connect.sid");
-      res.status(200).json({ message: "Logged out successfully." });
-    });
-  } else {
-    res.end();
+  if (!req.session) {
+    return res.status(200).json({ message: "No active session" });
   }
+
+  req.session.destroy((err: any) => {
+    if (err) {
+      throw new InternalServerError(
+        "Unexpected error when logging out, please try again"
+      );
+    }
+
+    res.clearCookie("connect.sid", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : false,
+    });
+
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 });
 
 const login = asyncHandler(async (req: Request, res: Response) => {

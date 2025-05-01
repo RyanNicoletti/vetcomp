@@ -34,7 +34,7 @@ import { ICompFormInput } from "../../../../shared-types/types";
 import { createCompensation } from "../../queries/compensationQueries";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { useUserStatus } from "../../hooks/useUserStatus";
+import { useAuth } from "../../context/AuthContext";
 
 export const CompForm = () => {
   const {
@@ -79,7 +79,7 @@ export const CompForm = () => {
   const [isSpecialist, setIsSpecialist] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { openSnackbar } = useSnackbar();
-  const { isAuthenticated } = useUserStatus();
+  const { isAuthenticated } = useAuth();
 
   const navigate = useNavigate();
 

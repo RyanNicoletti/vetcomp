@@ -20,7 +20,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { getLocationSuggestions } from "../../queries/locationQueries";
-import { useUserStatus } from "../../hooks/useUserStatus";
+import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import "./JobForm.css";
 import { NumericFormat } from "react-number-format";
@@ -38,7 +38,7 @@ const practiceTypes = [
 
 const JobForm = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useUserStatus();
+  const { isAuthenticated } = useAuth();
   const [locationQuery, setLocationQuery] = useState("");
   const [generalError, setGeneralError] = useState<string | null>(null);
 

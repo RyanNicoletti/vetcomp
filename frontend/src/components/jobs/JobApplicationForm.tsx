@@ -15,7 +15,7 @@ import {
   IconButton,
   Link,
 } from "@mui/material";
-import { useUserStatus } from "../../hooks/useUserStatus";
+import { useAuth } from "../../context/AuthContext";
 import { useSnackbar } from "../../context/SnackbarContext";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -43,7 +43,7 @@ const JobApplicationForm = ({
   open,
   onClose,
 }: JobApplicationFormProps) => {
-  const { isAuthenticated, email } = useUserStatus();
+  const { isAuthenticated, email } = useAuth();
   const { openSnackbar } = useSnackbar();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [resumeError, setResumeError] = useState<string | null>(null);

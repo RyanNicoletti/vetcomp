@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
+import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/header/Header";
 import Home from "./pages/Home";
 import AddCompForm from "./pages/AddCompForm";
@@ -29,41 +30,52 @@ import ApplicationsListPage from "./pages/ApplicationsListPage";
 function App() {
   return (
     <Router>
-      <Box className="app_container">
+      <AuthProvider>
         <SnackbarProvider>
-          <Box className="nav_container">
-            <Header />
+          <Box className="app_container">
+            <Box className="nav_container">
+              <Header />
+            </Box>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/landing" element={<LandingPage />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/jobs/payment" element={<JobPaymentPage />} />
+              <Route path="/jobs/post" element={<JobsPostPage />} />
+              <Route path="/jobs/payment/return" element={<PaymentReturn />} />
+              <Route
+                path="/jobs/:jobId/apply"
+                element={<JobApplicationPage />}
+              />
+              <Route
+                path="/jobs/:jobId/applications"
+                element={<ApplicationsListPage />}
+              />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/addcomp" element={<AddCompForm />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/privacy-policy" element={<PolicyPage />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route
+                path="/forgot-password"
+                element={<ForgotPasswordEmail />}
+              />
+              <Route
+                path="/reset-password/:token"
+                element={<PasswordReset />}
+              />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/admin" element={<AdminPage />} />
+              </Route>
+            </Routes>
+            <Footer />
           </Box>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/landing" element={<LandingPage />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/jobs" element={<JobsPage />} />
-            <Route path="/jobs/payment" element={<JobPaymentPage />} />
-            <Route path="/jobs/post" element={<JobsPostPage />} />
-            <Route path="/jobs/payment/return" element={<PaymentReturn />} />
-            <Route path="/jobs/:jobId/apply" element={<JobApplicationPage />} />
-            <Route
-              path="/jobs/:jobId/applications"
-              element={<ApplicationsListPage />}
-            />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/addcomp" element={<AddCompForm />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/privacy-policy" element={<PolicyPage />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/forgot-password" element={<ForgotPasswordEmail />} />
-            <Route path="/reset-password/:token" element={<PasswordReset />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/admin" element={<AdminPage />} />
-            </Route>
-          </Routes>
-          <Footer />
         </SnackbarProvider>
-      </Box>
+      </AuthProvider>
     </Router>
   );
 }
