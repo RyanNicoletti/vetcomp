@@ -307,7 +307,7 @@ const LocationCompensationChart = ({
                   paymentType === "annually" ? "Annual Salary" : "Hourly Rate"
                 }
                 tickFormatter={(value) => moneyFormatter.format(value)}
-                domain={["dataMin - 5000", "dataMax + 10000"]}
+                domain={[0, (dataMax: any) => dataMax + 50000]}
               />
               <ZAxis dataKey="z" range={[60, 400]} />
               <Tooltip content={<CustomTooltip />} />
