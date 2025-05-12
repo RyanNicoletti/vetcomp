@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Typography, Container, Paper, Box, Divider } from "@mui/material";
+import { Typography, Container, Paper, Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersCompensation } from "../../queries/compensationQueries";
 import { getUserJobs } from "../../queries/jobQueries";
 import { ICompensation, JobRecord } from "../../../../shared-types/types";
-import JobApplicationStatus from "../jobapplications/JobApplicationStatus";
-import RecentJobListings from "../jobs/RecentJobListings";
+import LocationCompensationChart from "./LocationCompensationChart";
+import UserApplications from "./UserApplications";
 import "./Dashboard.css";
 
 export const Dashboard = () => {
@@ -90,7 +90,7 @@ export const Dashboard = () => {
           <Typography variant="h5" className="section-title">
             Your Job Applications
           </Typography>
-          <JobApplicationStatus />
+          <UserApplications />
         </Paper>
 
         <Paper elevation={2} className="dashboard-section">
@@ -117,13 +117,6 @@ export const Dashboard = () => {
           )}
         </Paper>
       </Box>
-
-      <Paper elevation={2} className="dashboard-section">
-        <Typography variant="h5" className="section-title">
-          Recent Job Listings
-        </Typography>
-        <RecentJobListings />
-      </Paper>
     </Container>
   );
 };

@@ -10,10 +10,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
-import {
-  normalizeLocation,
-  extractStateFromLocation,
-} from "../../queries/compensationQueries";
+import { extractStateFromLocation } from "../../queries/compensationQueries";
 
 interface SearchAndFilterProps {
   onSearch: (filters: FilterState) => void;
