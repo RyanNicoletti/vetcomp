@@ -185,9 +185,9 @@ const LocationCompensationChart = ({
         x: comp.years_of_experience,
         y:
           paymentType === "annually"
-            ? comp.total_compensation
-            : comp.hourly_rate,
-        z: 100, // Size of the dot
+            ? Number(comp.total_compensation)
+            : Number(comp.hourly_rate),
+        z: 130, // size of the dot
         title: comp.title,
         company: comp.company,
         location: comp.location,
@@ -196,7 +196,6 @@ const LocationCompensationChart = ({
         isUser: isUserComp,
       };
     });
-
     setChartData(compData);
   };
 
@@ -291,7 +290,7 @@ const LocationCompensationChart = ({
             </Typography>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="105%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -307,9 +306,13 @@ const LocationCompensationChart = ({
                   paymentType === "annually" ? "Annual Salary" : "Hourly Rate"
                 }
                 tickFormatter={(value) => moneyFormatter.format(value)}
-                domain={[0, (dataMax: any) => dataMax + 50000]}
+                domain={
+                  paymentType === "annually"
+                    ? [0, "dataMax + 10000"]
+                    : [0, "dataMax + 10"]
+                }
               />
-              <ZAxis dataKey="z" range={[60, 400]} />
+              <ZAxis dataKey="z" range={[60, 70]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Scatter
