@@ -1,22 +1,20 @@
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { Typography, Container, Paper, Box, Divider } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { getUsersCompensation } from "../../queries/compensationQueries";
 import { getUserJobs } from "../../queries/jobQueries";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { ICompensation, JobRecord } from "../../../../shared-types/types";
+import JobApplicationStatus from "../jobapplications/JobApplicationStatus";
+import RecentJobListings from "../jobs/RecentJobListings";
 import "./Dashboard.css";
 
-import CompensationCards from "./CompensationCards";
-import JobPostsSection from "./JobPostsSection";
-import { LocationComparison } from "./LocationComparison";
-import EmptyDashboard from "./EmptyDashboard";
-import DashboardStats from "./DashboardStats";
-import { getUserApplications } from "../../queries/jobApplicationQueries";
-
 export const Dashboard = () => {
-  const queryClient = useQueryClient();
-  const { openSnackbar } = useSnackbar();
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [userCompensations, setUserCompensations] = useState<ICompensation[]>(
+    []
+  );
+  const [userJobs, setUserJobs] = useState<JobRecord[]>([]);
 
+  // Fetch user's compensations
   const {
     data: compensations,
     isLoading: isCompensationsLoading,
@@ -26,11 +24,7 @@ export const Dashboard = () => {
     queryFn: getUsersCompensation,
   });
 
-  const { data: applications = [] } = useQuery({
-    queryKey: ["userJobApplications"],
-    queryFn: getUserApplications,
-  });
-
+  // Fetch user's job postings
   const {
     data: jobs,
     isLoading: isJobsLoading,
@@ -40,64 +34,97 @@ export const Dashboard = () => {
     queryFn: getUserJobs,
   });
 
-  if (isCompensationsLoading || isJobsLoading) {
+  // Update state when data is loaded
+  useEffect(() => {
+    if (compensations) {
+      setUserCompensations(compensations);
+    }
+    if (jobs) {
+      setUserJobs(jobs);
+    }
+  }, [compensations, jobs]);
+
+  const isLoading = isCompensationsLoading || isJobsLoading;
+  const isError = isCompensationsError || isJobsError;
+
+  if (isLoading) {
     return (
-      <div className="loading-container">Loading your dashboard data...</div>
+      <Container className="dashboard-loading">
+        <Typography variant="h6">Loading your dashboard...</Typography>
+      </Container>
     );
   }
 
-  if (isCompensationsError || isJobsError) {
+  if (isError) {
     return (
-      <div className="error-container">
-        Error loading dashboard data. Please try refreshing the page.
-      </div>
+      <Container className="dashboard-error">
+        <Typography variant="h6">
+          Error loading dashboard data. Please try refreshing the page.
+        </Typography>
+      </Container>
     );
-  }
-
-  const hasNoData =
-    (!compensations || compensations.length === 0) &&
-    (!jobs || jobs.length === 0);
-
-  if (compensations && compensations.length > 0 && !selectedLocation) {
-    setSelectedLocation(compensations[0].location);
-  }
-
-  if (hasNoData) {
-    return <EmptyDashboard />;
   }
 
   return (
-    <div className="dashboard-container">
-      <DashboardStats
-        compensations={compensations || []}
-        jobs={jobs || []}
-        jobApplicationsCount={applications?.length}
-      />
+    <Container className="dashboard-container">
+      <Typography variant="h4" className="dashboard-title">
+        Your Dashboard
+      </Typography>
 
-      {compensations && compensations.length > 0 && (
-        <LocationComparison
-          userCompensations={compensations}
-          selectedLocation={selectedLocation}
-          onLocationChange={setSelectedLocation}
-        />
+      {userCompensations.length > 0 ? (
+        <Paper elevation={2} className="dashboard-section">
+          <LocationCompensationChart userCompensations={userCompensations} />
+        </Paper>
+      ) : (
+        <Paper elevation={2} className="dashboard-section empty-section">
+          <Typography variant="h6">No compensation data added yet</Typography>
+          <Typography variant="body1">
+            Add your compensation information to see how you compare to others
+            in your location.
+          </Typography>
+        </Paper>
       )}
 
-      {compensations && compensations.length > 0 && (
-        <CompensationCards
-          compensations={compensations}
-          queryClient={queryClient}
-          openSnackbar={openSnackbar}
-        />
-      )}
+      <Box className="dashboard-two-column">
+        <Paper elevation={2} className="dashboard-section">
+          <Typography variant="h5" className="section-title">
+            Your Job Applications
+          </Typography>
+          <JobApplicationStatus />
+        </Paper>
 
-      {jobs && jobs.length > 0 && (
-        <JobPostsSection
-          jobs={jobs}
-          queryClient={queryClient}
-          openSnackbar={openSnackbar}
-        />
-      )}
-    </div>
+        <Paper elevation={2} className="dashboard-section">
+          <Typography variant="h5" className="section-title">
+            Your Job Postings
+          </Typography>
+          {userJobs.length > 0 ? (
+            <div className="user-jobs-list">
+              {userJobs.map((job) => (
+                <Box key={job.id} className="user-job-item">
+                  <Typography variant="h6">{job.title}</Typography>
+                  <Typography variant="body2">{job.company}</Typography>
+                  <Typography variant="body2">
+                    Status:{" "}
+                    <span className={`status-${job.status}`}>{job.status}</span>
+                  </Typography>
+                </Box>
+              ))}
+            </div>
+          ) : (
+            <Typography variant="body1" className="empty-message">
+              You haven't posted any jobs yet.
+            </Typography>
+          )}
+        </Paper>
+      </Box>
+
+      <Paper elevation={2} className="dashboard-section">
+        <Typography variant="h5" className="section-title">
+          Recent Job Listings
+        </Typography>
+        <RecentJobListings />
+      </Paper>
+    </Container>
   );
 };
 

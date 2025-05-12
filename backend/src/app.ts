@@ -126,7 +126,8 @@ app.get("/locations", locationsController.getLocations);
  *
  */
 const compensationsRouter: Router = express.Router();
-compensationsRouter.get("/", compensationController.getAllSalaries);
+compensationsRouter.get("/", compensationController.getPaginatedCompensations);
+compensationsRouter.get("/all", compensationController.getAllCompensations);
 compensationsRouter.get(
   "/profile",
   compensationController.getProfileCompensations

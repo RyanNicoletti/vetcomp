@@ -6,7 +6,14 @@ import { SalaryFilter } from "../types";
 import b2Service from "./b2Service";
 
 const salariesService = {
-  getAll: async (db: Knex, salaryFilter: SalaryFilter) => {
+  getAll: async (db: Knex) => {
+    const compensations = await db("salaries")
+      .select("*")
+      .where({ is_approved: true });
+    return compensations;
+  },
+
+  getAllPaginated: async (db: Knex, salaryFilter: SalaryFilter) => {
     const query = db<ICompensation>("salaries").select(
       "*",
       db.raw("COUNT(*) OVER() AS total_count")

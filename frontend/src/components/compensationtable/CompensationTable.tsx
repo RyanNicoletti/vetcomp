@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TableRow from "@mui/material/TableRow";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getAllSalaries } from "../../queries/compensationQueries";
+import { getPaginatedCompensations } from "../../queries/compensationQueries";
 import ErrorBlock from "../ErrorBlock";
 import { SortParams } from "./types";
 import { ICompensation } from "../../../../shared-types/types";
@@ -127,7 +127,8 @@ export default function SalaryTable() {
     isPending: salaryIsPending,
   } = useQuery({
     queryKey: ["salaries", page, rowsPerPage, sortParams, filters],
-    queryFn: () => getAllSalaries(page, rowsPerPage, sortParams, filters),
+    queryFn: () =>
+      getPaginatedCompensations(page, rowsPerPage, sortParams, filters),
     placeholderData: keepPreviousData,
   });
 

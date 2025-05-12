@@ -18,64 +18,73 @@ import {
 } from "../errors/httpErrors";
 import { ICompensation } from "../../../shared-types/types";
 
-const getAllSalaries = asyncHandler(async (req: Request, res: Response) => {
-  const salaryFilter: SalaryFilter = {
-    page: 0,
-    rowsPerPage: 10,
-    sortDirection: "asc",
-    sortBy: "",
-    specialistsOnly: false,
-    isAdminQuery: false,
-  };
+const getAllCompensations = asyncHandler(
+  async (req: Request, res: Response) => {
+    const compensations = await compensationService.getAll(db);
+    res.status(200).json(compensations);
+  }
+);
 
-  if (typeof req.query.page === "string") {
-    const pageNumber: number = parseInt(req.query.page, 10);
-    const oneIndexedPageNumber: number = pageNumber - 1;
-    salaryFilter.page = oneIndexedPageNumber;
-  }
-  if (typeof req.query.rowsPerPage === "string") {
-    salaryFilter.rowsPerPage = parseInt(req.query.rowsPerPage, 10);
-  }
-  if (typeof req.query.sortDirection === "string") {
-    if (
-      req.query.sortDirection === "asc" ||
-      req.query.sortDirection === "desc"
-    ) {
-      salaryFilter.sortDirection = req.query.sortDirection;
+const getPaginatedCompensations = asyncHandler(
+  async (req: Request, res: Response) => {
+    const salaryFilter: SalaryFilter = {
+      page: 0,
+      rowsPerPage: 10,
+      sortDirection: "asc",
+      sortBy: "",
+      specialistsOnly: false,
+      isAdminQuery: false,
+    };
+
+    if (typeof req.query.page === "string") {
+      const pageNumber: number = parseInt(req.query.page, 10);
+      const oneIndexedPageNumber: number = pageNumber - 1;
+      salaryFilter.page = oneIndexedPageNumber;
     }
-  }
-  if (typeof req.query.sortBy === "string" && req.query.sortBy !== "") {
-    salaryFilter.sortBy = req.query.sortBy;
-  }
+    if (typeof req.query.rowsPerPage === "string") {
+      salaryFilter.rowsPerPage = parseInt(req.query.rowsPerPage, 10);
+    }
+    if (typeof req.query.sortDirection === "string") {
+      if (
+        req.query.sortDirection === "asc" ||
+        req.query.sortDirection === "desc"
+      ) {
+        salaryFilter.sortDirection = req.query.sortDirection;
+      }
+    }
+    if (typeof req.query.sortBy === "string" && req.query.sortBy !== "") {
+      salaryFilter.sortBy = req.query.sortBy;
+    }
 
-  if (
-    req.query.companySearch !== "" &&
-    typeof req.query.companySearch === "string"
-  ) {
-    salaryFilter.companySearch = req.query.companySearch;
-  }
-  if (
-    req.query.locationSearch !== "" &&
-    typeof req.query.locationSearch === "string"
-  ) {
-    salaryFilter.locationSearch = req.query.locationSearch;
-  }
+    if (
+      req.query.companySearch !== "" &&
+      typeof req.query.companySearch === "string"
+    ) {
+      salaryFilter.companySearch = req.query.companySearch;
+    }
+    if (
+      req.query.locationSearch !== "" &&
+      typeof req.query.locationSearch === "string"
+    ) {
+      salaryFilter.locationSearch = req.query.locationSearch;
+    }
 
-  if (req.query.specialistsOnly === "true") {
-    salaryFilter.specialistsOnly = true;
-  }
-  if (typeof req.query.practiceType === "string") {
-    salaryFilter.practiceTypeFilter = req.query.practiceType
-      .split(",")
-      .map((type) => type.trim());
-  }
+    if (req.query.specialistsOnly === "true") {
+      salaryFilter.specialistsOnly = true;
+    }
+    if (typeof req.query.practiceType === "string") {
+      salaryFilter.practiceTypeFilter = req.query.practiceType
+        .split(",")
+        .map((type) => type.trim());
+    }
 
-  const compensationsWithPages = await compensationService.getAll(
-    db,
-    salaryFilter
-  );
-  res.json(compensationsWithPages);
-});
+    const compensationsWithPages = await compensationService.getAllPaginated(
+      db,
+      salaryFilter
+    );
+    res.json(compensationsWithPages);
+  }
+);
 
 const getAllAdminCompensations = asyncHandler(
   async (req: Request, res: Response) => {
@@ -117,7 +126,7 @@ const getAllAdminCompensations = asyncHandler(
       throw new UnauthorizedError("Unauthorized");
     }
 
-    const compensationsWithPages = await compensationService.getAll(
+    const compensationsWithPages = await compensationService.getAllPaginated(
       db,
       salaryFilter
     );
@@ -362,7 +371,7 @@ const getLocationCompensations = asyncHandler(
 );
 
 export default {
-  getAllSalaries,
+  getPaginatedCompensations,
   createCompensation,
   getAllAdminCompensations,
   approveCompensationById,
@@ -371,4 +380,5 @@ export default {
   getProfileCompensations,
   uploadVerificationDocument,
   getLocationCompensations,
+  getAllCompensations,
 };

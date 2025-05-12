@@ -12,7 +12,20 @@ interface FilterState {
   specialistsOnly: boolean;
 }
 
-export const getAllSalaries = async (
+export const getAllCompensations = async (): Promise<ICompensation[]> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/all`,
+    { method: "GET", credentials: "include" }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch all compensations data");
+  }
+
+  return await response.json();
+};
+
+export const getPaginatedCompensations = async (
   page: number,
   rowsPerPage: number,
   sortParams: SortParams,
