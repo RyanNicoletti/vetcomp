@@ -156,10 +156,10 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
               <Box className="expandedDetailsOuterContainer">
                 <Grid container>
-                  <Grid item xs={2.5}>
+                  <Grid size={{ xs: 2.5 }}>
                     <Typography variant="h6">Compensation Details:</Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid size={{ xs: 3 }}>
                     <Typography>
                       Sign on bonus:{" "}
                       {formatNullableMoneyValue(row.sign_on_bonus) ?? "--"}
@@ -181,7 +181,7 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
                       {row.percent_production ?? "--"}
                     </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid size={{ xs: 3 }}>
                     <Typography>
                       Days/week: {row.days_worked_per_week ?? "--"}
                     </Typography>

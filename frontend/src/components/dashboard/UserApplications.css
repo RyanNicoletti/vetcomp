@@ -1,0 +1,51 @@
+.job-applications-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.application-item {
+  padding: 12px 0;
+  transition: background-color 0.2s;
+}
+
+.application-item:hover {
+  background-color: var(--color-table-alternate);
+}
+
+.status-badge {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.application-company {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.application-date {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  color: var(--color-text-dark);
+  opacity: 0.8;
+}
+
+.status-pending {
+  color: var(--color-text-dark);
+}
+
+.status-viewed {
+  color: var(--color-primary);
+}
+
+.status-contacted {
+  color: green;
+}
+
+@media (max-width: 768px) {
+  .job-applications-container {
+    max-height: none;
+  }
+}
