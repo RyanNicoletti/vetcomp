@@ -25,7 +25,7 @@ const Header = () => {
     "Home",
     "About",
     "Jobs",
-    ...(isAuthenticated ? ["Profile"] : ["Sign up", "Log in"]),
+    ...(isAuthenticated ? ["Dashboard"] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
 

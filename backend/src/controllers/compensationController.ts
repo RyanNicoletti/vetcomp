@@ -16,6 +16,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "../errors/httpErrors";
+import { ICompensation } from "../../../shared-types/types";
 
 const getAllSalaries = asyncHandler(async (req: Request, res: Response) => {
   const salaryFilter: SalaryFilter = {
@@ -327,6 +328,39 @@ const uploadVerificationDocument = asyncHandler(
   }
 );
 
+const getLocationCompensations = asyncHandler(
+  async (req: Request, res: Response) => {
+    const locationParam = req.query.location as string;
+
+    if (!locationParam) {
+      throw new BadRequestError("Location parameter is required");
+    }
+
+    // Check if it's a state code (2 letters)
+    const isStateCode = /^[A-Z]{2}$/.test(locationParam.toUpperCase());
+
+    let query = db<ICompensation>("salaries")
+      .select("*")
+      .where({ is_approved: true });
+
+    if (isStateCode) {
+      // If it's a state code, search for it in the location field
+      query = query.whereRaw("UPPER(location) LIKE ?", [
+        `%${locationParam.toUpperCase()}%`,
+      ]);
+    } else {
+      // Otherwise, do an exact match on the location
+      query = query.whereRaw("UPPER(location) = ?", [
+        locationParam.toUpperCase(),
+      ]);
+    }
+
+    const compensations = await query;
+
+    res.status(200).json({ compensations });
+  }
+);
+
 export default {
   getAllSalaries,
   createCompensation,
@@ -336,4 +370,5 @@ export default {
   deleteCompensationById,
   getProfileCompensations,
   uploadVerificationDocument,
+  getLocationCompensations,
 };

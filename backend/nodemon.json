@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": ".ts,.js",
   "ignore": [],
-  "exec": "node --env-file=.env --loader ts-node/esm ./src/server"
+  "exec": "node --env-file=.env --import=tsx ./src/server.ts"
 }

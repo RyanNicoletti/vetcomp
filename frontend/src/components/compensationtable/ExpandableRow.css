@@ -1,103 +1,89 @@
-.expanded-detail-container {
-  margin: 10px;
+.expanded-details-container {
+  padding: 20px;
 }
 
-.table-rows:nth-child(even) {
-  background-color: var(--color-table-alternate);
-}
-
-.table-rows:nth-child(odd) {
-  background-color: var(--color-text-light);
-}
-
-.expanded-row-title {
-  font-size: 1rem;
-  margin-bottom: 0.35em;
-  margin-left: 80px;
-}
-
-.yoe {
-  display: none;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 0.3fr);
-  gap: 5px 1px;
-  margin-left: 100px;
-}
-
-.company-location-cell p {
-  font-size: 16px;
-}
-.company-location-cell span {
-  font-size: 12px;
-}
-
-.type-of-practice-cell p {
-  font-size: 16px;
-}
-.type-of-practice-cell span {
-  font-size: 12px;
-}
-
-.years-of-experience-cell {
-  font-size: 16px;
-}
-
-.total-comp-p {
-  font-size: 16px;
-}
-.total-comp-span {
-  font-size: 12px;
-}
-
-.comp-row-container {
+.expanded-details-grid {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.comp-data {
-  align-self: center;
-  margin-right: 5px;
+.expanded-details-column {
+  flex: 1;
+  min-width: 300px;
 }
-.verification-checkmark {
-  width: 24px;
+
+.expanded-section {
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.expanded-section-title {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  color: #333;
+}
+
+.expanded-icon {
+  margin-right: 8px;
+  color: #1976d2;
+}
+
+.expanded-divider {
+  margin-bottom: 12px !important;
+}
+
+.expanded-detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.expanded-detail-item:last-child {
+  border-bottom: none;
+}
+
+.expanded-label {
+  font-weight: 500;
+  color: #666;
+  display: flex;
   align-items: center;
 }
 
-@media (max-width: 760px) {
-  .company-location-cell p {
-    font-size: 14px;
-  }
-  .company-location-cell span {
-    font-size: 12px;
+.expanded-value {
+  color: #333;
+  text-align: right;
+}
+
+.info-icon-button {
+  padding: 2px !important;
+  margin-left: 4px !important;
+}
+
+.info-icon {
+  font-size: 16px !important;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .expanded-details-grid {
+    flex-direction: column;
   }
 
-  .type-of-practice-cell p {
-    font-size: 14px;
-  }
-  .type-of-practice-cell span {
-    font-size: 12px;
-  }
-  .comp-row-container {
-    margin-left: 1.5rem;
+  .expanded-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .expanded-row-title {
-    margin-left: 15px;
-    font-size: 15px;
-  }
-  .yoe {
-    display: block;
-  }
-  .grid-container {
-    display: block;
-    margin-left: 50px;
-  }
-  .sign-on .percent-production .days-per-week .number-vets .gender {
-    font-size: 13px;
+  .expanded-value {
+    text-align: left;
+    margin-top: 4px;
+    width: 100%;
   }
 }

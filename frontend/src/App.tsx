@@ -18,7 +18,7 @@ import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
 import LandingPage from "./pages/LandingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
-import { ProfilePage } from "./pages/ProfilePage";
+import DashboardPage from "./pages/DashboardPage";
 import About from "./pages/About";
 import JobsPage from "./pages/JobsPage";
 import JobPaymentPage from "./components/jobs/JobPaymentPage";
@@ -54,7 +54,7 @@ function App() {
                 path="/jobs/:jobId/applications"
                 element={<ApplicationsListPage />}
               />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/addcomp" element={<AddCompForm />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/privacy-policy" element={<PolicyPage />} />

@@ -131,6 +131,10 @@ compensationsRouter.get(
   "/profile",
   compensationController.getProfileCompensations
 );
+compensationsRouter.get(
+  "/by-location",
+  compensationController.getLocationCompensations
+);
 compensationsRouter.post("/", compensationController.createCompensation);
 compensationsRouter.post(
   "/:compId/upload-verification",

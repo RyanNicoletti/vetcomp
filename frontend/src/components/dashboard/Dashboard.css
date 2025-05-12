@@ -1,4 +1,4 @@
-.profile-container {
+.dashboard-container {
   max-width: 1200px;
   margin: 100px auto 0;
   padding: 0 2rem;
@@ -6,6 +6,13 @@
 
 .page-title {
   margin-bottom: 1.5rem !important;
+  font-size: 1.8rem !important;
+}
+
+.section-title {
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+  color: #333333;
 }
 
 .compensations-grid {
@@ -16,11 +23,11 @@
 }
 
 .job-posts-container {
+  margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
-.comp-card,
-.profile-job-card {
+.comp-card {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -31,6 +38,13 @@
 }
 
 .profile-job-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: fit-content;
   max-width: 45%;
 }
 
@@ -93,8 +107,71 @@
   max-width: none;
 }
 
+.location-comparison-container {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e0e0e0;
+}
+
+.location-comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.location-dropdown {
+  min-width: 200px;
+}
+
+.chart-container {
+  height: 400px;
+  margin-top: 1rem;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error-container {
+  color: #d32f2f;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.action-button {
+  min-width: 200px;
+}
+
+.delete-job-button {
+  margin-top: 1rem !important;
+}
+
 @media (max-width: 768px) {
-  .profile-container {
+  .dashboard-container {
     padding: 0 1rem;
     margin-top: 80px;
   }
@@ -136,10 +213,14 @@
     width: 100%;
     word-break: break-word;
   }
+
+  .chart-container {
+    height: 300px;
+  }
 }
 
 @media (max-width: 480px) {
-  .profile-container {
+  .dashboard-container {
     padding: 0 0.75rem;
     margin-top: 70px;
   }

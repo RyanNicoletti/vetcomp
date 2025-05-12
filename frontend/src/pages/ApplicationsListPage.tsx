@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import ApplicationsList from "../components/profile/ApplicationsList";
+import ApplicationsList from "../components/dashboard/ApplicationsList";
 import { getJobById } from "../queries/jobQueries";
 import { CircularProgress, Typography } from "@mui/material";
 
