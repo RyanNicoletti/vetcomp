@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Typography,
-  Container,
-  Paper,
-  Box,
-  Divider,
-  Button,
-} from "@mui/material";
+import { Typography, Container, Paper, Box, Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersCompensation } from "../../queries/compensationQueries";
 import { getUserJobs } from "../../queries/jobQueries";
@@ -49,11 +42,13 @@ export const Dashboard = () => {
   });
 
   // Fetch job applications count
-  const { data: applicationsCount = 0, isLoading: isApplicationsCountLoading } =
-    useQuery({
-      queryKey: ["userApplicationsCount"],
-      queryFn: getUserApplicationsCount,
-    });
+  const {
+    data: _applicationsCount = 0,
+    isLoading: isApplicationsCountLoading,
+  } = useQuery({
+    queryKey: ["userApplicationsCount"],
+    queryFn: getUserApplicationsCount,
+  });
 
   // Update state when data is loaded
   useEffect(() => {

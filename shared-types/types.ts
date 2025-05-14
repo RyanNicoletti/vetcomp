@@ -25,7 +25,7 @@ export interface ICompensation {
   is_approved: boolean;
   verification_document_url: string | undefined;
   verification_document_name: string | null;
-  verification_original_document_name: string | undefined;
+  verification_document_original_name: string | undefined;
   needs_review: boolean;
   created_at?: Date;
   updated_at?: Date;

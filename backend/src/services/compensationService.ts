@@ -147,8 +147,8 @@ const salariesService = {
     const updatedCompensation = await db("salaries")
       .where({ id: compId })
       .update({
-        verification_document_url: verificationDocumentKey,
-        verification_document_name: verificationDocumentName,
+        verification_document_name: verificationDocumentKey,
+        verification_document_original_name: verificationDocumentName,
         needs_review: true,
       })
       .returning("*");

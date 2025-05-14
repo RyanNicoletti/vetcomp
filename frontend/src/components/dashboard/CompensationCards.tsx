@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Typography, Button, Input, Box, Link } from "@mui/material";
+import { Typography, Button, Input, Box } from "@mui/material";
 import { useMutation, QueryClient } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
 import { uploadVerificationDocument } from "../../queries/compensationQueries";

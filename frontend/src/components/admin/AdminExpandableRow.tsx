@@ -133,12 +133,13 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
           </div>
         </TableCell>
         <TableCell>
-          {row.verification_document_url ? (
+          {row.verification_document_name ? (
             <a
               href={row.verification_document_url}
               target="_blank"
               rel="noopener noreferrer">
-              {row.verification_document_name}
+              {row.verification_document_original_name ||
+                row.verification_document_name}
             </a>
           ) : (
             ""
