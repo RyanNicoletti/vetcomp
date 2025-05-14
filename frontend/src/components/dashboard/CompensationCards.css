@@ -1,0 +1,129 @@
+.page-title {
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+}
+
+.compensations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.comp-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  position: relative;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.comp-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.company {
+  font-size: 1.2rem !important;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem !important;
+}
+
+.location {
+  color: var(--color-text-dark);
+  margin-bottom: 1rem !important;
+  font-size: 0.9rem !important;
+}
+
+.comp-details {
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-dark);
+}
+
+.value {
+  font-weight: var(--font-weight-medium);
+  text-align: right;
+}
+
+.verification-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.verify-header {
+  margin-bottom: 0.5rem !important;
+  font-size: 1rem !important;
+  color: var(--color-primary);
+}
+
+.verified {
+  color: green;
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: #f0f8f0;
+  border-radius: 4px;
+}
+
+.comp-reminder {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #fff8e6;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.add-new-comp-btn {
+  margin-top: 0.5rem !important;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.general-reminder {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #e8f4fd;
+  border-radius: 8px;
+  border-left: 5px solid var(--color-primary);
+  text-align: center;
+}
+
+.reminder-action-btn {
+  margin-top: 1rem !important;
+}
+
+@media (max-width: 768px) {
+  .compensations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .general-reminder {
+    padding: 1rem;
+  }
+}

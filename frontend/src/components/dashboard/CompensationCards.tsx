@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Typography, Button, Input } from "@mui/material";
+import { Typography, Button, Input, Box, Link } from "@mui/material";
 import { useMutation, QueryClient } from "@tanstack/react-query";
+import { Link as RouterLink } from "react-router-dom";
 import { uploadVerificationDocument } from "../../queries/compensationQueries";
 import { ICompensation } from "../../../../shared-types/types";
 import {
   formatNullableMoneyValue,
   moneyFormatter,
 } from "../../utils/moneyFormatter";
+import "./CompensationCards.css";
 
 interface CompensationCardsProps {
   compensations: ICompensation[];
@@ -56,11 +58,25 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
     }
   };
 
+  // Function to check if a compensation entry is older than a year
+  const isOlderThanOneYear = (date: Date | undefined): boolean => {
+    if (!date) return false;
+
+    const createdAt = new Date(date);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    return createdAt < oneYearAgo;
+  };
+
   return (
-    <>
-      <Typography variant="h5" className="page-title">
-        Compensations
-      </Typography>
+    <div className="compensation-cards-section">
+      <div className="section-header">
+        <Typography variant="h5" className="page-title">
+          Your Compensation Data
+        </Typography>
+      </div>
+
       <div className="compensations-grid">
         {compensations.map((comp: ICompensation) => (
           <div key={comp.id} className="comp-card">
@@ -149,12 +165,44 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
                   <div className="value">{comp.days_worked_per_week}</div>
                 </div>
               )}
+              <div className="detail-item">
+                <div className="label">Date Added:</div>
+                <div className="value">
+                  {comp.created_at
+                    ? new Date(comp.created_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "N/A"}
+                </div>
+              </div>
             </div>
+
+            {isOlderThanOneYear(comp.created_at) && (
+              <Box className="comp-reminder">
+                <Typography variant="body2">
+                  It's been over a year since you submitted this compensation
+                  data. If your details have changed, please consider submitting
+                  updated information.
+                </Typography>
+                <Button
+                  component={RouterLink}
+                  to="/addcomp"
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  className="add-new-comp-btn">
+                  Add Updated Compensation
+                </Button>
+              </Box>
+            )}
+
             <div className="verification-section">
               {!comp.is_verified && comp.needs_review && (
                 <div>Verification pending review...</div>
               )}
-              {!comp.is_verified && (
+              {!comp.is_verified && !comp.needs_review && (
                 <div>
                   <Typography variant="h6" className="verify-header">
                     Verify Compensation
@@ -191,7 +239,23 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
           </div>
         ))}
       </div>
-    </>
+
+      {compensations.length === 0 && (
+        <Box textAlign="center" padding={3}>
+          <Typography variant="body1" gutterBottom>
+            You haven't added any compensation data yet.
+          </Typography>
+          <Button
+            component={RouterLink}
+            to="/addcomp"
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 2 }}>
+            Add Your Compensation
+          </Button>
+        </Box>
+      )}
+    </div>
   );
 };
 

@@ -93,7 +93,8 @@ const LocationCompensationChart = ({
 }: LocationCompensationChartProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [paymentType, setPaymentType] = useState<string>("annually");
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [userChartData, setUserChartData] = useState<any[]>([]);
+  const [otherChartData, setOtherChartData] = useState<any[]>([]);
 
   // Fetch all compensations
   const {
@@ -176,18 +177,23 @@ const LocationCompensationChart = ({
       (comp) => comp.payment_frequency === paymentType
     );
 
+    // Create arrays for user and other data
+    const userData: any[] = [];
+    const otherData: any[] = [];
+
     // Map compensations to chart data format
-    const compData = filteredCompensations.map((comp) => {
+    filteredCompensations.forEach((comp) => {
       const isUserComp = filteredUserComps.some(
         (userComp) => userComp.id === comp.id
       );
-      return {
+
+      const dataPoint = {
         x: comp.years_of_experience,
         y:
           paymentType === "annually"
             ? Number(comp.total_compensation)
             : Number(comp.hourly_rate),
-        z: 130, // size of the dot
+        z: isUserComp ? 160 : 130, // Make user dots slightly larger
         title: comp.title,
         company: comp.company,
         location: comp.location,
@@ -195,8 +201,16 @@ const LocationCompensationChart = ({
         practice_type: comp.type_of_practice,
         isUser: isUserComp,
       };
+
+      if (isUserComp) {
+        userData.push(dataPoint);
+      } else {
+        otherData.push(dataPoint);
+      }
     });
-    setChartData(compData);
+
+    setUserChartData(userData);
+    setOtherChartData(otherData);
   };
 
   // Custom tooltip for the chart
@@ -236,6 +250,7 @@ const LocationCompensationChart = ({
 
   const isLoading = isAllCompLoading || isLocationLoading;
   const isError = isAllCompError || isLocationError;
+  const hasData = userChartData.length > 0 || otherChartData.length > 0;
 
   return (
     <div className="location-comp-chart-container">
@@ -283,7 +298,7 @@ const LocationCompensationChart = ({
               Error loading compensation data. Please try again later.
             </Typography>
           </div>
-        ) : chartData.length === 0 ? (
+        ) : !hasData ? (
           <div className="no-chart-data">
             <Typography variant="body1">
               No compensation data available for the selected criteria.
@@ -312,17 +327,18 @@ const LocationCompensationChart = ({
                     : [0, "dataMax + 10"]
                 }
               />
-              <ZAxis dataKey="z" range={[60, 70]} />
+              <ZAxis dataKey="z" range={[60, 100]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Scatter
-                name={
-                  paymentType === "annually"
-                    ? "Annual Compensation"
-                    : "Hourly Rate"
-                }
-                data={chartData}
+                name="Other Compensations"
+                data={otherChartData}
                 fill="#8884d8"
+              />
+              <Scatter
+                name="Your Compensation"
+                data={userChartData}
+                fill="#ff7300" // Highlight user's data in orange
               />
             </ScatterChart>
           </ResponsiveContainer>

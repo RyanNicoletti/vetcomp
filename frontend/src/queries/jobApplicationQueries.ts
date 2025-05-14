@@ -34,6 +34,31 @@ export const getUserApplications = async () => {
   return response.json();
 };
 
+export const getUserApplicationsCount = async (): Promise<number> => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/jobs/applications/count`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch application count");
+    }
+
+    const data = await response.json();
+    return data.count;
+  } catch (error) {
+    console.error("Error fetching application count:", error);
+    return 0;
+  }
+};
+
 export const deleteApplication = async (
   applicationId: string
 ): Promise<void> => {

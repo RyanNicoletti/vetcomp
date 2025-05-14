@@ -1,11 +1,23 @@
 import { useState, useEffect } from "react";
-import { Typography, Container, Paper, Box } from "@mui/material";
+import {
+  Typography,
+  Container,
+  Paper,
+  Box,
+  Divider,
+  Button,
+} from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersCompensation } from "../../queries/compensationQueries";
 import { getUserJobs } from "../../queries/jobQueries";
+import { getUserApplicationsCount } from "../../queries/jobApplicationQueries";
 import { ICompensation, JobRecord } from "../../../../shared-types/types";
 import LocationCompensationChart from "./LocationCompensationChart";
 import UserApplications from "./UserApplications";
+import CompensationCards from "./CompensationCards";
+import { useSnackbar } from "../../context/SnackbarContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import "./Dashboard.css";
 
 export const Dashboard = () => {
@@ -13,6 +25,8 @@ export const Dashboard = () => {
     []
   );
   const [userJobs, setUserJobs] = useState<JobRecord[]>([]);
+  const queryClient = useQueryClient();
+  const { openSnackbar } = useSnackbar();
 
   // Fetch user's compensations
   const {
@@ -34,6 +48,13 @@ export const Dashboard = () => {
     queryFn: getUserJobs,
   });
 
+  // Fetch job applications count
+  const { data: applicationsCount = 0, isLoading: isApplicationsCountLoading } =
+    useQuery({
+      queryKey: ["userApplicationsCount"],
+      queryFn: getUserApplicationsCount,
+    });
+
   // Update state when data is loaded
   useEffect(() => {
     if (compensations) {
@@ -44,7 +65,8 @@ export const Dashboard = () => {
     }
   }, [compensations, jobs]);
 
-  const isLoading = isCompensationsLoading || isJobsLoading;
+  const isLoading =
+    isCompensationsLoading || isJobsLoading || isApplicationsCountLoading;
   const isError = isCompensationsError || isJobsError;
 
   if (isLoading) {
@@ -71,13 +93,42 @@ export const Dashboard = () => {
         Your Dashboard
       </Typography>
 
+      {/* User's Compensation Cards - Now at the top for immediate accessibility */}
+      <Paper elevation={2} className="dashboard-section">
+        <CompensationCards
+          compensations={userCompensations}
+          queryClient={queryClient}
+          openSnackbar={openSnackbar}
+        />
+
+        {/* General reminder for all users */}
+        <Box className="general-reminder">
+          <Typography variant="body1">
+            Got a new job or has it been over a year since you last posted? Help
+            keep our data current by adding your updated compensation
+            information.
+          </Typography>
+          <Button
+            component={Link}
+            to="/addcomp"
+            variant="contained"
+            color="primary"
+            className="reminder-action-btn">
+            Add New Compensation
+          </Button>
+        </Box>
+      </Paper>
+
+      {/* Compensation Chart - Moved below the cards */}
       {userCompensations.length > 0 ? (
         <Paper elevation={2} className="dashboard-section">
           <LocationCompensationChart userCompensations={userCompensations} />
         </Paper>
       ) : (
         <Paper elevation={2} className="dashboard-section empty-section">
-          <Typography variant="h6">No compensation data added yet</Typography>
+          <Typography variant="h6">
+            No compensation data to visualize
+          </Typography>
           <Typography variant="body1">
             Add your compensation information to see how you compare to others
             in your location.
