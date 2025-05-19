@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Typography,
   Box,
@@ -14,6 +15,7 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import BusinessIcon from "@mui/icons-material/Business";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import JobDetailsModal from "../jobs/JobDetailsModal";
 import "./UserApplications.css";
 import { getUserApplications } from "../../queries/jobApplicationQueries";
 
@@ -29,6 +31,8 @@ interface JobApplication {
 }
 
 const UserApplications = () => {
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
   const {
     data: applications,
     isLoading,
@@ -40,7 +44,7 @@ const UserApplications = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
+      case "applied":
         return "default";
       case "viewed":
         return "primary";
@@ -49,6 +53,14 @@ const UserApplications = () => {
       default:
         return "default";
     }
+  };
+
+  const handleJobClick = (jobId: string) => {
+    setSelectedJobId(jobId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedJobId(null);
   };
 
   if (isLoading) {
@@ -86,88 +98,96 @@ const UserApplications = () => {
   }
 
   return (
-    <Box className="job-applications-container">
-      <List>
-        {applications.map((application: JobApplication, index: number) => (
-          <Box key={application.id}>
-            {index > 0 && <Divider />}
-            <ListItem
-              alignItems="flex-start"
-              className="application-item"
-              component={Link}
-              to={`/jobs/${application.job_id}`}
-              sx={{
-                textDecoration: "none",
-                color: "inherit",
-                "&:hover": {
-                  backgroundColor: "#f5f5f5",
-                },
-              }}>
-              <ListItemText
-                primary={
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center">
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      {application.job_title}
-                    </Typography>
-                    <Chip
-                      label={application.status}
-                      size="small"
-                      color={getStatusColor(application.status)}
-                    />
-                  </Box>
-                }
-                secondary={
-                  <>
-                    <Box display="flex" alignItems="center" mt={0.5}>
-                      <BusinessIcon
-                        fontSize="small"
-                        sx={{ marginRight: 0.5, opacity: 0.7 }}
-                      />
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        color="text.primary">
-                        {application.company} - {application.location}
+    <>
+      <Box className="job-applications-container">
+        <List>
+          {applications.map((application: JobApplication, index: number) => (
+            <Box key={application.id}>
+              {index > 0 && <Divider />}
+              <ListItem
+                alignItems="flex-start"
+                className="application-item"
+                onClick={() => handleJobClick(application.job_id)}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
+                  },
+                }}>
+                <ListItemText
+                  primary={
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center">
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {application.job_title}
                       </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" mt={0.5}>
-                      <CalendarTodayIcon
-                        fontSize="small"
-                        sx={{ marginRight: 0.5, opacity: 0.7 }}
+                      <Chip
+                        label={application.status}
+                        size="small"
+                        color={getStatusColor(application.status)}
                       />
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        color="text.secondary">
-                        Applied on{" "}
-                        {format(
-                          new Date(application.created_at),
-                          "MMM d, yyyy"
-                        )}
-                      </Typography>
                     </Box>
-                  </>
-                }
-              />
-            </ListItem>
-          </Box>
-        ))}
-      </List>
+                  }
+                  secondary={
+                    <>
+                      <Box display="flex" alignItems="center" mt={0.5}>
+                        <BusinessIcon
+                          fontSize="small"
+                          sx={{ marginRight: 0.5, opacity: 0.7 }}
+                        />
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.primary">
+                          {application.company} - {application.location}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" mt={0.5}>
+                        <CalendarTodayIcon
+                          fontSize="small"
+                          sx={{ marginRight: 0.5, opacity: 0.7 }}
+                        />
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.secondary">
+                          Applied on{" "}
+                          {format(
+                            new Date(application.created_at),
+                            "MMM d, yyyy"
+                          )}
+                        </Typography>
+                      </Box>
+                    </>
+                  }
+                />
+              </ListItem>
+            </Box>
+          ))}
+        </List>
 
-      <Box textAlign="center" padding={2}>
-        <Button
-          component={Link}
-          to="/jobs"
-          variant="outlined"
-          color="primary"
-          size="small">
-          View More Jobs
-        </Button>
+        <Box textAlign="center" padding={2}>
+          <Button
+            component={Link}
+            to="/jobs"
+            variant="outlined"
+            color="primary"
+            size="small">
+            View More Jobs
+          </Button>
+        </Box>
       </Box>
-    </Box>
+
+      {selectedJobId && (
+        <JobDetailsModal
+          jobId={selectedJobId}
+          open={!!selectedJobId}
+          onClose={handleCloseModal}
+        />
+      )}
+    </>
   );
 };
 

@@ -7,9 +7,10 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "../errors/httpErrors";
-import { JobQuerySchema } from "../schemas/jobSchemas";
+import { JobQuerySchema, JobFormSchema } from "../schemas/jobSchemas";
 import { z } from "zod";
 import stripeService from "../services/stripeService";
+import { JobRecord } from "../../../shared-types/types";
 
 const getAll = asyncHandler(async (req: Request, res: Response) => {
   const query = JobQuerySchema.parse(req.query);
@@ -52,6 +53,48 @@ const getUserJobs = asyncHandler(async (req: Request, res: Response) => {
   res.json(jobs);
 });
 
+const createJob = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.session.userId) {
+    throw new UnauthorizedError("Must be logged in to create jobs");
+  }
+
+  const validatedData = JobFormSchema.parse({
+    ...req.body,
+    status: "active",
+    user_id: req.session.userId,
+  });
+
+  const transformedJobData: Omit<JobRecord, "id"> = {
+    user_id: validatedData.user_id,
+    title: validatedData.title,
+    company: validatedData.company,
+    location: validatedData.location,
+    type: validatedData.type,
+    practice_type: validatedData.practiceType,
+    salary_min: validatedData.salaryMin,
+    salary_max: validatedData.salaryMax,
+    sign_on_bonus: validatedData.signOnBonus ?? null,
+    experience_min: validatedData.experienceMin,
+    experience_max: validatedData.experienceMax,
+    description: validatedData.description,
+    requirements: validatedData.requirements ?? null,
+    benefits: validatedData.benefits ?? null,
+    application_method: validatedData.applicationMethod,
+    contact_email: validatedData.contactEmail ?? null,
+    application_url: validatedData.applicationUrl ?? null,
+    status: "active",
+    customer_id: null,
+    subscription_id: null,
+  };
+
+  const newJob = await jobsService.create(db, transformedJobData);
+
+  res.status(201).json({
+    message: "Job posted successfully!",
+    job: newJob,
+  });
+});
+
 const cancelSubscription = asyncHandler(async (req: Request, res: Response) => {
   if (!req.session.userId) {
     throw new UnauthorizedError("Must be logged in to cancel jobs");
@@ -64,7 +107,12 @@ const cancelSubscription = asyncHandler(async (req: Request, res: Response) => {
     throw new NotFoundError("Job not found");
   }
 
-  await stripeService.cancelSubscriptionImmediately(job.subscription_id);
+  if (job.subscription_id) {
+    await stripeService.cancelSubscriptionImmediately(job.subscription_id);
+  } else {
+    // For free jobs, just update status to expired
+    await jobsService.updateJobStatus(db, jobId, "expired");
+  }
 
   res.json({ message: "Job cancelled successfully" });
 });
@@ -73,5 +121,6 @@ export default {
   getAll,
   getJobById,
   getUserJobs,
+  createJob,
   cancelSubscription,
 };

@@ -8,6 +8,7 @@ import { ICompensation, JobRecord } from "../../../../shared-types/types";
 import LocationCompensationChart from "./LocationCompensationChart";
 import UserApplications from "./UserApplications";
 import CompensationCards from "./CompensationCards";
+import JobPostsSection from "./JobPostsSection";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -21,7 +22,6 @@ export const Dashboard = () => {
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
 
-  // Fetch user's compensations
   const {
     data: compensations,
     isLoading: isCompensationsLoading,
@@ -31,7 +31,6 @@ export const Dashboard = () => {
     queryFn: getUsersCompensation,
   });
 
-  // Fetch user's job postings
   const {
     data: jobs,
     isLoading: isJobsLoading,
@@ -41,7 +40,6 @@ export const Dashboard = () => {
     queryFn: getUserJobs,
   });
 
-  // Fetch job applications count
   const {
     data: _applicationsCount = 0,
     isLoading: isApplicationsCountLoading,
@@ -50,7 +48,6 @@ export const Dashboard = () => {
     queryFn: getUserApplicationsCount,
   });
 
-  // Update state when data is loaded
   useEffect(() => {
     if (compensations) {
       setUserCompensations(compensations);
@@ -88,7 +85,6 @@ export const Dashboard = () => {
         Your Dashboard
       </Typography>
 
-      {/* User's Compensation Cards - Now at the top for immediate accessibility */}
       <Paper elevation={2} className="dashboard-section">
         <CompensationCards
           compensations={userCompensations}
@@ -96,7 +92,6 @@ export const Dashboard = () => {
           openSnackbar={openSnackbar}
         />
 
-        {/* General reminder for all users */}
         <Box className="general-reminder">
           <Typography variant="body1">
             Got a new job or has it been over a year since you last posted? Help
@@ -114,7 +109,6 @@ export const Dashboard = () => {
         </Box>
       </Paper>
 
-      {/* Compensation Chart - Moved below the cards */}
       {userCompensations.length > 0 ? (
         <Paper elevation={2} className="dashboard-section">
           <LocationCompensationChart userCompensations={userCompensations} />
@@ -140,26 +134,22 @@ export const Dashboard = () => {
         </Paper>
 
         <Paper elevation={2} className="dashboard-section">
-          <Typography variant="h5" className="section-title">
-            Your Job Postings
-          </Typography>
+          {/* Replace the simple job listing with JobPostsSection */}
           {userJobs.length > 0 ? (
-            <div className="user-jobs-list">
-              {userJobs.map((job) => (
-                <Box key={job.id} className="user-job-item">
-                  <Typography variant="h6">{job.title}</Typography>
-                  <Typography variant="body2">{job.company}</Typography>
-                  <Typography variant="body2">
-                    Status:{" "}
-                    <span className={`status-${job.status}`}>{job.status}</span>
-                  </Typography>
-                </Box>
-              ))}
-            </div>
+            <JobPostsSection
+              jobs={userJobs}
+              queryClient={queryClient}
+              openSnackbar={openSnackbar}
+            />
           ) : (
-            <Typography variant="body1" className="empty-message">
-              You haven't posted any jobs yet.
-            </Typography>
+            <>
+              <Typography variant="h5" className="section-title">
+                Your Job Ads
+              </Typography>
+              <Typography variant="body1" className="empty-message">
+                You haven't posted any jobs yet.
+              </Typography>
+            </>
           )}
         </Paper>
       </Box>

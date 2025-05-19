@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Box,
   Button,
@@ -21,11 +21,13 @@ import {
 } from "@mui/material";
 import { getLocationSuggestions } from "../../queries/locationQueries";
 import { useAuth } from "../../context/AuthContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 import { useState } from "react";
 import "./JobForm.css";
 import { NumericFormat } from "react-number-format";
 import { convertCurrencyToNumber } from "../../utils/moneyFormatter";
 import { IJobFormData } from "../../../../shared-types/types";
+import { createJobFree } from "../../queries/jobQueries";
 
 const practiceTypes = [
   "Small animal",
@@ -39,6 +41,7 @@ const practiceTypes = [
 const JobForm = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { openSnackbar } = useSnackbar();
   const [locationQuery, setLocationQuery] = useState("");
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -79,6 +82,23 @@ const JobForm = () => {
     enabled: locationQuery.length > 2,
   });
 
+  const createJobMutation = useMutation({
+    mutationFn: createJobFree,
+    onSuccess: (data) => {
+      openSnackbar("Job posted successfully!", "success");
+      navigate("/jobs/payment/return", {
+        state: {
+          jobId: data.job.id,
+          jobTitle: data.job.title,
+          company: data.job.company,
+        },
+      });
+    },
+    onError: (error: Error) => {
+      setGeneralError(error.message || "Failed to create job posting");
+    },
+  });
+
   const onSubmit = async (jobFormData: IJobFormData) => {
     if (!isAuthenticated) {
       navigate("/login?redirect=/jobs/post");
@@ -88,7 +108,7 @@ const JobForm = () => {
     const isValid = await trigger();
 
     if (isValid) {
-      navigate("/jobs/payment", { state: { jobData: jobFormData } });
+      createJobMutation.mutate(jobFormData);
     }
   };
 
@@ -108,6 +128,12 @@ const JobForm = () => {
             <Typography variant="h5" component="h1" gutterBottom>
               Post a New Job
             </Typography>
+
+            <Alert severity="info" sx={{ mb: 2 }}>
+              🎉 Job posting is FREE while the veterinarycomp.com job board is
+              in beta!
+            </Alert>
+
             {generalError && (
               <Alert
                 severity="error"
@@ -537,7 +563,8 @@ const JobForm = () => {
                 <Button
                   variant="outlined"
                   onClick={() => navigate("/jobs")}
-                  className="job-posting-cancel-btn">
+                  className="job-posting-cancel-btn"
+                  disabled={createJobMutation.isPending}>
                   Cancel
                 </Button>
                 <Tooltip
@@ -551,9 +578,16 @@ const JobForm = () => {
                     <Button
                       type="submit"
                       variant="contained"
-                      disabled={!isAuthenticated}
+                      disabled={!isAuthenticated || createJobMutation.isPending}
                       className="job-posting-submit-btn">
-                      Continue to Payment
+                      {createJobMutation.isPending ? (
+                        <>
+                          <CircularProgress size={20} sx={{ mr: 1 }} />
+                          Posting Job...
+                        </>
+                      ) : (
+                        "Create Job Ad"
+                      )}
                     </Button>
                   </span>
                 </Tooltip>

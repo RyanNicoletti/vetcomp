@@ -152,6 +152,7 @@ const jobsRouter: Router = express.Router();
 // General job routes
 jobsRouter.get("/", jobsController.getAll);
 jobsRouter.get("/profile", jobsController.getUserJobs);
+jobsRouter.post("/", jobsController.createJob);
 
 // Job applications routes (grouped together and before /:id)
 jobsRouter.get(

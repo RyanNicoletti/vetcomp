@@ -46,13 +46,14 @@ const PaymentMethodManager = ({ jobId }: PaymentMethodManagerProps) => {
 
   return (
     <div className="payment-method-container">
-      <Button
+      {/* UNCOMMENT THIS WHEN IMPLEMENTING PAYMENTS */}
+      {/* <Button
         variant="outlined"
         startIcon={<PaymentIcon />}
         onClick={handleOpenDialog}
         className="payment-method-button">
         Manage Payment Methods
-      </Button>
+      </Button> */}
 
       <Dialog
         open={dialogOpen}

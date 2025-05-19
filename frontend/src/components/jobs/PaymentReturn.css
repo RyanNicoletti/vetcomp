@@ -36,6 +36,12 @@
   margin-bottom: 0.5rem !important;
 }
 
+.payment-return-subtitle {
+  margin-bottom: 1rem !important;
+  color: #666;
+  font-style: italic;
+}
+
 .payment-return-message {
   margin-bottom: 1rem !important;
   color: #666;
@@ -55,8 +61,24 @@
   text-decoration: underline;
 }
 
+.payment-return-free-note {
+  margin-bottom: 2rem !important;
+  color: #1976d2;
+  font-weight: 500;
+  background: #e3f2fd;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.payment-return-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .payment-return-button {
-  min-width: 200px !important;
+  min-width: 150px !important;
 }
 
 @media (max-width: 600px) {
@@ -67,5 +89,13 @@
 
   .payment-return-success {
     padding: 1rem;
+  }
+
+  .payment-return-actions {
+    flex-direction: column;
+  }
+
+  .payment-return-button {
+    width: 100% !important;
   }
 }

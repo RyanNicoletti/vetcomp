@@ -42,7 +42,10 @@ const jobsService = {
     };
   },
 
-  create: async (db: Knex, jobData: JobRecord): Promise<JobRecord> => {
+  create: async (
+    db: Knex,
+    jobData: Omit<JobRecord, "id">
+  ): Promise<JobRecord> => {
     const [job] = await db("jobs").insert(jobData).returning("*");
     return job;
   },
@@ -58,17 +61,20 @@ const jobsService = {
 
   getById: async (db: Knex, jobId: string): Promise<JobRecord | null> => {
     try {
-      const job = await db<JobRecord>("jobs")
-        .where({
-          id: jobId,
-          status: "active",
-        })
-        .first();
+      const job = await db<JobRecord>("jobs").where({ id: jobId }).first();
       return job || null;
     } catch (error) {
       console.error("Unable to find job: ", error);
       throw error;
     }
+  },
+
+  updateJobStatus: async (
+    db: Knex,
+    jobId: string,
+    status: "active" | "expired" | "draft"
+  ): Promise<void> => {
+    await db<JobRecord>("jobs").where({ id: jobId }).update({ status });
   },
 };
 

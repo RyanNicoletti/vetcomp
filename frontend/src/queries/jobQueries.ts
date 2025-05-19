@@ -71,22 +71,41 @@ export const deleteJobPost = async (jobId: string): Promise<void> => {
   }
 };
 
-export const createJob = async (data: IJobFormData): Promise<JobRecord> => {
-  const formData = new FormData();
-  formData.append("newJob", JSON.stringify(data));
+// UNCOMMENT THIS WHEN IMPLEMENTING PAID JOBS
+// export const createJob = async (data: IJobFormData): Promise<JobRecord> => {
+//   const formData = new FormData();
+//   formData.append("newJob", JSON.stringify(data));
 
+//   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: formData,
+//     credentials: "include",
+//   });
+
+//   if (!response.ok) {
+//     const error = await response.json();
+//     throw new Error(error.message || "Failed to create job");
+//   }
+
+//   return response.json();
+// };
+
+export const createJobFree = async (jobData: IJobFormData) => {
   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: formData,
     credentials: "include",
+    body: JSON.stringify(jobData),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to create job");
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Failed to create job");
   }
 
   return response.json();

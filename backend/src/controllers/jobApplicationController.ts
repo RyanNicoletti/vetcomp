@@ -78,7 +78,7 @@ const jobApplicationsController = {
       phone_number: validatedData.phoneNumber ?? null,
       resume_name: resumeKey,
       resume_original_name: resumeOriginalName,
-      status: "pending",
+      status: "applied",
     });
 
     // Send confirmation email to applicant

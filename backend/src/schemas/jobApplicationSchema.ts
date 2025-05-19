@@ -10,7 +10,7 @@ export const JobApplicationSchema = z.object({
   resume_url: z.string().optional(),
   resume_name: z.string().optional(),
   resume_original_name: z.string().optional(),
-  status: z.enum(["pending", "viewed", "contacted"]),
+  status: z.enum(["applied", "viewed", "contacted"]),
   created_at: z.date().optional(),
   updated_at: z.date().optional(),
 });

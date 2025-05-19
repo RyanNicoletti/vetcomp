@@ -102,8 +102,8 @@ export interface JobRecord {
   application_url?: string | null;
   user_id: string;
   status: JobStatus;
-  subscription_id: string;
-  customer_id: string;
+  subscription_id?: string | null;
+  customer_id?: string | null;
   created_at?: Date;
 }
 

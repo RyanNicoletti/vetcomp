@@ -1,5 +1,4 @@
 import type { Knex } from "knex";
-import path from "path";
 
 if (!process.env.DB_CONNECTION_URL) {
   console.error(
@@ -21,11 +20,11 @@ const config: KnexConfig = {
       max: 10,
     },
     migrations: {
-      directory: path.resolve(__dirname, "../src/db/migrations"),
+      directory: "../src/db/migrations",
       extension: "ts",
     },
     seeds: {
-      directory: path.resolve(__dirname, "../src/db/seeds"),
+      directory: "../src/db/seeds",
       extension: "ts",
     },
   },
@@ -37,7 +36,7 @@ const config: KnexConfig = {
       max: 10,
     },
     migrations: {
-      directory: path.resolve(__dirname, "../src/db/migrations"),
+      directory: "../src/db/migrations",
       extension: "ts",
     },
   },

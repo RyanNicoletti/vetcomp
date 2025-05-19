@@ -109,7 +109,7 @@ const JobsList = () => {
           onClick={handlePostJob}
           className="post-job-button"
           startIcon={<AddCircleOutlineIcon />}>
-          Post a Job
+          Post a free Job
         </Button>
       </Box>
 

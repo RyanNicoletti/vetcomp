@@ -20,6 +20,12 @@
   color: #444;
 }
 
+.free-highlight {
+  color: var(--color-primary);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 .no-jobs-subtitle {
   margin-bottom: 1rem !important;
   color: #666;

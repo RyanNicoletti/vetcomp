@@ -274,7 +274,9 @@ const getProfileCompensations = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.session?.userId;
     if (!userId) {
-      throw new UnauthorizedError("Please login before viewing profile.");
+      throw new UnauthorizedError(
+        "Please login before viewing your dashboard."
+      );
     }
 
     const userCompensations = await userService.getCompsByUserId(db, userId);

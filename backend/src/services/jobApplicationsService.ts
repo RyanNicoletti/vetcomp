@@ -11,9 +11,13 @@ interface JobApplication {
   resume_original_name: string | undefined;
   resume_url?: string;
   resume_name?: string;
-  status: "pending" | "viewed" | "contacted";
+  status: "applied" | "viewed" | "contacted";
   created_at: Date;
   updated_at: Date;
+
+  job_title?: string;
+  company?: string;
+  location?: string;
 }
 
 const jobApplicationsService = {
@@ -50,8 +54,15 @@ const jobApplicationsService = {
     userId: string
   ): Promise<JobApplication[]> => {
     const applications = await db("job_applications")
-      .where({ user_id: userId })
-      .orderBy("created_at", "desc");
+      .join("jobs", "job_applications.job_id", "jobs.id")
+      .where({ "job_applications.user_id": userId })
+      .select(
+        "job_applications.*",
+        "jobs.title as job_title",
+        "jobs.company",
+        "jobs.location"
+      )
+      .orderBy("job_applications.created_at", "desc");
 
     return Promise.all(
       applications.map(async (app) => {

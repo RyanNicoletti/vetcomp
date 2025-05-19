@@ -57,8 +57,8 @@ export const JobSchema = z.object({
   contact_email: z.string().email().nullable(),
   application_url: z.string().url().nullable(),
   status: JobStatus,
-  subscription_id: z.string(),
-  customer_id: z.string(),
+  subscription_id: z.string().nullable(),
+  customer_id: z.string().nullable(),
 });
 
 const convertCurrencyToNumber = (value: string | number): number => {

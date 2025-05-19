@@ -14,10 +14,11 @@ const NoJobsMessage = () => {
     <Box className="no-jobs-message-container">
       <Box className="no-jobs-content">
         <Typography variant="h5" className="no-jobs-title">
-          Hiring? Post a job ad for only $45/month
+          Veterinarycomp.com job board is currently in beta
         </Typography>
         <Typography variant="body1" className="no-jobs-subtitle">
-          Cancel anytime.
+          Post a job add here, <span className="free-highlight">free</span> for
+          a limited time.
         </Typography>
         <Typography variant="body1" className="no-jobs-subtitle">
           Looking for work? Check back later when there are more jobs!
@@ -28,7 +29,7 @@ const NoJobsMessage = () => {
           startIcon={<AddCircleOutlineIcon />}
           onClick={handlePostJob}
           className="post-job-cta">
-          Post a Job
+          Post a Job for Free
         </Button>
       </Box>
     </Box>

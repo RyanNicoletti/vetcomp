@@ -239,10 +239,10 @@ const emailService = {
           <div class="subscription-details">
             <p>Your subscription has been set up successfully:</p>
             <p>Amount: $${subscriptionDetails.amount}/month</p>
-            <p>You can cancel your subscription at any time from your profile page.</p>
+            <p>You can cancel your subscription at any time from your dashboard.</p>
           </div>
 
-          <p>If you need to make any changes to your job post or have any questions, please visit your profile page or contact our support team at support@veterinarycomp.com.</p>
+          <p>If you need to make any changes to your job post or have any questions, please visit your dashboard or contact our support team at support@veterinarycomp.com.</p>
 
           <p>Best regards,<br>The VeterinaryComp Team</p>
         </body>
@@ -383,9 +383,9 @@ const emailService = {
             <li>Name: ${applicantName}</li>
             <li>Email: ${applicantEmail}</li>
           </ul>
-          <p>You can view the full application and manage all your job applications by visiting your profile page: <a href="${
+          <p>You can view the full application and manage all your job applications by visiting your dashboard: <a href="${
             process.env.FRONTEND_URL
-          }/profile">View Applications</a></p>
+          }/dashboard">View Applications</a></p>
           <p>The Veterinarycomp.com Team</p>
           <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
           <div class="footer">
@@ -474,7 +474,7 @@ const emailService = {
               : ""
           }
           
-          <p>Alternatively, you can update your payment information by logging into your account and visiting your profile page.</p>
+          <p>Alternatively, you can update your payment information by logging into your account and visiting your dashboard.</p>
           
           <p>If you need any assistance, please contact our support team at support@veterinarycomp.com.</p>
           
@@ -567,7 +567,7 @@ const emailService = {
           
           <p>The payment will be automatically processed using your current payment method.</p>
           
-          <p>If you need to update your payment method, please log in to your account and visit your profile page.</p>
+          <p>If you need to update your payment method, please log in to your account and visit your dashboard.</p>
           
           <p>If you have any questions or need assistance, please contact our support team at support@veterinarycomp.com.</p>
           
@@ -660,7 +660,7 @@ const emailService = {
           
           <p>Your job post will remain active and visible to potential candidates.</p>
           
-          <p>If you wish to make any changes to your subscription or need to update your payment information, please log in to your account and visit your profile page.</p>
+          <p>If you wish to make any changes to your subscription or need to update your payment information, please log in to your account and visit your dashboard.</p>
           
           <p>Thank you for continuing to use Veterinarycomp.com for your recruiting needs!</p>
           

@@ -109,7 +109,7 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
+      case "applied":
         return "default";
       case "viewed":
         return "primary";
@@ -169,12 +169,12 @@ const ApplicationsList = ({ jobId, jobTitle }: ApplicationsListProps) => {
       <div className="applications-header-container">
         <Button
           component={Link}
-          to="/profile"
+          to="/dashboard"
           variant="outlined"
           size="small"
           className="back-button"
           startIcon={<ArrowBackIcon />}>
-          Back to Profile
+          Back to Dashboard
         </Button>
         <Typography variant="h5" className="applications-title">
           Applications for {jobTitle}

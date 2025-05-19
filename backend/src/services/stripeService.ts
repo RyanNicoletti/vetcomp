@@ -292,7 +292,7 @@ const stripeService = {
 
       const session = await stripe.billingPortal.sessions.create({
         customer: job.customer_id,
-        return_url: `${process.env.FRONTEND_URL}/profile`,
+        return_url: `${process.env.FRONTEND_URL}/dashboard`,
       });
 
       return { url: session.url };
