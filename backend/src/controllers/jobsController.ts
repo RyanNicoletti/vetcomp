@@ -11,6 +11,8 @@ import { JobQuerySchema, JobFormSchema } from "../schemas/jobSchemas";
 import { z } from "zod";
 import stripeService from "../services/stripeService";
 import { JobRecord } from "../../../shared-types/types";
+import emailService from "../services/emailService";
+import userService from "../services/userService";
 
 const getAll = asyncHandler(async (req: Request, res: Response) => {
   const query = JobQuerySchema.parse(req.query);
@@ -58,6 +60,12 @@ const createJob = asyncHandler(async (req: Request, res: Response) => {
     throw new UnauthorizedError("Must be logged in to create jobs");
   }
 
+  // UNCOMMENT THIS: NO NEED FOR THIS WHEN DOING PID JOBS (NO NEED FOR USER)
+  const user = await userService.getById(db, req.session.userId);
+  if (!user || !user.email) {
+    throw new BadRequestError("User not found");
+  }
+
   const validatedData = JobFormSchema.parse({
     ...req.body,
     status: "active",
@@ -83,11 +91,21 @@ const createJob = asyncHandler(async (req: Request, res: Response) => {
     contact_email: validatedData.contactEmail ?? null,
     application_url: validatedData.applicationUrl ?? null,
     status: "active",
+    // UNCOMMENT THIS: NEED TO UPDATE BELOW FIELDS FOR PAID JOBS
     customer_id: null,
     subscription_id: null,
   };
 
   const newJob = await jobsService.create(db, transformedJobData);
+  // UNCOMMENT THIS: delete below when doing paid jobs, EMAIL IS SENT ELSEWHERE
+  await emailService.sendJobPostConfirmationEmail({
+    email: user.email,
+    jobDetails: newJob,
+    subscriptionDetails: {
+      amount: 0,
+      interval: "free",
+    },
+  });
 
   res.status(201).json({
     message: "Job posted successfully!",

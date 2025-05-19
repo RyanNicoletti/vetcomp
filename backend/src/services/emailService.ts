@@ -224,8 +224,8 @@ const emailService = {
         <body>
           <img src="cid:logo" alt="VeterinaryComp Logo" class="logo">
           
-          <h2>Job Post Confirmation</h2>
-          <p>Thank you for posting a job on VeterinaryComp! Your job post has been successfully created and is now live on our platform.</p>
+          <h2>Job Ad Confirmation</h2>
+          <p>Thank you for posting a job on VeterinaryComp! Your job ad has been successfully created and is now live.</p>
           
           <div class="job-details">
             <h3>Job Details:</h3>
@@ -244,7 +244,7 @@ const emailService = {
 
           <p>If you need to make any changes to your job post or have any questions, please visit your dashboard or contact our support team at support@veterinarycomp.com.</p>
 
-          <p>Best regards,<br>The VeterinaryComp Team</p>
+          <p>Thank you,<br>The VeterinaryComp Team</p>
         </body>
         </html>
       `,
