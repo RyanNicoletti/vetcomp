@@ -10,7 +10,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { createCustomerPortalSession } from "../../queries/stripeQueries";
 import { useSnackbar } from "../../context/SnackbarContext";
-import PaymentIcon from "@mui/icons-material/Payment";
+// UNCOMMENT THIS WHEN DOING PAYMENTS
+// import PaymentIcon from "@mui/icons-material/Payment";
 import "./PaymentMethodManager.css";
 
 interface PaymentMethodManagerProps {
@@ -31,10 +32,10 @@ const PaymentMethodManager = ({ jobId }: PaymentMethodManagerProps) => {
       setDialogOpen(false);
     },
   });
-
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
-  };
+  // UNCOMMENT THIS WHEN DOING PAYMENTS
+  // const handleOpenDialog = () => {
+  //   setDialogOpen(true);
+  // };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
