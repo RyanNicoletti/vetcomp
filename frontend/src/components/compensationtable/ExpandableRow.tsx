@@ -156,6 +156,33 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
                         </div>
                       </div>
 
+                      {row.is_practice_owner && (
+                        <div className="expanded-detail-item">
+                          <div className="expanded-label">Practice Owner:</div>
+                          <div className="expanded-value">Yes</div>
+                        </div>
+                      )}
+
+                      {row.practice_description && (
+                        <div className="expanded-detail-item">
+                          <div className="expanded-label">
+                            Practice Details:
+                          </div>
+                          <div className="expanded-value">
+                            {row.practice_description}
+                          </div>
+                        </div>
+                      )}
+
+                      {row.is_traveling && (
+                        <div className="expanded-detail-item">
+                          <div className="expanded-label">Work Type:</div>
+                          <div className="expanded-value">
+                            Traveling (multiple locations)
+                          </div>
+                        </div>
+                      )}
+
                       {row.gender && (
                         <div className="expanded-detail-item">
                           <div className="expanded-label">Gender:</div>

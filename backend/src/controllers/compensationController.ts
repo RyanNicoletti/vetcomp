@@ -215,6 +215,9 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
     verification_document_name: verificationDocument?.key,
     verification_document_original_name: verificationDocument?.originalName,
     needs_review: needsReview,
+    is_practice_owner: validatedData.isPracticeOwner,
+    practice_description: validatedData.practiceDescription || null,
+    is_traveling: validatedData.isTraveling,
   };
 
   const insertedComp = await compensationService.create(db, compensationData);

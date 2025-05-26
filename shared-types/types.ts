@@ -27,6 +27,9 @@ export interface ICompensation {
   verification_document_name: string | null;
   verification_document_original_name: string | undefined;
   needs_review: boolean;
+  is_practice_owner: boolean;
+  practice_description: string | null;
+  is_traveling: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -57,6 +60,9 @@ export interface ICompFormInput {
   verificationDocumentName?: string;
   daysWorkedPerWeek?: string;
   email?: string;
+  isPracticeOwner: boolean;
+  practiceDescription: string | null;
+  isTraveling: boolean;
 }
 
 export type JobType = "full-time" | "part-time" | "contract" | "relief";

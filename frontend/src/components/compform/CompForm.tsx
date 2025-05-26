@@ -66,6 +66,9 @@ export const CompForm = () => {
       verificationDocumentName: "",
       daysWorkedPerWeek: "",
       email: "",
+      isPracticeOwner: false,
+      practiceDescription: "",
+      isTraveling: false,
     },
   });
 

@@ -103,6 +103,26 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
                 <div className="label">Years of Experience:</div>
                 <div className="value">{comp.years_of_experience}</div>
               </div>
+              {comp.is_practice_owner && (
+                <>
+                  <div className="detail-item">
+                    <div className="label">Practice Owner:</div>
+                    <div className="value">Yes</div>
+                  </div>
+                  {comp.practice_description && (
+                    <div className="detail-item">
+                      <div className="label">Practice Details:</div>
+                      <div className="value">{comp.practice_description}</div>
+                    </div>
+                  )}
+                </>
+              )}
+              {comp.is_traveling && (
+                <div className="detail-item">
+                  <div className="label">Work Type:</div>
+                  <div className="value">Traveling (multiple locations)</div>
+                </div>
+              )}
               {comp.payment_frequency === "annually" && (
                 <div className="detail-item">
                   <div className="label">Total Compensation:</div>

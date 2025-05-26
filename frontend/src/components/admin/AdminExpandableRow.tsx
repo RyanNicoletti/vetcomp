@@ -191,6 +191,17 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
                       {row.number_of_veterinarians ?? "--"}
                     </Typography>
                     <Typography>Gender: {row.gender ?? "--"}</Typography>
+                    {row.is_practice_owner && (
+                      <Typography>Practice Owner: Yes</Typography>
+                    )}
+                    {row.practice_description && (
+                      <Typography>
+                        Practice Details: {row.practice_description}
+                      </Typography>
+                    )}
+                    {row.is_traveling && (
+                      <Typography>Traveling (multiple locations)</Typography>
+                    )}
                   </Grid>
                 </Grid>
               </Box>
