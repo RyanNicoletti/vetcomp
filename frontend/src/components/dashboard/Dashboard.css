@@ -39,8 +39,9 @@
 }
 
 .empty-message {
-  color: var(--color-text-dark);
-  margin-top: 0.5rem;
+  margin-top: 1rem !important;
+  display: flex;
+  justify-content: center;
 }
 
 .dashboard-loading,

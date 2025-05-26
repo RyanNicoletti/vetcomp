@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Typography, Button, Input, Box } from "@mui/material";
+import { Typography, Button, Input, Box, Paper } from "@mui/material";
 import { useMutation, QueryClient } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
 import { uploadVerificationDocument } from "../../queries/compensationQueries";
@@ -242,9 +242,16 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
 
       {compensations.length === 0 && (
         <Box textAlign="center" padding={3}>
-          <Typography variant="body1" gutterBottom>
-            You haven't added any compensation data yet.
-          </Typography>
+          <Paper elevation={2} className="dashboard-section empty-section">
+            <Typography variant="h6">
+              See how you stack up against others!
+            </Typography>
+            <Typography variant="body1">
+              Add your compensation information to see how you compare to others
+              based on years of experience and location.
+            </Typography>
+          </Paper>
+
           <Button
             component={RouterLink}
             to="/addcomp"

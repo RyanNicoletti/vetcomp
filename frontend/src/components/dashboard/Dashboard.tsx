@@ -61,6 +61,20 @@ export const Dashboard = () => {
     isCompensationsLoading || isJobsLoading || isApplicationsCountLoading;
   const isError = isCompensationsError || isJobsError;
 
+  const shouldShowReminder = () => {
+    if (!userCompensations || userCompensations.length === 0) {
+      return false;
+    }
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const allEntriesOld = userCompensations.every((comp) => {
+      return new Date(comp.created_at!) < oneYearAgo;
+    });
+
+    return allEntriesOld;
+  };
+
   if (isLoading) {
     return (
       <Container className="dashboard-loading">
@@ -84,6 +98,11 @@ export const Dashboard = () => {
       <Typography variant="h4" className="dashboard-title">
         VeterinaryComp Dashboard
       </Typography>
+      {userCompensations.length > 0 && (
+        <Paper elevation={2} className="dashboard-section">
+          <LocationCompensationChart userCompensations={userCompensations} />
+        </Paper>
+      )}
 
       <Paper elevation={2} className="dashboard-section">
         <CompensationCards
@@ -92,38 +111,24 @@ export const Dashboard = () => {
           openSnackbar={openSnackbar}
         />
 
-        <Box className="general-reminder">
-          <Typography variant="body1">
-            Got a new job or has it been over a year since you last posted? Help
-            keep our data current by adding your updated compensation
-            information.
-          </Typography>
-          <Button
-            component={Link}
-            to="/addcomp"
-            variant="contained"
-            color="primary"
-            className="reminder-action-btn">
-            Add New Compensation
-          </Button>
-        </Box>
+        {shouldShowReminder() && (
+          <Box className="general-reminder">
+            <Typography variant="body1">
+              Got a new job or has it been over a year since you last posted?
+              Help keep our data current by adding your updated compensation
+              information.
+            </Typography>
+            <Button
+              component={Link}
+              to="/addcomp"
+              variant="contained"
+              color="primary"
+              className="reminder-action-btn">
+              Add New Compensation
+            </Button>
+          </Box>
+        )}
       </Paper>
-
-      {userCompensations.length > 0 ? (
-        <Paper elevation={2} className="dashboard-section">
-          <LocationCompensationChart userCompensations={userCompensations} />
-        </Paper>
-      ) : (
-        <Paper elevation={2} className="dashboard-section empty-section">
-          <Typography variant="h6">
-            See how you stack up against others!
-          </Typography>
-          <Typography variant="body1">
-            Add your compensation information to see how you compare to others
-            based on years of experience and location.
-          </Typography>
-        </Paper>
-      )}
 
       <Box className="dashboard-two-column">
         <Paper elevation={2} className="dashboard-section">
@@ -134,7 +139,6 @@ export const Dashboard = () => {
         </Paper>
 
         <Paper elevation={2} className="dashboard-section">
-          {/* Replace the simple job listing with JobPostsSection */}
           {userJobs.length > 0 ? (
             <JobPostsSection
               jobs={userJobs}
