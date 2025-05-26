@@ -82,7 +82,7 @@ export const Dashboard = () => {
   return (
     <Container className="dashboard-container">
       <Typography variant="h4" className="dashboard-title">
-        Your Dashboard
+        VeterinaryComp Dashboard
       </Typography>
 
       <Paper elevation={2} className="dashboard-section">
@@ -116,11 +116,11 @@ export const Dashboard = () => {
       ) : (
         <Paper elevation={2} className="dashboard-section empty-section">
           <Typography variant="h6">
-            No compensation data to visualize
+            See how you stack up against others!
           </Typography>
           <Typography variant="body1">
             Add your compensation information to see how you compare to others
-            in your location.
+            based on years of experience and location.
           </Typography>
         </Paper>
       )}

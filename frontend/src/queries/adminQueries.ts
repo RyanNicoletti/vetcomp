@@ -1,6 +1,15 @@
 import { CompensationDetailsWithPages } from "../../../shared-types/types";
 import { SortParams } from "../components/compensationtable/types";
 
+interface UserWithCompensations {
+  id: string;
+  email: string;
+  is_verified: boolean;
+  is_admin: boolean;
+  created_at: string;
+  compensations: any[];
+}
+
 export const deleteCompensationById = async (id: string) => {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/admin/compensations/${id}`,
@@ -67,4 +76,17 @@ export const getCompensationsAdmin = async (
   }
   const salaryData: CompensationDetailsWithPages = await response.json();
   return salaryData;
+};
+
+export const getUsersWithCompensations = async (): Promise<
+  UserWithCompensations[]
+> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/admin/users`,
+    { method: "GET", credentials: "include" }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch users data.");
+  }
+  return response.json();
 };

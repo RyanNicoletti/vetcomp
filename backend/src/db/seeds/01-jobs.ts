@@ -21,9 +21,7 @@ export async function seed(knex: Knex): Promise<void> {
       benefits: "Competitive salary, health insurance, 401k, CE allowance",
       status: "active",
       application_method: "email",
-      application_email: "careers@vcasf.com",
-      posted_date: knex.fn.now(),
-      expires_at: knex.raw("NOW() + INTERVAL '30 days'"),
+      contact_email: "careers@vcasf.com",
     },
     {
       title: "Emergency Veterinarian",
@@ -42,8 +40,6 @@ export async function seed(knex: Knex): Promise<void> {
       status: "active",
       application_method: "external",
       application_url: "https://careers.bluepearl.com/jobs/emergency-vet-ny",
-      posted_date: knex.fn.now(),
-      expires_at: knex.raw("NOW() + INTERVAL '30 days'"),
     },
   ]);
 }

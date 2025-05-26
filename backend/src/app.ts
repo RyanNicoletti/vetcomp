@@ -16,6 +16,7 @@ import * as Sentry from "@sentry/node";
 import jobsController from "./controllers/jobsController.js";
 import stripeController from "./controllers/stripeController.js";
 import jobApplicationsController from "./controllers/jobApplicationController.js";
+import adminController from "./controllers/adminController.js";
 
 const app: Express = express();
 
@@ -95,6 +96,7 @@ adminRouter.patch(
   "/compensations/:id/approve",
   compensationController.approveCompensationById
 );
+adminRouter.get("/users", adminController.getUsersWithCompensations);
 app.use("/admin", adminRouter);
 
 /**
