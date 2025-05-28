@@ -30,6 +30,7 @@ export interface ICompensation {
   is_practice_owner: boolean;
   practice_description: string | null;
   is_traveling: boolean;
+  travel_notes: string | null;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -63,6 +64,7 @@ export interface ICompFormInput {
   isPracticeOwner: boolean;
   practiceDescription: string | null;
   isTraveling: boolean;
+  travelNotes: string | null;
 }
 
 export type JobType = "full-time" | "part-time" | "contract" | "relief";

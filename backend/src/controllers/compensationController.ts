@@ -218,6 +218,7 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
     is_practice_owner: validatedData.isPracticeOwner,
     practice_description: validatedData.practiceDescription || null,
     is_traveling: validatedData.isTraveling,
+    travel_notes: validatedData.travelNotes || null,
   };
 
   const insertedComp = await compensationService.create(db, compensationData);

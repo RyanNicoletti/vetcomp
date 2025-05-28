@@ -123,6 +123,14 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
                   <div className="value">Traveling (multiple locations)</div>
                 </div>
               )}
+
+              {comp.travel_notes && (
+                <div className="detail-item">
+                  <div className="label">Travel Details:</div>
+                  <div className="value">{comp.travel_notes}</div>
+                </div>
+              )}
+
               {comp.payment_frequency === "annually" && (
                 <div className="detail-item">
                   <div className="label">Total Compensation:</div>

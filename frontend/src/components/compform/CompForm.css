@@ -30,6 +30,23 @@
   font-weight: bold;
 }
 
+.work-type-section {
+  margin-bottom: 24px;
+}
+
+.work-type-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.practice-description-field,
+.travel-notes-field {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
 .additional-comp-btns-container {
   display: flex;
   gap: 12px;
@@ -92,6 +109,7 @@
 }
 
 #salaryInfoSection {
+  margin-top: 15px;
   margin-bottom: 0px;
 }
 
@@ -132,5 +150,9 @@
 
   .payment-frequency-checkboxes .MuiCheckbox-root {
     padding: 4px;
+  }
+
+  .work-type-checkboxes {
+    gap: 8px;
   }
 }

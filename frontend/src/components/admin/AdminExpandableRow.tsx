@@ -202,6 +202,11 @@ export const AdminExpandableRow = ({ row }: { row: ICompensation }) => {
                     {row.is_traveling && (
                       <Typography>Traveling (multiple locations)</Typography>
                     )}
+                    {row.travel_notes && (
+                      <Typography>
+                        Travel Details: {row.travel_notes}
+                      </Typography>
+                    )}
                   </Grid>
                 </Grid>
               </Box>

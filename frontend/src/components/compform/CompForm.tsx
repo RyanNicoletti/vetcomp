@@ -69,6 +69,7 @@ export const CompForm = () => {
       isPracticeOwner: false,
       practiceDescription: "",
       isTraveling: false,
+      travelNotes: "",
     },
   });
 
@@ -182,6 +183,8 @@ export const CompForm = () => {
 
   const paymentFrequency: string = watch("paymentFrequency");
   const isNewGrad: boolean = watch("isNewGrad");
+  const isPracticeOwner: boolean = watch("isPracticeOwner");
+  const isTraveling: boolean = watch("isTraveling");
 
   const onSubmit: SubmitHandler<ICompFormInput> = async (
     data: ICompFormInput
@@ -227,7 +230,7 @@ export const CompForm = () => {
           render={({ field, fieldState }) => (
             <Box>
               <Typography>
-                Location
+                Primary Location
                 <Tooltip
                   title="If you prefer not to disclose your exact location, please enter the closest metropolitan area."
                   placement="top">
@@ -378,7 +381,6 @@ export const CompForm = () => {
                   <Checkbox
                     {...field}
                     onChange={(e) => {
-                      // field.onChange(e);
                       handleIsNewGrad(e);
                     }}
                   />
@@ -388,6 +390,74 @@ export const CompForm = () => {
             )}
           />
         </Box>
+
+        <Controller
+          name="isPracticeOwner"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Checkbox {...field} checked={field.value} />}
+              label="Practice Owner"
+            />
+          )}
+        />
+
+        {isPracticeOwner && (
+          <Controller
+            name="practiceDescription"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Practice Description</Typography>
+                <TextField
+                  {...field}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  placeholder="Optional: add a note about your practice('s)"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            )}
+          />
+        )}
+
+        <Controller
+          name="isTraveling"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Checkbox {...field} checked={field.value} />}
+              label={
+                <Box>
+                  <Typography component="span">Multiple Locations</Typography>
+                </Box>
+              }
+            />
+          )}
+        />
+
+        {isTraveling && (
+          <Controller
+            name="travelNotes"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Travel Details</Typography>
+                <TextField
+                  {...field}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  placeholder="Optional: add a note about what locations/regions you travel to"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            )}
+          />
+        )}
 
         <Typography
           variant="h6"

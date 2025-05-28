@@ -1,11 +1,15 @@
 .expanded-details-container {
-  padding: 20px;
+  padding: 0;
+  background-color: #f8f9fa;
+  border-left: 4px solid var(--color-primary);
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
 }
 
 .expanded-details-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 0;
 }
 
 .expanded-details-column {
@@ -14,51 +18,94 @@
 }
 
 .expanded-section {
-  margin-bottom: 20px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  padding: 15px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
+  border-right: 1px solid #e0e0e0;
+}
+
+.expanded-section:last-child {
+  border-right: none;
 }
 
 .expanded-section-title {
   display: flex;
   align-items: center;
   font-weight: 600 !important;
-  margin-bottom: 8px !important;
-  color: #333;
+  margin-bottom: 12px !important;
+  color: var(--color-primary);
+  font-size: 1rem !important;
 }
 
 .expanded-icon {
   margin-right: 8px;
-  color: #1976d2;
+  color: var(--color-primary);
 }
 
 .expanded-divider {
-  margin-bottom: 12px !important;
+  margin-bottom: 16px !important;
+  background-color: #e0e0e0;
 }
 
 .expanded-detail-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .expanded-detail-item:last-child {
   border-bottom: none;
 }
 
+.expanded-detail-item.full-width {
+  justify-content: flex-start;
+}
+
 .expanded-label {
   font-weight: 500;
-  color: #666;
+  color: #555;
   display: flex;
   align-items: center;
+  min-width: 140px;
+  margin-right: 12px;
 }
 
 .expanded-value {
   color: #333;
   text-align: right;
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.practice-owner-display,
+.traveling-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+.status-check {
+  color: #2e7d32;
+  font-size: 16px !important;
+}
+
+.status-description {
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-left: 0;
 }
 
 .info-icon-button {
@@ -76,6 +123,16 @@
     flex-direction: column;
   }
 
+  .expanded-section {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 16px;
+  }
+
+  .expanded-section:last-child {
+    border-bottom: none;
+  }
+
   .expanded-detail-item {
     flex-direction: column;
     align-items: flex-start;
@@ -85,5 +142,19 @@
     text-align: left;
     margin-top: 4px;
     width: 100%;
+  }
+
+  .expanded-label {
+    min-width: auto;
+    margin-right: 0;
+  }
+
+  .practice-owner-display,
+  .traveling-display {
+    gap: 4px;
+  }
+
+  .status-description {
+    margin-left: 0;
   }
 }

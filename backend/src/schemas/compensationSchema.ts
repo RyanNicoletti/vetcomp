@@ -101,8 +101,15 @@ export const CompFormSchema = z
       .nullable(),
     email: z.union([z.string().email(), z.literal("")]).nullable(),
     isPracticeOwner: z.boolean(),
-    practiceDescription: z.string().optional(),
+    practiceDescription: z
+      .string()
+      .transform((val) => (val === "" ? null : val))
+      .nullable(),
     isTraveling: z.boolean(),
+    travelNotes: z
+      .string()
+      .transform((val) => (val === "" ? null : val))
+      .nullable(),
   })
   .refine(
     (data) => {

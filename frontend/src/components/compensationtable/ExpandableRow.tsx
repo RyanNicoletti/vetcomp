@@ -41,6 +41,35 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
     }
   );
 
+  const renderPracticeOwnerStatus = () => {
+    if (!row.is_practice_owner) return null;
+
+    return (
+      <div className="practice-owner-display">
+        <div className="status-badge">
+          Practice Owner
+          <CheckCircleIcon className="status-check" />
+        </div>
+        {row.practice_description && (
+          <div className="status-description">{row.practice_description}</div>
+        )}
+      </div>
+    );
+  };
+
+  const renderTravelingStatus = () => {
+    if (!row.is_traveling) return null;
+
+    return (
+      <div className="traveling-display">
+        <div className="status-badge">Traveling/Multiple locations</div>
+        {row.travel_notes && (
+          <div className="status-description">{row.travel_notes}</div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <TableRow className="table-rows">
@@ -157,28 +186,17 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
                       </div>
 
                       {row.is_practice_owner && (
-                        <div className="expanded-detail-item">
-                          <div className="expanded-label">Practice Owner:</div>
-                          <div className="expanded-value">Yes</div>
-                        </div>
-                      )}
-
-                      {row.practice_description && (
-                        <div className="expanded-detail-item">
-                          <div className="expanded-label">
-                            Practice Details:
-                          </div>
+                        <div className="expanded-detail-item full-width">
                           <div className="expanded-value">
-                            {row.practice_description}
+                            {renderPracticeOwnerStatus()}
                           </div>
                         </div>
                       )}
 
                       {row.is_traveling && (
-                        <div className="expanded-detail-item">
-                          <div className="expanded-label">Work Type:</div>
+                        <div className="expanded-detail-item full-width">
                           <div className="expanded-value">
-                            Traveling (multiple locations)
+                            {renderTravelingStatus()}
                           </div>
                         </div>
                       )}
@@ -327,33 +345,18 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
                         </div>
                       )}
 
-                      <div className="expanded-detail-item">
-                        <div className="expanded-label">
-                          Verification Status:
-                        </div>
-                        <div className="expanded-value">
-                          {row.is_verified ? (
+                      {row.is_verified && (
+                        <div className="expanded-detail-item full-width">
+                          <div className="expanded-value">
                             <Chip
                               icon={<CheckCircleIcon />}
-                              label="Verified"
+                              label="Verified Compensation"
                               color="success"
                               size="small"
                             />
-                          ) : row.needs_review ? (
-                            <Chip
-                              label="Pending Review"
-                              color="warning"
-                              size="small"
-                            />
-                          ) : (
-                            <Chip
-                              label="Unverified"
-                              color="default"
-                              size="small"
-                            />
-                          )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </Box>
                   </div>
                 </div>
