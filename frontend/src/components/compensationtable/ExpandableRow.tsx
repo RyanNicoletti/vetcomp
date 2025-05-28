@@ -178,13 +178,6 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
                         </div>
                       </div>
 
-                      <div className="expanded-detail-item">
-                        <div className="expanded-label">New Graduate:</div>
-                        <div className="expanded-value">
-                          {row.is_new_grad ? "Yes" : "No"}
-                        </div>
-                      </div>
-
                       {row.is_practice_owner && (
                         <div className="expanded-detail-item full-width">
                           <div className="expanded-value">
@@ -269,15 +262,6 @@ export const ExpandableRow = ({ row }: ExpandableRowProps) => {
                         Compensation Details
                       </Typography>
                       <Divider className="expanded-divider" />
-
-                      <div className="expanded-detail-item">
-                        <div className="expanded-label">Payment Type:</div>
-                        <div className="expanded-value">
-                          {row.payment_frequency === "annually"
-                            ? "Annual Salary"
-                            : "Hourly Rate"}
-                        </div>
-                      </div>
 
                       {row.payment_frequency === "annually" ? (
                         <>
