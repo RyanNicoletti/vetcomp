@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import AdminCompTable from "../components/admin/AdminCompTable";
 import AdminUsersTable from "../components/admin/AdminUsersTable";
+import AdminJobsTable from "../components/admin/AdminJobsTable";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,6 +38,7 @@ const AdminPage = () => {
         <Tabs value={value} onChange={handleChange} aria-label="admin tabs">
           <Tab label="Compensation Review" />
           <Tab label="User Management" />
+          <Tab label="Job Management" />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -44,6 +46,9 @@ const AdminPage = () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <AdminUsersTable />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <AdminJobsTable />
       </TabPanel>
     </Box>
   );

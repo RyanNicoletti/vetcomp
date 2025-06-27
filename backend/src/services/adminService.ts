@@ -40,6 +40,17 @@ const adminService = {
 
     return usersWithCompensations;
   },
+
+  getAllJobsWithUsers: async (db: Knex) => {
+    return db("jobs")
+      .join("users", "jobs.user_id", "users.id")
+      .select("jobs.*", "users.email as user_email")
+      .orderBy("jobs.created_at", "desc");
+  },
+
+  deleteJobById: async (db: Knex, jobId: string): Promise<void> => {
+    await db("jobs").where({ id: jobId }).del();
+  },
 };
 
 export default adminService;

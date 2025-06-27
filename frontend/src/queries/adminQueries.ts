@@ -10,6 +10,28 @@ interface UserWithCompensations {
   compensations: any[];
 }
 
+interface JobWithUser {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  practice_type: string;
+  salary_min: number;
+  salary_max: number;
+  experience_min: number;
+  experience_max: number;
+  description: string;
+  requirements: string | null;
+  benefits: string | null;
+  application_method: string;
+  contact_email: string | null;
+  application_url: string | null;
+  status: string;
+  created_at: string;
+  user_email: string;
+}
+
 export const deleteCompensationById = async (id: string) => {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/admin/compensations/${id}`,
@@ -89,4 +111,31 @@ export const getUsersWithCompensations = async (): Promise<
     throw new Error("Failed to fetch users data.");
   }
   return response.json();
+};
+
+export const getAllJobsAdmin = async (): Promise<JobWithUser[]> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/admin/jobs`,
+    { method: "GET", credentials: "include" }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch jobs data.");
+  }
+  return response.json();
+};
+
+export const deleteJobById = async (id: string) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/admin/jobs/${id}`,
+    { method: "DELETE", credentials: "include" }
+  );
+  const responseData = await response.json();
+  if (!response.ok) {
+    throw {
+      status: response.status,
+      message: responseData.message,
+      errors: responseData.errors,
+    };
+  }
+  return;
 };

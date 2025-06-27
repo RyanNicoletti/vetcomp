@@ -97,6 +97,8 @@ adminRouter.patch(
   compensationController.approveCompensationById
 );
 adminRouter.get("/users", adminController.getUsersWithCompensations);
+adminRouter.get("/jobs", adminController.getAllJobsWithUsers);
+adminRouter.delete("/jobs/:id", adminController.deleteJobById);
 app.use("/admin", adminRouter);
 
 /**

@@ -12,6 +12,21 @@ const getUsersWithCompensations = asyncHandler(
   }
 );
 
+const getAllJobsWithUsers = asyncHandler(
+  async (req: Request, res: Response) => {
+    const jobs = await adminService.getAllJobsWithUsers(db);
+    res.status(200).json(jobs);
+  }
+);
+
+const deleteJobById = asyncHandler(async (req: Request, res: Response) => {
+  const jobId = req.params.id;
+  await adminService.deleteJobById(db, jobId);
+  res.status(200).json({ message: "Job deleted successfully" });
+});
+
 export default {
   getUsersWithCompensations,
+  deleteJobById,
+  getAllJobsWithUsers,
 };
