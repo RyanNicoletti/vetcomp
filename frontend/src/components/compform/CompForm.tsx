@@ -195,6 +195,23 @@ export const CompForm = () => {
   return (
     <div className="form-wrapper">
       <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+        {!isAuthenticated && (
+          <Box className="account-signup-section" mb={3}>
+            <Typography variant="h6" className="section-title">
+              Create Account for Salary Comparison
+            </Typography>
+            <Typography variant="body2" className="signup-message" gutterBottom>
+              Having an account allows you to use our salary comparison tool to
+              see how your compensation stacks up against others.
+            </Typography>
+            <Typography variant="body2" className="sign-up-link-container">
+              <RouterLink to="/signup" className="sign-up-link">
+                Create account here
+              </RouterLink>{" "}
+              for free or continue below without one
+            </Typography>
+          </Box>
+        )}
         <Typography className="section-title" variant="h6">
           Company Information
         </Typography>
@@ -849,8 +866,15 @@ export const CompForm = () => {
                   fullWidth
                   error={!!fieldState.error}
                   helperText={
-                    fieldState.error?.message ||
-                    "Your email will not be shared. Required if you want to have your compensation details linked to an account."
+                    fieldState.error?.message || (
+                      <>
+                        Email will never be shared/sold/used for marketing or
+                        spam.
+                        <br />
+                        Required if you would like your data linked to an email
+                        address.
+                      </>
+                    )
                   }
                 />
               </Box>
@@ -871,14 +895,6 @@ export const CompForm = () => {
             color="error"
             style={{ marginBottom: "10px", textAlign: "center" }}>
             {errors.root.serverError.message}
-          </Typography>
-        )}
-        {!isAuthenticated && (
-          <Typography variant="body2" className="sign-up-link-container">
-            Or, create an account first:{" "}
-            <RouterLink to="/signup" className="sign-up-link">
-              Sign up here
-            </RouterLink>
           </Typography>
         )}
       </form>

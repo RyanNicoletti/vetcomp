@@ -7,10 +7,13 @@ import {
   Paper,
   Card,
   CardContent,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
-import { useMutation, QueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, QueryClient } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
 import { uploadVerificationDocument } from "../../queries/compensationQueries";
+import { getSalaryComparison } from "../../queries/salaryComparisonQueries";
 import { ICompensation } from "../../../../shared-types/types";
 import {
   formatNullableMoneyValue,
@@ -18,6 +21,7 @@ import {
 } from "../../utils/moneyFormatter";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import SalaryComparison from "../salarycomparison/SalaryComparison";
 import "./CompensationCards.css";
 
 interface CompensationCardsProps {
@@ -28,6 +32,158 @@ interface CompensationCardsProps {
     severity: "success" | "error" | "info" | "warning"
   ) => void;
 }
+
+const SalaryComparisonSection = ({
+  hasApprovedCompensation,
+}: {
+  hasApprovedCompensation: boolean;
+}) => {
+  const [showComparison, setShowComparison] = useState(false);
+
+  const {
+    data: comparisonData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["salaryComparison"],
+    queryFn: getSalaryComparison,
+    enabled: showComparison, // Only fetch when user clicks the button
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const handleCompareClick = () => {
+    setShowComparison(true);
+    if (!comparisonData) {
+      refetch();
+    }
+  };
+
+  if (!hasApprovedCompensation) {
+    return null;
+  }
+
+  if (showComparison) {
+    if (isLoading) {
+      return (
+        <Card
+          className="salary-comparison-loading-card"
+          sx={{
+            mb: 3,
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
+          }}>
+          <CardContent>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              flexDirection="column"
+              py={4}>
+              <CircularProgress size={60} sx={{ color: "white", mb: 2 }} />
+              <Typography variant="h6" fontWeight="bold">
+                Analyzing Your Compensation...
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ opacity: 0.9, textAlign: "center", mt: 1 }}>
+                Comparing your salary to others in your field, location, and
+                experience level
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (isError) {
+      return (
+        <Card className="salary-comparison-error-card" sx={{ mb: 3 }}>
+          <CardContent>
+            <Alert severity="error">
+              <Typography variant="h6">
+                Unable to Generate Comparison
+              </Typography>
+              <Typography>
+                {(error as any)?.message ||
+                  "Please ensure you have submitted compensation data with your account to use this feature."}
+              </Typography>
+              <Box mt={2}>
+                <Button
+                  onClick={() => setShowComparison(false)}
+                  variant="outlined"
+                  size="small">
+                  Try Again
+                </Button>
+              </Box>
+            </Alert>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (comparisonData) {
+      return (
+        <Box className="salary-comparison-results" sx={{ mb: 3 }}>
+          <SalaryComparison embedded />
+          <Box mt={2} textAlign="center">
+            <Button
+              onClick={() => setShowComparison(false)}
+              variant="outlined"
+              size="small">
+              Hide Comparison
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+  }
+
+  // Default state - show the comparison CTA card
+  return (
+    <Card
+      className="salary-comparison-cta-card"
+      sx={{
+        mb: 3,
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        color: "white",
+      }}>
+      <CardContent>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box display="flex" alignItems="center" gap={2}>
+            <AnalyticsIcon fontSize="large" />
+            <Box>
+              <Typography variant="h6" fontWeight="bold">
+                See How You Compare
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Get detailed insights on how your compensation stacks up against
+                others in your field, location, and experience level.
+              </Typography>
+            </Box>
+          </Box>
+          <Button
+            onClick={handleCompareClick}
+            variant="contained"
+            size="large"
+            startIcon={<TrendingUpIcon />}
+            sx={{
+              bgcolor: "rgba(255,255,255,0.2)",
+              color: "white",
+              "&:hover": {
+                bgcolor: "rgba(255,255,255,0.3)",
+              },
+              fontWeight: "bold",
+              minWidth: "200px",
+            }}>
+            Compare My Salary
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
 
 const CompensationCards: React.FC<CompensationCardsProps> = ({
   compensations,
@@ -72,65 +228,34 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
     (comp) => comp.is_approved
   );
 
+  const shouldShowReminder = () => {
+    if (!compensations || compensations.length === 0) {
+      return false;
+    }
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const allEntriesOld = compensations.every((comp) => {
+      return new Date(comp.created_at!) < oneYearAgo;
+    });
+
+    return allEntriesOld;
+  };
+
   return (
     <div className="compensation-cards-container">
       <Typography variant="h5" gutterBottom>
         Your Compensation Information
       </Typography>
 
-      {/* Salary Comparison Tool Card - Show if user has approved compensation */}
-      {hasApprovedCompensation && (
-        <Card
-          className="salary-comparison-cta-card"
-          sx={{
-            mb: 3,
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-          }}>
-          <CardContent>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between">
-              <Box display="flex" alignItems="center" gap={2}>
-                <AnalyticsIcon fontSize="large" />
-                <Box>
-                  <Typography variant="h6" fontWeight="bold">
-                    See How You Compare
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Get detailed insights on how your compensation stacks up
-                    against others in your field, location, and experience
-                    level.
-                  </Typography>
-                </Box>
-              </Box>
-              <Button
-                component={RouterLink}
-                to="/salary-comparison"
-                variant="contained"
-                size="large"
-                startIcon={<TrendingUpIcon />}
-                sx={{
-                  bgcolor: "rgba(255,255,255,0.2)",
-                  color: "white",
-                  "&:hover": {
-                    bgcolor: "rgba(255,255,255,0.3)",
-                  },
-                  fontWeight: "bold",
-                  minWidth: "200px",
-                }}>
-                Compare My Salary
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
+      {/* Salary Comparison Section - Show if user has approved compensation */}
+      <SalaryComparisonSection
+        hasApprovedCompensation={hasApprovedCompensation}
+      />
 
       <div className="compensation-cards">
         {compensations.map((comp) => (
           <div key={comp.id} className="compensation-card">
-            {/* Rest of existing compensation card content remains unchanged */}
             <div className="comp-header">
               <Typography variant="h6">{comp.title}</Typography>
               <Typography variant="body1">{comp.company}</Typography>
@@ -265,20 +390,6 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
       )}
     </div>
   );
-
-  function shouldShowReminder() {
-    if (!compensations || compensations.length === 0) {
-      return false;
-    }
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-    const allEntriesOld = compensations.every((comp) => {
-      return new Date(comp.created_at!) < oneYearAgo;
-    });
-
-    return allEntriesOld;
-  }
 };
 
 export default CompensationCards;

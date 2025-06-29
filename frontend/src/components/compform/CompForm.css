@@ -30,6 +30,19 @@
   font-weight: bold;
 }
 
+.account-signup-section {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.signup-message {
+  margin-bottom: 12px;
+  color: #6c757d;
+}
+
 .work-type-section {
   margin-bottom: 24px;
 }

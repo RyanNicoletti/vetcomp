@@ -26,7 +26,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useQuery } from "@tanstack/react-query";
 import { moneyFormatter } from "../../utils/moneyFormatter";
 import "./SalaryComparison.css";
-import { getSalaryComparison } from "queries/salaryComparisonQueries";
+import { getSalaryComparison } from "../../queries/salaryComparisonQueries";
 
 interface ComparisonMetrics {
   userSalary: number;
@@ -205,7 +205,13 @@ const MetricsCard: React.FC<{
   );
 };
 
-const SalaryComparison: React.FC = () => {
+interface SalaryComparisonProps {
+  embedded?: boolean;
+}
+
+const SalaryComparison: React.FC<SalaryComparisonProps> = ({
+  embedded = false,
+}) => {
   const {
     data: comparisonData,
     isLoading,
@@ -217,7 +223,11 @@ const SalaryComparison: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  if (isLoading) {
+  if (embedded && (isLoading || isError)) {
+    return null;
+  }
+
+  if (!embedded && isLoading) {
     return (
       <Box className="salary-comparison-container">
         <Typography variant="h4" gutterBottom>
@@ -241,7 +251,8 @@ const SalaryComparison: React.FC = () => {
     );
   }
 
-  if (isError) {
+  // Existing error state for standalone usage
+  if (!embedded && isError) {
     return (
       <Box className="salary-comparison-container">
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -257,7 +268,7 @@ const SalaryComparison: React.FC = () => {
 
   if (!comparisonData) {
     return (
-      <Box className="salary-comparison-container">
+      <Box className={embedded ? "" : "salary-comparison-container"}>
         <Alert severity="info">
           <Typography variant="h6">No Data Available</Typography>
           <Typography>
@@ -273,9 +284,12 @@ const SalaryComparison: React.FC = () => {
     comparisonData;
 
   return (
-    <Box className="salary-comparison-container">
+    <Box
+      className={
+        embedded ? "salary-comparison-embedded" : "salary-comparison-container"
+      }>
       <Box className="comparison-header" mb={4}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant={embedded ? "h5" : "h4"} gutterBottom>
           Your Salary Comparison Report
         </Typography>
         <Alert
@@ -359,5 +373,4 @@ const SalaryComparison: React.FC = () => {
     </Box>
   );
 };
-
 export default SalaryComparison;
