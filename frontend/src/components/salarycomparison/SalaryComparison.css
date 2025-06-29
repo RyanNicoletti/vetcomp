@@ -1,0 +1,105 @@
+/* frontend/src/components/salarycomparison/SalaryComparison.css */
+
+.salary-comparison-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  margin-top: 80px;
+}
+
+.comparison-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.metrics-card {
+  height: 100%;
+  transition: box-shadow 0.3s ease;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.metrics-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.percentile-bar {
+  margin: 16px 0;
+}
+
+.salary-metrics {
+  margin-top: 16px;
+}
+
+.metric-item {
+  padding: 12px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.recommendations-list {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.recommendation-item {
+  padding: 4px 8px;
+}
+
+.insights-card {
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.disclaimer {
+  margin-top: 24px;
+}
+
+/* Responsive grid layout for metrics */
+.salary-metrics .MuiBox-root {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .salary-metrics .MuiBox-root {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+@media (max-width: 768px) {
+  .salary-comparison-container {
+    padding: 16px;
+    margin-top: 70px;
+  }
+
+  .comparison-header {
+    margin-bottom: 24px;
+  }
+
+  .comparison-header h4 {
+    font-size: 1.5rem;
+  }
+
+  .metric-item {
+    padding: 8px;
+  }
+
+  .metrics-card .MuiCardContent-root {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .salary-comparison-container {
+    padding: 12px;
+  }
+
+  .comparison-header h4 {
+    font-size: 1.25rem;
+  }
+}

@@ -17,6 +17,7 @@ import jobsController from "./controllers/jobsController.js";
 import stripeController from "./controllers/stripeController.js";
 import jobApplicationsController from "./controllers/jobApplicationController.js";
 import adminController from "./controllers/adminController.js";
+import salaryComparisonController from "./controllers/salaryComparisonController.js";
 
 const app: Express = express();
 
@@ -139,6 +140,10 @@ compensationsRouter.get(
 compensationsRouter.get(
   "/by-location",
   compensationController.getLocationCompensations
+);
+compensationsRouter.get(
+  "/comparison",
+  salaryComparisonController.getSalaryComparison
 );
 compensationsRouter.post("/", compensationController.createCompensation);
 compensationsRouter.post(
