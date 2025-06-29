@@ -1,6 +1,3 @@
-// frontend/src/components/compform/CompForm.tsx
-// Enhanced styling version that maintains the exact working functionality
-
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import {
   Autocomplete,
@@ -82,18 +79,18 @@ export const CompForm = () => {
   const [showPercentProduction, setShowPercentProduction] = useState(false);
   const [showAverageAnnualProduction, setShowAverageAnnualProduction] =
     useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [isSpecialist, setIsSpecialist] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-
-  const navigate = useNavigate();
   const { openSnackbar } = useSnackbar();
   const { isAuthenticated } = useAuth();
 
+  const navigate = useNavigate();
+
   const {
     data: locations,
-    refetch,
     isLoading: locationIsLoading,
+    refetch,
   } = useQuery({
     queryKey: ["locations", locationQuery],
     queryFn: () => getLocationSuggestions(locationQuery),
@@ -103,11 +100,21 @@ export const CompForm = () => {
   const addCompensationMutation = useMutation({
     mutationFn: createCompensation,
     onError: (error: any) => {
-      if (error.status === 409) {
-        setError("email", {
+      if (error.error?.details) {
+        error.error.details.forEach(
+          (err: { path: string; message: string }) => {
+            setError(err.path[0] as keyof ICompFormInput, {
+              type: "manual",
+              message: err.message,
+            });
+          }
+        );
+      } else {
+        setError("root.serverError", {
           type: "manual",
           message:
-            "This email address is already associated with an account. Please use a different email or log in to your existing account.",
+            error.message ||
+            "An unexpected error occurred. Please try again later.",
         });
       }
     },
@@ -185,31 +192,6 @@ export const CompForm = () => {
     addCompensationMutation.mutateAsync(data);
   };
 
-  // Scroll to first error when form has validation errors
-  useEffect(() => {
-    const firstErrorField = Object.keys(errors)[0];
-    if (firstErrorField) {
-      const errorElement = document.querySelector(
-        `[name="${firstErrorField}"], input[name="${firstErrorField}"], select[name="${firstErrorField}"], textarea[name="${firstErrorField}"]`
-      ) as HTMLElement;
-
-      if (errorElement) {
-        // Scroll to the error field with some offset for better UX
-        errorElement.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-
-        // Focus the field if it's focusable
-        if (errorElement.focus) {
-          setTimeout(() => {
-            errorElement.focus();
-          }, 500);
-        }
-      }
-    }
-  }, [errors]);
-
   return (
     <div className="form-wrapper">
       <form onSubmit={handleSubmit(onSubmit)} className="form-container">
@@ -240,27 +222,11 @@ export const CompForm = () => {
         />
 
         <Controller
-          name="title"
-          control={control}
-          rules={{ required: "Title is required" }}
-          render={({ field, fieldState }) => (
-            <Box>
-              <Typography>Job Title</Typography>
-              <TextField
-                {...field}
-                placeholder="Associate Veterinarian"
-                fullWidth
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </Box>
-          )}
-        />
-
-        <Controller
           name="location"
           control={control}
-          rules={{ required: "Location is required" }}
+          rules={{
+            required: "Location is required",
+          }}
           render={({ field, fieldState }) => (
             <Box>
               <Typography>
@@ -318,9 +284,23 @@ export const CompForm = () => {
           )}
         />
 
-        <Typography className="section-title" variant="h6">
-          Position Information
-        </Typography>
+        <Controller
+          name="title"
+          control={control}
+          rules={{ required: "Title is required" }}
+          render={({ field, fieldState }) => (
+            <Box>
+              <Typography>Job Title</Typography>
+              <TextField
+                {...field}
+                placeholder="Associate Veterinarian"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            </Box>
+          )}
+        />
 
         <Controller
           name="isSpecialist"
@@ -333,7 +313,7 @@ export const CompForm = () => {
                   checked={field.value}
                   onChange={(e) => {
                     field.onChange(e.target.checked);
-                    setIsSpecialist(e.target.checked);
+                    setIsSpecialist(!isSpecialist);
                   }}
                 />
               }
@@ -346,33 +326,22 @@ export const CompForm = () => {
           name={isSpecialist ? "specialization" : "typeOfPractice"}
           control={control}
           rules={{ required: "This field is required" }}
-          render={({ field, fieldState }) => (
-            <Box>
-              <Typography>
-                {isSpecialist ? "Specialization" : "Type of Practice"}
-              </Typography>
-              <FormControl fullWidth error={!!fieldState.error}>
-                <Select {...field} displayEmpty>
-                  <MenuItem value="" disabled>
-                    Select{" "}
-                    {isSpecialist ? "specialization" : "type of practice"}
+          render={({ field }) => (
+            <FormControl fullWidth>
+              <Select {...field} displayEmpty>
+                <MenuItem value="" disabled>
+                  Select {isSpecialist ? "specialization" : "type of practice"}
+                </MenuItem>
+                {(isSpecialist
+                  ? specialistOptions
+                  : generalPracticeOptions
+                ).map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
                   </MenuItem>
-                  {(isSpecialist
-                    ? specialistOptions
-                    : generalPracticeOptions
-                  ).map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {fieldState.error && (
-                  <Typography color="error" variant="caption">
-                    {fieldState.error.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Box>
+                ))}
+              </Select>
+            </FormControl>
           )}
         />
 
@@ -422,77 +391,73 @@ export const CompForm = () => {
           />
         </Box>
 
-        <Typography className="section-title" variant="h6">
-          Work Type
-        </Typography>
-
-        <div className="work-type-section">
-          <div className="work-type-checkboxes">
-            <Controller
-              name="isPracticeOwner"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={<Checkbox {...field} checked={field.value} />}
-                  label="Practice Owner"
-                />
-              )}
-            />
-
-            <Controller
-              name="isTraveling"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={<Checkbox {...field} checked={field.value} />}
-                  label="Multiple Locations"
-                />
-              )}
-            />
-          </div>
-
-          {isPracticeOwner && (
-            <Controller
-              name="practiceDescription"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Box className="practice-description-field">
-                  <Typography>Practice Description</Typography>
-                  <TextField
-                    {...field}
-                    multiline
-                    rows={3}
-                    fullWidth
-                    placeholder="Optional: add a note about your practice"
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
-                </Box>
-              )}
+        <Controller
+          name="isPracticeOwner"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Checkbox {...field} checked={field.value} />}
+              label="Practice Owner"
             />
           )}
+        />
 
-          {isTraveling && (
-            <Controller
-              name="travelNotes"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Box className="travel-notes-field">
-                  <Typography>Travel Details</Typography>
-                  <TextField
-                    {...field}
-                    multiline
-                    rows={3}
-                    fullWidth
-                    placeholder="Optional: add a note about what locations/regions you travel to"
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
+        {isPracticeOwner && (
+          <Controller
+            name="practiceDescription"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Practice Description</Typography>
+                <TextField
+                  {...field}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  placeholder="Optional: add a note about your practice('s)"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            )}
+          />
+        )}
+
+        <Controller
+          name="isTraveling"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Checkbox {...field} checked={field.value} />}
+              label={
+                <Box>
+                  <Typography component="span">Multiple Locations</Typography>
                 </Box>
-              )}
+              }
             />
           )}
-        </div>
+        />
+
+        {isTraveling && (
+          <Controller
+            name="travelNotes"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Travel Details</Typography>
+                <TextField
+                  {...field}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  placeholder="Optional: add a note about what locations/regions you travel to"
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                />
+              </Box>
+            )}
+          />
+        )}
 
         <Typography
           variant="h6"
@@ -802,8 +767,8 @@ export const CompForm = () => {
           color="textSecondary"
           id="fileUploadCaption">
           Upload an offer letter or pay stub for verification. Files are
-          encrypted and stored securely before being reviewd, then deleted from
-          our system.
+          encrypted during transfer to the VeterinaryComp team, then deleted
+          after being reviewed.
         </Typography>
 
         <Typography className="section-title" variant="h6">
@@ -839,7 +804,9 @@ export const CompForm = () => {
               <Typography>Gender</Typography>
               <FormControl fullWidth>
                 <Select {...field} displayEmpty>
-                  <MenuItem value="">Prefer not to say</MenuItem>
+                  <MenuItem value="" disabled>
+                    Select gender
+                  </MenuItem>
                   <MenuItem value="male">Male</MenuItem>
                   <MenuItem value="female">Female</MenuItem>
                   <MenuItem value="non-binary">Non-binary</MenuItem>
@@ -870,68 +837,51 @@ export const CompForm = () => {
           }}
         />
 
-        <Controller
-          name="email"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Box>
-              <Typography>Email</Typography>
-              <TextField
-                {...field}
-                type="email"
-                fullWidth
-                placeholder="your_email@example.com"
-                error={!!fieldState.error}
-                helperText={
-                  fieldState.error?.message || (
-                    <>
-                      Will not be used/shared/sold for marketing or spam ever.{" "}
-                      <br />
-                      Required if you'd like to link comp data to an email
-                      address.
-                    </>
-                  )
-                }
-              />
-            </Box>
-          )}
-        />
-
+        {!isAuthenticated && (
+          <Controller
+            name="email"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Box>
+                <Typography>Email</Typography>
+                <TextField
+                  {...field}
+                  fullWidth
+                  error={!!fieldState.error}
+                  helperText={
+                    fieldState.error?.message ||
+                    "Your email will not be shared. Required if you want to have your compensation details linked to an account."
+                  }
+                />
+              </Box>
+            )}
+          />
+        )}
         <div className="submit-container">
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            size="large"
-            disabled={addCompensationMutation.isPending}
-            startIcon={
-              addCompensationMutation.isPending ? (
-                <CircularProgress size={20} />
-              ) : null
-            }>
-            {addCompensationMutation.isPending ? "Submitting..." : "Submit"}
+            className="submit-button">
+            Submit
           </Button>
         </div>
-
+        {errors.root?.serverError && (
+          <Typography
+            color="error"
+            style={{ marginBottom: "10px", textAlign: "center" }}>
+            {errors.root.serverError.message}
+          </Typography>
+        )}
         {!isAuthenticated && (
-          <div className="sign-up-link-container">
-            <Typography variant="body2" color="textSecondary">
-              Want to track your submissions and use advanced features?{" "}
-              <Link
-                component={RouterLink}
-                to="/signup"
-                className="sign-up-link">
-                Create a free account
-              </Link>{" "}
-              to manage your compensation data and access our salary comparison
-              tool. You can always create an account later if you provided your
-              email address above.
-            </Typography>
-          </div>
+          <Typography variant="body2" className="sign-up-link-container">
+            Or, create an account first:{" "}
+            <RouterLink to="/signup" className="sign-up-link">
+              Sign up here
+            </RouterLink>
+          </Typography>
         )}
       </form>
     </div>
   );
 };
-
-export default CompForm;
