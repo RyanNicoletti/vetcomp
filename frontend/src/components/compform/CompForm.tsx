@@ -802,8 +802,8 @@ export const CompForm = () => {
           color="textSecondary"
           id="fileUploadCaption">
           Upload an offer letter or pay stub for verification. Files are
-          encrypted during transfer to the VeterinaryComp team, then deleted
-          after being reviewed.
+          encrypted and stored securely before being reviewd, then deleted from
+          our system.
         </Typography>
 
         <Typography className="section-title" variant="h6">
@@ -836,9 +836,7 @@ export const CompForm = () => {
           control={control}
           render={({ field }) => (
             <Box>
-              <Typography>
-                Gender (Optional - for statistical purposes)
-              </Typography>
+              <Typography>Gender</Typography>
               <FormControl fullWidth>
                 <Select {...field} displayEmpty>
                   <MenuItem value="">Prefer not to say</MenuItem>
@@ -877,16 +875,22 @@ export const CompForm = () => {
           control={control}
           render={({ field, fieldState }) => (
             <Box>
-              <Typography>Email (Optional but Recommended)</Typography>
+              <Typography>Email</Typography>
               <TextField
                 {...field}
                 type="email"
                 fullWidth
-                placeholder="your.email@example.com"
+                placeholder="your_email@example.com"
                 error={!!fieldState.error}
                 helperText={
-                  fieldState.error?.message ||
-                  "Will not be used/shared/sold for marketing or spam ever. Required for salary comparison tool access."
+                  fieldState.error?.message || (
+                    <>
+                      Will not be used/shared/sold for marketing or spam ever.{" "}
+                      <br />
+                      Required if you'd like to link comp data to an email
+                      address.
+                    </>
+                  )
                 }
               />
             </Box>
