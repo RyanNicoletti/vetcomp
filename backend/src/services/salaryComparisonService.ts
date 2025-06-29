@@ -1,5 +1,6 @@
 import { Knex } from "knex";
 import { ICompensation } from "../../../shared-types/types";
+import aiSummaryService from "./aiSummaryService";
 
 interface ComparisonMetrics {
   userSalary: number;
@@ -21,18 +22,10 @@ interface SalaryComparisonResult {
   byExperience: ComparisonMetrics;
   userCompensations: ICompensation[];
   insights: {
-    competitiveAdvantage: string;
-    improvementAreas: string[];
     marketPosition: "below" | "average" | "above";
   };
+  aiSummary?: string; // Optional in case AI service fails
 }
-
-const calculatePercentile = (value: number, sortedValues: number[]): number => {
-  if (sortedValues.length === 0) return 0;
-
-  const count = sortedValues.filter((v) => v <= value).length;
-  return Math.round((count / sortedValues.length) * 100);
-};
 
 const calculateMetrics = (
   salaries: number[],
@@ -48,33 +41,37 @@ const calculateMetrics = (
         percentile75: 0,
         count: 0,
       },
-      userPercentile: 0,
-      recommendations: ["Not enough data available for comparison"],
+      userPercentile: 50,
+      recommendations: ["Insufficient data for comparison"],
     };
   }
 
-  const sorted = [...salaries].sort((a, b) => a - b);
-  const mean = salaries.reduce((sum, val) => sum + val, 0) / salaries.length;
-  const median = sorted[Math.floor(sorted.length / 2)];
-  const percentile25 = sorted[Math.floor(sorted.length * 0.25)];
-  const percentile75 = sorted[Math.floor(sorted.length * 0.75)];
-  const userPercentile = calculatePercentile(userSalary, sorted);
+  const sortedSalaries = [...salaries].sort((a, b) => a - b);
+  const mean = salaries.reduce((sum, sal) => sum + sal, 0) / salaries.length;
 
+  const getPercentile = (arr: number[], percentile: number): number => {
+    const index = (percentile / 100) * (arr.length - 1);
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    const weight = index % 1;
+
+    if (upper >= arr.length) return arr[arr.length - 1];
+    return arr[lower] * (1 - weight) + arr[upper] * weight;
+  };
+
+  const median = getPercentile(sortedSalaries, 50);
+  const percentile25 = getPercentile(sortedSalaries, 25);
+  const percentile75 = getPercentile(sortedSalaries, 75);
+
+  // Fix the user percentile calculation
+  const lowerCount = sortedSalaries.filter((sal) => sal < userSalary).length;
+  const equalCount = sortedSalaries.filter((sal) => sal === userSalary).length;
+  const userPercentile = Math.round(
+    ((lowerCount + equalCount / 2) / sortedSalaries.length) * 100
+  );
+
+  // No recommendations anymore - keep it simple
   const recommendations: string[] = [];
-
-  if (userPercentile < 25) {
-    recommendations.push(
-      "Your compensation is below market average - if you are looking for new opportunities, consider negotiating for higher compensation"
-    );
-  } else if (userPercentile < 50) {
-    recommendations.push(
-      "Your compensation is just below market median there may be room for improvement if you are looking for new opportunities"
-    );
-  } else if (userPercentile < 75) {
-    recommendations.push("Your compensation is competitive and above average");
-  } else {
-    recommendations.push("Your compensation is excellent and in the top tier");
-  }
 
   return {
     userSalary,
@@ -93,7 +90,8 @@ const calculateMetrics = (
 const salaryComparisonService = {
   async getUserSalaryComparison(
     db: Knex,
-    userId: string
+    userId: string,
+    compensationId?: string
   ): Promise<SalaryComparisonResult | null> {
     const userCompensations = await db<ICompensation>("salaries")
       .select("*")
@@ -103,20 +101,34 @@ const salaryComparisonService = {
       return null;
     }
 
-    const latestUserComp = userCompensations.sort(
-      (a, b) =>
-        new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
-    )[0];
+    let selectedUserComp: ICompensation;
+
+    if (compensationId) {
+      const specificComp = userCompensations.find(
+        (comp) => comp.id === compensationId
+      );
+      if (!specificComp) {
+        return null;
+      }
+      selectedUserComp = specificComp;
+    } else {
+      selectedUserComp = userCompensations.sort(
+        (a, b) =>
+          new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+      )[0];
+    }
 
     const userAnnualSalary =
-      latestUserComp.payment_frequency === "hourly"
-        ? (latestUserComp.hourly_rate || 0) * 40 * 52
-        : latestUserComp.total_compensation || latestUserComp.base_salary || 0;
+      selectedUserComp.payment_frequency === "hourly"
+        ? (selectedUserComp.hourly_rate || 0) * 40 * 52
+        : selectedUserComp.total_compensation ||
+          selectedUserComp.base_salary ||
+          0;
 
     const allCompensations = await db<ICompensation>("salaries")
       .select("*")
       .where({ is_approved: true })
-      .whereNot({ user_id: userId }); // Exclude user's own data
+      .whereNot({ user_id: userId });
 
     const allAnnualSalaries = allCompensations
       .map((comp) => {
@@ -130,7 +142,7 @@ const salaryComparisonService = {
     const overall = calculateMetrics(allAnnualSalaries, userAnnualSalary);
 
     const locationCompensations = allCompensations.filter((comp) => {
-      const userLocation = latestUserComp.location.toLowerCase();
+      const userLocation = selectedUserComp.location.toLowerCase();
       const compLocation = comp.location.toLowerCase();
 
       const getUserState = (location: string) => {
@@ -157,7 +169,7 @@ const salaryComparisonService = {
     const practiceTypeCompensations = allCompensations.filter(
       (comp) =>
         comp.type_of_practice?.toLowerCase() ===
-        latestUserComp.type_of_practice?.toLowerCase()
+        selectedUserComp.type_of_practice?.toLowerCase()
     );
 
     const practiceTypeSalaries = practiceTypeCompensations
@@ -173,13 +185,11 @@ const salaryComparisonService = {
       userAnnualSalary
     );
 
-    const experienceRange = 2;
-    const experienceCompensations = allCompensations.filter(
-      (comp) =>
-        Math.abs(
-          comp.years_of_experience - latestUserComp.years_of_experience
-        ) <= experienceRange
-    );
+    const userExperience = selectedUserComp.years_of_experience || 0;
+    const experienceCompensations = allCompensations.filter((comp) => {
+      const compExperience = comp.years_of_experience || 0;
+      return Math.abs(compExperience - userExperience) <= 2;
+    });
 
     const experienceSalaries = experienceCompensations
       .map((comp) =>
@@ -191,44 +201,41 @@ const salaryComparisonService = {
 
     const byExperience = calculateMetrics(experienceSalaries, userAnnualSalary);
 
+    // Simplified insights - no more competitive advantage or improvement areas
     const insights = {
-      competitiveAdvantage:
-        overall.userPercentile >= 75
-          ? "You are in the top 25% of earners in your field"
-          : overall.userPercentile >= 50
-          ? "You earn above the median for your field"
-          : overall.userPercentile >= 25
-          ? "You earn below the median but above the bottom 25%"
-          : "You are in the bottom 25% of earners in your field",
-
-      improvementAreas: [
-        ...(overall.userPercentile < 50
-          ? [
-              "Your compensation is below the market median for veterinary professionals",
-            ]
-          : []),
-        ...(byLocation.userPercentile < 50
-          ? ["Compensation in your area may be below regional averages"]
-          : []),
-        ...(byPracticeType.userPercentile < 50
-          ? [
-              "Your practice type may offer lower compensation compared to others",
-            ]
-          : []),
-        ...(byExperience.userPercentile < 50
-          ? ["Professionals with similar experience typically earn more"]
-          : []),
-        ...(overall.userPercentile >= 75
-          ? ["You are earning competitively within your field"]
-          : []),
-      ],
-
       marketPosition: (overall.userPercentile >= 60
         ? "above"
         : overall.userPercentile >= 40
         ? "average"
         : "below") as "below" | "average" | "above",
     };
+
+    // Generate AI summary with raw compensation data
+    let aiSummary: string | undefined;
+    try {
+      aiSummary = await aiSummaryService.getSalarySummary(
+        db,
+        userId,
+        selectedUserComp.id,
+        {
+          userCompensation: selectedUserComp,
+          allCompensations,
+          locationCompensations,
+          practiceTypeCompensations,
+          experienceCompensations,
+          calculatedMetrics: {
+            userPercentile: overall.userPercentile,
+            marketMedian: overall.marketData.median,
+            locationPercentile: byLocation.userPercentile,
+            practiceTypePercentile: byPracticeType.userPercentile,
+            experiencePercentile: byExperience.userPercentile,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Failed to get raw data AI summary:", error);
+      // aiSummary remains undefined, component will handle gracefully
+    }
 
     return {
       overall,
@@ -237,6 +244,7 @@ const salaryComparisonService = {
       byExperience,
       userCompensations,
       insights,
+      aiSummary,
     };
   },
 };

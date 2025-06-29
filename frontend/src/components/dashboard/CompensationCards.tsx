@@ -9,6 +9,10 @@ import {
   CardContent,
   Alert,
   CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useMutation, useQuery, QueryClient } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
@@ -35,29 +39,43 @@ interface CompensationCardsProps {
 
 const SalaryComparisonSection = ({
   hasApprovedCompensation,
+  approvedCompensations,
 }: {
   hasApprovedCompensation: boolean;
+  approvedCompensations: ICompensation[];
 }) => {
   const [showComparison, setShowComparison] = useState(false);
+  const [selectedCompensationId, setSelectedCompensationId] =
+    useState<string>("");
 
   const {
     data: comparisonData,
     isLoading,
     isError,
     error,
-    refetch,
   } = useQuery({
-    queryKey: ["salaryComparison"],
-    queryFn: getSalaryComparison,
-    enabled: showComparison, // Only fetch when user clicks the button
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: ["salaryComparison", selectedCompensationId],
+    queryFn: () => getSalaryComparison(selectedCompensationId),
+    enabled: showComparison && !!selectedCompensationId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const handleCompareClick = () => {
-    setShowComparison(true);
-    if (!comparisonData) {
-      refetch();
+    if (approvedCompensations.length === 1) {
+      setSelectedCompensationId(approvedCompensations[0].id);
+    } else if (!selectedCompensationId && approvedCompensations.length > 1) {
+      setSelectedCompensationId(approvedCompensations[0].id);
     }
+
+    setShowComparison(true);
+  };
+
+  const handleHideComparison = () => {
+    setShowComparison(false);
+  };
+
+  const handleCompensationChange = (compId: string) => {
+    setSelectedCompensationId(compId);
   };
 
   if (!hasApprovedCompensation) {
@@ -126,10 +144,27 @@ const SalaryComparisonSection = ({
     if (comparisonData) {
       return (
         <Box className="salary-comparison-results" sx={{ mb: 3 }}>
-          <SalaryComparison embedded />
+          {approvedCompensations.length > 1 && (
+            <Box mb={2}>
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>Select Compensation</InputLabel>
+                <Select
+                  value={selectedCompensationId}
+                  label="Select Compensation"
+                  onChange={(e) => handleCompensationChange(e.target.value)}>
+                  {approvedCompensations.map((comp) => (
+                    <MenuItem key={comp.id} value={comp.id}>
+                      {comp.title} - {comp.company}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+          <SalaryComparison embedded compensationId={selectedCompensationId} />
           <Box mt={2} textAlign="center">
             <Button
-              onClick={() => setShowComparison(false)}
+              onClick={handleHideComparison}
               variant="outlined"
               size="small">
               Hide Comparison
@@ -140,48 +175,24 @@ const SalaryComparisonSection = ({
     }
   }
 
-  // Default state - show the comparison CTA card
+  // Always show simple button when not showing comparison
   return (
-    <Card
-      className="salary-comparison-cta-card"
-      sx={{
-        mb: 3,
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        color: "white",
-      }}>
-      <CardContent>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center" gap={2}>
-            <AnalyticsIcon fontSize="large" />
-            <Box>
-              <Typography variant="h6" fontWeight="bold">
-                See How You Compare
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Get detailed insights on how your compensation stacks up against
-                others in your field, location, and experience level.
-              </Typography>
-            </Box>
-          </Box>
-          <Button
-            onClick={handleCompareClick}
-            variant="contained"
-            size="large"
-            startIcon={<TrendingUpIcon />}
-            sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
-              color: "white",
-              "&:hover": {
-                bgcolor: "rgba(255,255,255,0.3)",
-              },
-              fontWeight: "bold",
-              minWidth: "200px",
-            }}>
-            Compare My Salary
-          </Button>
-        </Box>
-      </CardContent>
-    </Card>
+    <Box sx={{ mb: 3, textAlign: "center" }}>
+      <Button
+        onClick={handleCompareClick}
+        variant="contained"
+        size="medium"
+        sx={{
+          bgcolor: "#667eea",
+          color: "white",
+          "&:hover": {
+            bgcolor: "#5a6fd8",
+          },
+          fontWeight: "bold",
+        }}>
+        Show Salary Comparison
+      </Button>
+    </Box>
   );
 };
 
@@ -228,6 +239,10 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
     (comp) => comp.is_approved
   );
 
+  const approvedCompensations = compensations.filter(
+    (comp) => comp.is_approved
+  );
+
   const shouldShowReminder = () => {
     if (!compensations || compensations.length === 0) {
       return false;
@@ -248,9 +263,9 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
         Your Compensation Information
       </Typography>
 
-      {/* Salary Comparison Section - Show if user has approved compensation */}
       <SalaryComparisonSection
         hasApprovedCompensation={hasApprovedCompensation}
+        approvedCompensations={approvedCompensations}
       />
 
       <div className="compensation-cards">
@@ -333,17 +348,16 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
                   <Typography variant="h6" className="verify-header">
                     Verify Compensation
                   </Typography>
-                  <Typography component="p">
-                    Upload an offer letter or pay stub to have this compensation
-                    verified.
+                  <Typography component="p" className="verify-description">
+                    Upload verification document (offer letter or pay stub).
                   </Typography>
                   <Input
                     type="file"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleFileChange(e, comp.id)
                     }
-                    fullWidth
                     disableUnderline
+                    sx={{ width: "fit-content", maxWidth: "300px", mb: 1 }}
                   />
                   <Button
                     variant="contained"
@@ -352,8 +366,11 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
                     disabled={
                       !selectedFiles[comp.id] || uploadingCompId === comp.id
                     }
-                    fullWidth
-                    style={{ marginTop: "10px" }}>
+                    sx={{
+                      width: "fit-content",
+                      maxWidth: "300px",
+                      display: "block",
+                    }}>
                     {uploadingCompId === comp.id
                       ? "Uploading..."
                       : "Upload Verification"}

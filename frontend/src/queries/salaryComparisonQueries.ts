@@ -18,29 +18,34 @@ interface SalaryComparisonResult {
   byExperience: ComparisonMetrics;
   userCompensations: any[];
   insights: {
-    competitiveAdvantage: string;
-    improvementAreas: string[];
     marketPosition: "below" | "average" | "above";
   };
+  aiSummary?: string;
 }
 
-export const getSalaryComparison =
-  async (): Promise<SalaryComparisonResult> => {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/compensations/comparison`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
+export const getSalaryComparison = async (
+  compensationId?: string
+): Promise<SalaryComparisonResult> => {
+  const url = new URL(
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/comparison`
+  );
+
+  if (compensationId) {
+    url.searchParams.append("compensationId", compensationId);
+  }
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message ||
+        "Failed to fetch salary comparison data. Please ensure you have submitted compensation information with your account."
     );
+  }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message ||
-          "Failed to fetch salary comparison data. Please ensure you have submitted compensation information with your account."
-      );
-    }
-
-    return await response.json();
-  };
+  return await response.json();
+};

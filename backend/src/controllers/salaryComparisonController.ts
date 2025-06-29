@@ -13,9 +13,14 @@ const getSalaryComparison = asyncHandler(
     }
 
     const userId = req.session.userId;
+    const compensationId = req.query.compensationId as string | undefined;
 
     const comparisonResult =
-      await salaryComparisonService.getUserSalaryComparison(db, userId);
+      await salaryComparisonService.getUserSalaryComparison(
+        db,
+        userId,
+        compensationId
+      );
 
     if (!comparisonResult) {
       throw new NotFoundError(

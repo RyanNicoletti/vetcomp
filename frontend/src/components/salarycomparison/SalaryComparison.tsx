@@ -5,18 +5,9 @@ import {
   CardContent,
   Typography,
   LinearProgress,
-  Chip,
   Alert,
   Paper,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
 } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
-import WarningIcon from "@mui/icons-material/Warning";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import BusinessIcon from "@mui/icons-material/Business";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -48,10 +39,9 @@ interface SalaryComparisonResult {
   byExperience: ComparisonMetrics;
   userCompensations: any[];
   insights: {
-    competitiveAdvantage: string;
-    improvementAreas: string[];
     marketPosition: "below" | "average" | "above";
   };
+  aiSummary?: string;
 }
 
 const PercentileBar: React.FC<{ percentile: number; label: string }> = ({
@@ -104,33 +94,30 @@ const MetricsCard: React.FC<{
   metrics: ComparisonMetrics;
   isLoading?: boolean;
 }> = ({ title, icon, metrics, isLoading = false }) => {
+  const { userSalary, marketData, userPercentile, recommendations } = metrics;
+
   if (isLoading) {
     return (
       <Card className="metrics-card">
         <CardContent>
-          <Box display="flex" alignItems="center" gap={1} mb={2}>
+          <Box display="flex" alignItems="center" gap={2} mb={2}>
             {icon}
             <Typography variant="h6">{title}</Typography>
           </Box>
-          <LinearProgress />
+          <Box textAlign="center" py={4}>
+            <Typography>Loading...</Typography>
+          </Box>
         </CardContent>
       </Card>
     );
   }
 
-  const { userSalary, marketData, userPercentile, recommendations } = metrics;
-
   return (
     <Card className="metrics-card">
       <CardContent>
-        <Box display="flex" alignItems="center" gap={1} mb={2}>
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
           {icon}
           <Typography variant="h6">{title}</Typography>
-          <Chip
-            label={`${marketData.count} samples`}
-            size="small"
-            variant="outlined"
-          />
         </Box>
 
         {marketData.count === 0 ? (
@@ -177,27 +164,6 @@ const MetricsCard: React.FC<{
                 </Paper>
               </Box>
             </Box>
-
-            {recommendations.length > 0 && (
-              <Box mt={2}>
-                <Typography variant="body2" fontWeight="medium" mb={1}>
-                  Recommendations:
-                </Typography>
-                <List dense className="recommendations-list">
-                  {recommendations.map((rec, index) => (
-                    <ListItem key={index} className="recommendation-item">
-                      <ListItemIcon>
-                        <InfoIcon color="primary" fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={rec}
-                        primaryTypographyProps={{ variant: "body2" }}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            )}
           </>
         )}
       </CardContent>
@@ -207,10 +173,12 @@ const MetricsCard: React.FC<{
 
 interface SalaryComparisonProps {
   embedded?: boolean;
+  compensationId?: string;
 }
 
 const SalaryComparison: React.FC<SalaryComparisonProps> = ({
   embedded = false,
+  compensationId,
 }) => {
   const {
     data: comparisonData,
@@ -218,8 +186,8 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
     isError,
     error,
   } = useQuery<SalaryComparisonResult>({
-    queryKey: ["salaryComparison"],
-    queryFn: getSalaryComparison,
+    queryKey: ["salaryComparison", compensationId],
+    queryFn: () => getSalaryComparison(compensationId),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -280,8 +248,21 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
     );
   }
 
-  const { overall, byLocation, byPracticeType, byExperience, insights } =
-    comparisonData;
+  // Type guard to ensure we have the required properties
+  if (!comparisonData.overall) {
+    return (
+      <Box className={embedded ? "" : "salary-comparison-container"}>
+        <Alert severity="error">
+          <Typography variant="h6">Invalid Data</Typography>
+          <Typography>
+            Unable to process comparison data. Please try again later.
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
+
+  const { overall, byLocation, byPracticeType, byExperience } = comparisonData;
 
   return (
     <Box
@@ -292,17 +273,28 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
         <Typography variant={embedded ? "h5" : "h4"} gutterBottom>
           Your Salary Comparison Report
         </Typography>
-        <Alert
-          severity={
-            insights.marketPosition === "above"
-              ? "success"
-              : insights.marketPosition === "average"
-              ? "info"
-              : "warning"
-          }
-          sx={{ mb: 2 }}>
-          <Typography variant="h6">{insights.competitiveAdvantage}</Typography>
-        </Alert>
+
+        {comparisonData.aiSummary && (
+          <Box>
+            <Alert severity="info" sx={{ mt: 2 }}>
+              <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                {comparisonData.aiSummary}
+              </Typography>
+            </Alert>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              sx={{
+                display: "block",
+                textAlign: "right",
+                mt: 0.5,
+                fontStyle: "italic",
+                fontSize: "0.75rem",
+              }}>
+              Summary generated by AI
+            </Typography>
+          </Box>
+        )}
       </Box>
 
       <Box
@@ -334,31 +326,6 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
         />
       </Box>
 
-      {insights.improvementAreas.length > 0 && (
-        <Card className="insights-card" sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              <WarningIcon
-                color="warning"
-                sx={{ mr: 1, verticalAlign: "middle" }}
-              />
-              Areas for Potential Improvement
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <List>
-              {insights.improvementAreas.map((area, index) => (
-                <ListItem key={index}>
-                  <ListItemIcon>
-                    <CheckCircleIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText primary={area} />
-                </ListItem>
-              ))}
-            </List>
-          </CardContent>
-        </Card>
-      )}
-
       <Box className="disclaimer" mt={3}>
         <Alert severity="info">
           <Typography variant="body2">
@@ -373,4 +340,5 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
     </Box>
   );
 };
+
 export default SalaryComparison;
