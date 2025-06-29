@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Grid, Alert } from "@mui/material";
+import { Box, Typography, Button, Grid } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useNavigate } from "react-router-dom";
 import "./NoJobsMessage.css";
