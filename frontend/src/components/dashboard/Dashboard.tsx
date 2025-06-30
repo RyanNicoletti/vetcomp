@@ -42,8 +42,8 @@ export const Dashboard = () => {
 
   const {
     data: _applicationsCount = 0,
-    isLoading: isApplicationsCountLoading,
-    isError: isApplicationsCountError,
+    isLoading: _isApplicationsCountLoading,
+    isError: _isApplicationsCountError,
   } = useQuery({
     queryKey: ["userApplicationsCount"],
     queryFn: getUserApplicationsCount,

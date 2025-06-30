@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   Alert,
-  CircularProgress,
   Select,
   MenuItem,
   FormControl,
@@ -23,8 +22,6 @@ import {
   formatNullableMoneyValue,
   moneyFormatter,
 } from "../../utils/moneyFormatter";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import SalaryComparison from "../salarycomparison/SalaryComparison";
 import "./CompensationCards.css";
 
