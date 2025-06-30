@@ -66,7 +66,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
   if (
     !metrics ||
     !metrics.marketData ||
-    (!metrics.isHourly && metrics.marketData.count < 10)
+    (!metrics.isHourly && metrics.marketData.count < 5)
   ) {
     return (
       <Card className="metrics-card">
