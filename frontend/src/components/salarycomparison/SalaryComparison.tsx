@@ -94,7 +94,7 @@ const MetricsCard: React.FC<{
   metrics: ComparisonMetrics;
   isLoading?: boolean;
 }> = ({ title, icon, metrics, isLoading = false }) => {
-  const { userSalary, marketData, userPercentile, recommendations } = metrics;
+  const { userSalary, marketData } = metrics;
 
   if (isLoading) {
     return (
@@ -125,46 +125,42 @@ const MetricsCard: React.FC<{
             Not enough data available for this comparison
           </Alert>
         ) : (
-          <>
-            <PercentileBar percentile={userPercentile} label="Your Position" />
-
-            <Box className="salary-metrics" mt={2}>
-              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
-                <Paper className="metric-item" elevation={0}>
-                  <Typography variant="body2" color="textSecondary">
-                    Your Salary
-                  </Typography>
-                  <Typography variant="h6" color="primary" fontWeight="bold">
-                    {moneyFormatter.format(userSalary)}
-                  </Typography>
-                </Paper>
-                <Paper className="metric-item" elevation={0}>
-                  <Typography variant="body2" color="textSecondary">
-                    Market Median
-                  </Typography>
-                  <Typography variant="h6" fontWeight="bold">
-                    {moneyFormatter.format(marketData.median)}
-                  </Typography>
-                </Paper>
-                <Paper className="metric-item" elevation={0}>
-                  <Typography variant="body2" color="textSecondary">
-                    25th Percentile
-                  </Typography>
-                  <Typography variant="body1">
-                    {moneyFormatter.format(marketData.percentile25)}
-                  </Typography>
-                </Paper>
-                <Paper className="metric-item" elevation={0}>
-                  <Typography variant="body2" color="textSecondary">
-                    75th Percentile
-                  </Typography>
-                  <Typography variant="body1">
-                    {moneyFormatter.format(marketData.percentile75)}
-                  </Typography>
-                </Paper>
-              </Box>
+          <Box className="salary-metrics" mt={2}>
+            <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+              <Paper className="metric-item" elevation={0}>
+                <Typography variant="body2" color="textSecondary">
+                  Your Salary
+                </Typography>
+                <Typography variant="h6" color="primary" fontWeight="bold">
+                  {moneyFormatter.format(userSalary)}
+                </Typography>
+              </Paper>
+              <Paper className="metric-item" elevation={0}>
+                <Typography variant="body2" color="textSecondary">
+                  Market Median
+                </Typography>
+                <Typography variant="h6" fontWeight="bold">
+                  {moneyFormatter.format(marketData.median)}
+                </Typography>
+              </Paper>
+              <Paper className="metric-item" elevation={0}>
+                <Typography variant="body2" color="textSecondary">
+                  25th Percentile
+                </Typography>
+                <Typography variant="body1">
+                  {moneyFormatter.format(marketData.percentile25)}
+                </Typography>
+              </Paper>
+              <Paper className="metric-item" elevation={0}>
+                <Typography variant="body2" color="textSecondary">
+                  75th Percentile
+                </Typography>
+                <Typography variant="body1">
+                  {moneyFormatter.format(marketData.percentile75)}
+                </Typography>
+              </Paper>
             </Box>
-          </>
+          </Box>
         )}
       </CardContent>
     </Card>
