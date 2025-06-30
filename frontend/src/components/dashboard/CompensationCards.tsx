@@ -84,29 +84,7 @@ const SalaryComparisonSection = ({
 
   if (showComparison) {
     if (isLoading) {
-      return (
-        <Card
-          className="salary-comparison-loading-card"
-          sx={{
-            mb: 3,
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-          }}>
-          <CardContent>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              py={2}>
-              <CircularProgress size={40} sx={{ color: "white", mb: 1 }} />
-              <Typography variant="h6" fontWeight="bold">
-                Loading...
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      );
+      return null;
     }
 
     if (isError) {
