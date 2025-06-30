@@ -12,6 +12,7 @@ interface ComparisonMetrics {
   };
   userPercentile: number;
   recommendations: string[];
+  isHourly: boolean;
 }
 
 interface SalaryComparisonResult {
@@ -27,7 +28,8 @@ interface SalaryComparisonResult {
 
 const calculateMetrics = (
   salaries: number[],
-  userSalary: number
+  userSalary: number,
+  isHourly: boolean = false
 ): ComparisonMetrics => {
   const validSalaries = salaries.filter(
     (salary) =>
@@ -46,6 +48,7 @@ const calculateMetrics = (
       },
       userPercentile: 50,
       recommendations: [],
+      isHourly,
     };
   }
 
@@ -76,14 +79,19 @@ const calculateMetrics = (
   return {
     userSalary,
     marketData: {
-      mean: Math.round(mean),
-      median: Math.round(median),
-      percentile25: Math.round(percentile25),
-      percentile75: Math.round(percentile75),
+      mean: isHourly ? Math.round(mean * 100) / 100 : Math.round(mean),
+      median: isHourly ? Math.round(median * 100) / 100 : Math.round(median),
+      percentile25: isHourly
+        ? Math.round(percentile25 * 100) / 100
+        : Math.round(percentile25),
+      percentile75: isHourly
+        ? Math.round(percentile75 * 100) / 100
+        : Math.round(percentile75),
       count: validSalaries.length,
     },
     userPercentile,
     recommendations: [],
+    isHourly,
   };
 };
 
@@ -124,36 +132,39 @@ const salaryComparisonService = {
       )[0];
     }
 
-    const userAnnualSalary =
-      selectedUserComp.payment_frequency === "hourly"
-        ? convertToNumber(selectedUserComp.hourly_rate) * 40 * 52
-        : convertToNumber(selectedUserComp.total_compensation) ||
-          convertToNumber(selectedUserComp.base_salary) ||
-          0;
+    const isUserHourly = selectedUserComp.payment_frequency === "hourly";
+    const userCompensation = isUserHourly
+      ? convertToNumber(selectedUserComp.hourly_rate)
+      : convertToNumber(selectedUserComp.total_compensation);
 
     const allCompensations = await db<ICompensation>("salaries")
       .select("*")
       .where({ is_approved: true })
       .whereNot({ user_id: userId });
 
-    const allAnnualSalaries = allCompensations
+    const allCompensationValues = allCompensations
+      .filter(
+        (comp) => comp.payment_frequency === selectedUserComp.payment_frequency
+      )
       .map((comp) => {
         if (comp.payment_frequency === "hourly") {
-          const hourlyRate = convertToNumber(comp.hourly_rate);
-          return hourlyRate * 40 * 52;
+          return convertToNumber(comp.hourly_rate);
         }
-        return (
-          convertToNumber(comp.total_compensation) ||
-          convertToNumber(comp.base_salary) ||
-          0
-        );
+        return convertToNumber(comp.total_compensation);
       })
       .filter(
-        (salary) =>
-          salary != null && !isNaN(salary) && isFinite(salary) && salary > 0
+        (compensation) =>
+          compensation != null &&
+          !isNaN(compensation) &&
+          isFinite(compensation) &&
+          compensation > 0
       );
 
-    const overall = calculateMetrics(allAnnualSalaries, userAnnualSalary);
+    const overall = calculateMetrics(
+      allCompensationValues,
+      userCompensation,
+      isUserHourly
+    );
 
     const locationCompensations = allCompensations.filter((comp) => {
       const userLocation = selectedUserComp.location.toLowerCase();
@@ -169,40 +180,46 @@ const salaryComparisonService = {
       const userState = getState(userLocation);
       const compState = getState(compLocation);
 
-      return userState === compState && userState !== "";
+      return (
+        userState === compState &&
+        userState !== "" &&
+        comp.payment_frequency === selectedUserComp.payment_frequency
+      );
     });
 
-    const locationSalaries = locationCompensations
+    const locationValues = locationCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? convertToNumber(comp.hourly_rate) * 40 * 52
-          : convertToNumber(comp.total_compensation) ||
-            convertToNumber(comp.base_salary) ||
-            0
+          ? convertToNumber(comp.hourly_rate)
+          : convertToNumber(comp.total_compensation)
       )
-      .filter((salary) => salary > 0);
+      .filter((compensation) => compensation > 0);
 
-    const byLocation = calculateMetrics(locationSalaries, userAnnualSalary);
+    const byLocation = calculateMetrics(
+      locationValues,
+      userCompensation,
+      isUserHourly
+    );
 
     const practiceTypeCompensations = allCompensations.filter(
       (comp) =>
         comp.type_of_practice?.toLowerCase() ===
-        selectedUserComp.type_of_practice?.toLowerCase()
+          selectedUserComp.type_of_practice?.toLowerCase() &&
+        comp.payment_frequency === selectedUserComp.payment_frequency
     );
 
-    const practiceTypeSalaries = practiceTypeCompensations
+    const practiceTypeValues = practiceTypeCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? convertToNumber(comp.hourly_rate) * 40 * 52
-          : convertToNumber(comp.total_compensation) ||
-            convertToNumber(comp.base_salary) ||
-            0
+          ? convertToNumber(comp.hourly_rate)
+          : convertToNumber(comp.total_compensation)
       )
-      .filter((salary) => salary > 0);
+      .filter((compensation) => compensation > 0);
 
     const byPracticeType = calculateMetrics(
-      practiceTypeSalaries,
-      userAnnualSalary
+      practiceTypeValues,
+      userCompensation,
+      isUserHourly
     );
 
     const userExperience = convertToNumber(
@@ -210,20 +227,25 @@ const salaryComparisonService = {
     );
     const experienceCompensations = allCompensations.filter((comp) => {
       const compExperience = convertToNumber(comp.years_of_experience);
-      return Math.abs(compExperience - userExperience) <= 2;
+      return (
+        Math.abs(compExperience - userExperience) <= 2 &&
+        comp.payment_frequency === selectedUserComp.payment_frequency
+      );
     });
 
-    const experienceSalaries = experienceCompensations
+    const experienceValues = experienceCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? convertToNumber(comp.hourly_rate) * 40 * 52
-          : convertToNumber(comp.total_compensation) ||
-            convertToNumber(comp.base_salary) ||
-            0
+          ? convertToNumber(comp.hourly_rate)
+          : convertToNumber(comp.total_compensation)
       )
-      .filter((salary) => salary > 0);
+      .filter((compensation) => compensation > 0);
 
-    const byExperience = calculateMetrics(experienceSalaries, userAnnualSalary);
+    const byExperience = calculateMetrics(
+      experienceValues,
+      userCompensation,
+      isUserHourly
+    );
 
     const insights = {
       marketPosition: (overall.userPercentile >= 60

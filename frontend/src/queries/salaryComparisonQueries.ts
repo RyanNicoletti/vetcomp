@@ -9,6 +9,7 @@ interface ComparisonMetrics {
   };
   userPercentile: number;
   recommendations: string[];
+  isHourly: boolean;
 }
 
 interface SalaryComparisonResult {

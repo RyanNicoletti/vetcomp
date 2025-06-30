@@ -18,6 +18,7 @@ interface ComparisonMetrics {
   };
   userPercentile: number;
   recommendations: string[];
+  isHourly: boolean;
 }
 
 interface SalaryComparisonResult {
@@ -62,7 +63,11 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
     );
   }
 
-  if (!metrics || !metrics.marketData || metrics.marketData.count < 10) {
+  if (
+    !metrics ||
+    !metrics.marketData ||
+    (!metrics.isHourly && metrics.marketData.count < 10)
+  ) {
     return (
       <Card className="metrics-card">
         <CardContent>
@@ -74,14 +79,22 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
           </Box>
           <Alert severity="info">
             <Typography variant="body2">
-              We're still gathering data for this comparison, more insights will
-              be available as our database expands.
+              We're still gathering data for this comparison - check back soon
+              as our community grows!
             </Typography>
           </Alert>
         </CardContent>
       </Card>
     );
   }
+
+  const isHourly = metrics.isHourly;
+  const formatValue = (value: number) => {
+    if (isHourly) {
+      return `${value.toFixed(2)}/hr`;
+    }
+    return `${value.toLocaleString()}`;
+  };
 
   const safeMarketData = {
     mean: metrics.marketData.mean || 0,
@@ -102,8 +115,8 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
 
         <Box className="salary-metrics">
           <Typography variant="body2" color="textSecondary" mb={2}>
-            Your Salary:{" "}
-            <strong>${(metrics.userSalary || 0).toLocaleString()}</strong>
+            Your Compensation:{" "}
+            <strong>{formatValue(metrics.userSalary || 0)}</strong>
           </Typography>
 
           <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
@@ -112,7 +125,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 Market Median
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${safeMarketData.median.toLocaleString()}
+                {formatValue(safeMarketData.median)}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -120,7 +133,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 Market Mean
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${safeMarketData.mean.toLocaleString()}
+                {formatValue(safeMarketData.mean)}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -128,7 +141,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 25th Percentile
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${safeMarketData.percentile25.toLocaleString()}
+                {formatValue(safeMarketData.percentile25)}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -136,7 +149,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 75th Percentile
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${safeMarketData.percentile75.toLocaleString()}
+                {formatValue(safeMarketData.percentile75)}
               </Typography>
             </Box>
           </Box>
