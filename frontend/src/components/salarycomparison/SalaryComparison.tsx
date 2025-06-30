@@ -62,7 +62,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
     );
   }
 
-  if (metrics.marketData.count < 10) {
+  if (!metrics || !metrics.marketData || metrics.marketData.count < 10) {
     return (
       <Card className="metrics-card">
         <CardContent>
@@ -74,13 +74,21 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
           </Box>
           <Alert severity="info">
             <Typography variant="body2">
-              Not enough data available for comparison in this section
+              We're still gathering data for this comparison, more insights will
+              be available as our database expands.
             </Typography>
           </Alert>
         </CardContent>
       </Card>
     );
   }
+
+  const safeMarketData = {
+    mean: metrics.marketData.mean || 0,
+    median: metrics.marketData.median || 0,
+    percentile25: metrics.marketData.percentile25 || 0,
+    percentile75: metrics.marketData.percentile75 || 0,
+  };
 
   return (
     <Card className="metrics-card">
@@ -94,7 +102,8 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
 
         <Box className="salary-metrics">
           <Typography variant="body2" color="textSecondary" mb={2}>
-            Your Salary: <strong>${metrics.userSalary.toLocaleString()}</strong>
+            Your Salary:{" "}
+            <strong>${(metrics.userSalary || 0).toLocaleString()}</strong>
           </Typography>
 
           <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
@@ -103,7 +112,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 Market Median
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${metrics.marketData.median.toLocaleString()}
+                ${safeMarketData.median.toLocaleString()}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -111,7 +120,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 Market Mean
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${metrics.marketData.mean.toLocaleString()}
+                ${safeMarketData.mean.toLocaleString()}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -119,7 +128,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 25th Percentile
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${metrics.marketData.percentile25.toLocaleString()}
+                ${safeMarketData.percentile25.toLocaleString()}
               </Typography>
             </Box>
             <Box className="metric-item">
@@ -127,7 +136,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
                 75th Percentile
               </Typography>
               <Typography variant="body2" fontWeight="medium">
-                ${metrics.marketData.percentile75.toLocaleString()}
+                ${safeMarketData.percentile75.toLocaleString()}
               </Typography>
             </Box>
           </Box>
@@ -274,8 +283,7 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
             <strong>Disclaimer:</strong> This comparison is based on anonymous
             data submitted by veterinary professionals. Results may vary based
             on geographic location, specific role requirements, and market
-            conditions. Use this information as a general guide for salary
-            discussions and career planning.
+            conditions.
           </Typography>
         </Alert>
       </Box>

@@ -29,7 +29,6 @@ const calculateMetrics = (
   salaries: number[],
   userSalary: number
 ): ComparisonMetrics => {
-  // Filter out any null, undefined, NaN, or non-positive values
   const validSalaries = salaries.filter(
     (salary) =>
       salary != null && !isNaN(salary) && isFinite(salary) && salary > 0
@@ -88,6 +87,12 @@ const calculateMetrics = (
   };
 };
 
+const convertToNumber = (value: any): number => {
+  if (value == null) return 0;
+  const num = typeof value === "string" ? parseFloat(value) : Number(value);
+  return isNaN(num) ? 0 : num;
+};
+
 const salaryComparisonService = {
   async getUserSalaryComparison(
     db: Knex,
@@ -121,9 +126,9 @@ const salaryComparisonService = {
 
     const userAnnualSalary =
       selectedUserComp.payment_frequency === "hourly"
-        ? (selectedUserComp.hourly_rate || 0) * 40 * 52
-        : selectedUserComp.total_compensation ||
-          selectedUserComp.base_salary ||
+        ? convertToNumber(selectedUserComp.hourly_rate) * 40 * 52
+        : convertToNumber(selectedUserComp.total_compensation) ||
+          convertToNumber(selectedUserComp.base_salary) ||
           0;
 
     const allCompensations = await db<ICompensation>("salaries")
@@ -134,10 +139,14 @@ const salaryComparisonService = {
     const allAnnualSalaries = allCompensations
       .map((comp) => {
         if (comp.payment_frequency === "hourly") {
-          const hourlyRate = comp.hourly_rate || 0;
+          const hourlyRate = convertToNumber(comp.hourly_rate);
           return hourlyRate * 40 * 52;
         }
-        return comp.total_compensation || comp.base_salary || 0;
+        return (
+          convertToNumber(comp.total_compensation) ||
+          convertToNumber(comp.base_salary) ||
+          0
+        );
       })
       .filter(
         (salary) =>
@@ -166,8 +175,10 @@ const salaryComparisonService = {
     const locationSalaries = locationCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? (comp.hourly_rate || 0) * 40 * 52
-          : comp.total_compensation || comp.base_salary || 0
+          ? convertToNumber(comp.hourly_rate) * 40 * 52
+          : convertToNumber(comp.total_compensation) ||
+            convertToNumber(comp.base_salary) ||
+            0
       )
       .filter((salary) => salary > 0);
 
@@ -182,8 +193,10 @@ const salaryComparisonService = {
     const practiceTypeSalaries = practiceTypeCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? (comp.hourly_rate || 0) * 40 * 52
-          : comp.total_compensation || comp.base_salary || 0
+          ? convertToNumber(comp.hourly_rate) * 40 * 52
+          : convertToNumber(comp.total_compensation) ||
+            convertToNumber(comp.base_salary) ||
+            0
       )
       .filter((salary) => salary > 0);
 
@@ -192,17 +205,21 @@ const salaryComparisonService = {
       userAnnualSalary
     );
 
-    const userExperience = selectedUserComp.years_of_experience || 0;
+    const userExperience = convertToNumber(
+      selectedUserComp.years_of_experience
+    );
     const experienceCompensations = allCompensations.filter((comp) => {
-      const compExperience = comp.years_of_experience || 0;
+      const compExperience = convertToNumber(comp.years_of_experience);
       return Math.abs(compExperience - userExperience) <= 2;
     });
 
     const experienceSalaries = experienceCompensations
       .map((comp) =>
         comp.payment_frequency === "hourly"
-          ? (comp.hourly_rate || 0) * 40 * 52
-          : comp.total_compensation || comp.base_salary || 0
+          ? convertToNumber(comp.hourly_rate) * 40 * 52
+          : convertToNumber(comp.total_compensation) ||
+            convertToNumber(comp.base_salary) ||
+            0
       )
       .filter((salary) => salary > 0);
 

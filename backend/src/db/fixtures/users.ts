@@ -1,0 +1,73 @@
+// First, create users
+export const users = [
+  {
+    id: "550e8400-e29b-41d4-a716-446655440001",
+    email: "user1@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440002",
+    email: "user2@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    email: "user3@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440004",
+    email: "user4@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440005",
+    email: "user5@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440006",
+    email: "user6@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440007",
+    email: "user7@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440008",
+    email: "user8@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440009",
+    email: "user9@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+  {
+    id: "550e8400-e29b-41d4-a716-446655440010",
+    email: "user10@test.com",
+    password_hash: "$argon2id$v=19$m=65536,t=3,p=4$test$test",
+    is_verified: true,
+    is_admin: false,
+  },
+];
