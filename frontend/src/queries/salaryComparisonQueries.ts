@@ -20,7 +20,6 @@ interface SalaryComparisonResult {
   insights: {
     marketPosition: "below" | "average" | "above";
   };
-  aiSummary?: string;
 }
 
 export const getSalaryComparison = async (

@@ -1,23 +1,11 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  LinearProgress,
-  Alert,
-  Paper,
-} from "@mui/material";
-import ScheduleIcon from "@mui/icons-material/Schedule";
+import { useQuery } from "@tanstack/react-query";
+import { Box, Typography, Alert, Card, CardContent } from "@mui/material";
+import { getSalaryComparison } from "../../queries/salaryComparisonQueries";
 import BusinessIcon from "@mui/icons-material/Business";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { useQuery } from "@tanstack/react-query";
-import { moneyFormatter } from "../../utils/moneyFormatter";
+import ScheduleIcon from "@mui/icons-material/Schedule";
 import "./SalaryComparison.css";
-import { getSalaryComparison } from "../../queries/salaryComparisonQueries";
 
 interface ComparisonMetrics {
   userSalary: number;
@@ -41,72 +29,54 @@ interface SalaryComparisonResult {
   insights: {
     marketPosition: "below" | "average" | "above";
   };
-  aiSummary?: string;
 }
 
-const PercentileBar: React.FC<{ percentile: number; label: string }> = ({
-  percentile,
-  label,
-}) => {
-  const getColor = (p: number) => {
-    if (p >= 75) return "success";
-    if (p >= 50) return "primary";
-    if (p >= 25) return "warning";
-    return "error";
-  };
-
-  const getIcon = (p: number) => {
-    if (p >= 60) return <TrendingUpIcon color="success" />;
-    if (p >= 40) return <TrendingFlatIcon color="primary" />;
-    return <TrendingDownIcon color="error" />;
-  };
-
-  return (
-    <Box className="percentile-bar">
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={1}>
-        <Typography variant="body2" fontWeight="medium">
-          {label}
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          {getIcon(percentile)}
-          <Typography variant="body2" fontWeight="bold">
-            {percentile}th percentile
-          </Typography>
-        </Box>
-      </Box>
-      <LinearProgress
-        variant="determinate"
-        value={percentile}
-        color={getColor(percentile)}
-        sx={{ height: 8, borderRadius: 4 }}
-      />
-    </Box>
-  );
-};
-
-const MetricsCard: React.FC<{
+interface MetricsCardProps {
   title: string;
   icon: React.ReactNode;
   metrics: ComparisonMetrics;
   isLoading?: boolean;
-}> = ({ title, icon, metrics, isLoading = false }) => {
-  const { userSalary, marketData } = metrics;
+}
 
+const MetricsCard: React.FC<MetricsCardProps> = ({
+  title,
+  icon,
+  metrics,
+  isLoading = false,
+}) => {
   if (isLoading) {
     return (
       <Card className="metrics-card">
         <CardContent>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <Box display="flex" alignItems="center" mb={2}>
             {icon}
-            <Typography variant="h6">{title}</Typography>
+            <Typography variant="h6" ml={1}>
+              {title}
+            </Typography>
           </Box>
-          <Box textAlign="center" py={4}>
-            <Typography>Loading...</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Loading comparison data...
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (metrics.marketData.count < 10) {
+    return (
+      <Card className="metrics-card">
+        <CardContent>
+          <Box display="flex" alignItems="center" mb={2}>
+            {icon}
+            <Typography variant="h6" ml={1}>
+              {title}
+            </Typography>
           </Box>
+          <Alert severity="info">
+            <Typography variant="body2">
+              Not enough data available for comparison in this section
+            </Typography>
+          </Alert>
         </CardContent>
       </Card>
     );
@@ -115,53 +85,53 @@ const MetricsCard: React.FC<{
   return (
     <Card className="metrics-card">
       <CardContent>
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
+        <Box display="flex" alignItems="center" mb={2}>
           {icon}
-          <Typography variant="h6">{title}</Typography>
+          <Typography variant="h6" ml={1}>
+            {title}
+          </Typography>
         </Box>
 
-        {marketData.count === 0 ? (
-          <Alert severity="info">
-            Not enough data available for this comparison
-          </Alert>
-        ) : (
-          <Box className="salary-metrics" mt={2}>
-            <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
-              <Paper className="metric-item" elevation={0}>
-                <Typography variant="body2" color="textSecondary">
-                  Your Salary
-                </Typography>
-                <Typography variant="h6" color="primary" fontWeight="bold">
-                  {moneyFormatter.format(userSalary)}
-                </Typography>
-              </Paper>
-              <Paper className="metric-item" elevation={0}>
-                <Typography variant="body2" color="textSecondary">
-                  Market Median
-                </Typography>
-                <Typography variant="h6" fontWeight="bold">
-                  {moneyFormatter.format(marketData.median)}
-                </Typography>
-              </Paper>
-              <Paper className="metric-item" elevation={0}>
-                <Typography variant="body2" color="textSecondary">
-                  25th Percentile
-                </Typography>
-                <Typography variant="body1">
-                  {moneyFormatter.format(marketData.percentile25)}
-                </Typography>
-              </Paper>
-              <Paper className="metric-item" elevation={0}>
-                <Typography variant="body2" color="textSecondary">
-                  75th Percentile
-                </Typography>
-                <Typography variant="body1">
-                  {moneyFormatter.format(marketData.percentile75)}
-                </Typography>
-              </Paper>
+        <Box className="salary-metrics">
+          <Typography variant="body2" color="textSecondary" mb={2}>
+            Your Salary: <strong>${metrics.userSalary.toLocaleString()}</strong>
+          </Typography>
+
+          <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+            <Box className="metric-item">
+              <Typography variant="caption" color="textSecondary">
+                Market Median
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                ${metrics.marketData.median.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box className="metric-item">
+              <Typography variant="caption" color="textSecondary">
+                Market Mean
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                ${metrics.marketData.mean.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box className="metric-item">
+              <Typography variant="caption" color="textSecondary">
+                25th Percentile
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                ${metrics.marketData.percentile25.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box className="metric-item">
+              <Typography variant="caption" color="textSecondary">
+                75th Percentile
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                ${metrics.marketData.percentile75.toLocaleString()}
+              </Typography>
             </Box>
           </Box>
-        )}
+        </Box>
       </CardContent>
     </Card>
   );
@@ -184,7 +154,7 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
   } = useQuery<SalaryComparisonResult>({
     queryKey: ["salaryComparison", compensationId],
     queryFn: () => getSalaryComparison(compensationId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   if (embedded && (isLoading || isError)) {
@@ -215,7 +185,6 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
     );
   }
 
-  // Existing error state for standalone usage
   if (!embedded && isError) {
     return (
       <Box className="salary-comparison-container">
@@ -244,7 +213,6 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
     );
   }
 
-  // Type guard to ensure we have the required properties
   if (!comparisonData.overall) {
     return (
       <Box className={embedded ? "" : "salary-comparison-container"}>
@@ -269,28 +237,6 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
         <Typography variant={embedded ? "h5" : "h4"} gutterBottom>
           Your Salary Comparison Report
         </Typography>
-
-        {comparisonData.aiSummary && (
-          <Box>
-            <Alert severity="info" sx={{ mt: 2 }}>
-              <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-                {comparisonData.aiSummary}
-              </Typography>
-            </Alert>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              sx={{
-                display: "block",
-                textAlign: "right",
-                mt: 0.5,
-                fontStyle: "italic",
-                fontSize: "0.75rem",
-              }}>
-              Summary generated by AI
-            </Typography>
-          </Box>
-        )}
       </Box>
 
       <Box
@@ -298,7 +244,7 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
         gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
         gap={3}>
         <MetricsCard
-          title="Overall Market"
+          title="Overall"
           icon={<BusinessIcon color="primary" />}
           metrics={overall}
         />
