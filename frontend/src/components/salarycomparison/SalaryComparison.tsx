@@ -66,6 +66,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
   if (
     !metrics ||
     !metrics.marketData ||
+    metrics.marketData.count === 0 ||
     (!metrics.isHourly && metrics.marketData.count < 5)
   ) {
     return (
@@ -115,7 +116,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
 
         <Box className="salary-metrics">
           <Typography variant="body2" color="textSecondary" mb={2}>
-            Your Compensation:{" "}
+            Your Total Compensation:{" "}
             <strong>{formatValue(metrics.userSalary || 0)}</strong>
           </Typography>
 
