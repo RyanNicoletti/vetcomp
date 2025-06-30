@@ -116,6 +116,18 @@ const jobApplicationsService = {
 
     return !!application;
   },
+
+  getUserApplicationsCount: async (
+    db: Knex,
+    userId: string
+  ): Promise<number> => {
+    const result = await db("job_applications")
+      .where({ user_id: userId })
+      .count("id as count")
+      .first();
+
+    return parseInt(result?.count as string) || 0;
+  },
 };
 
 export default jobApplicationsService;

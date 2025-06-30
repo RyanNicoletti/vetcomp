@@ -98,16 +98,10 @@ const SalaryComparisonSection = ({
               alignItems="center"
               justifyContent="center"
               flexDirection="column"
-              py={4}>
-              <CircularProgress size={60} sx={{ color: "white", mb: 2 }} />
+              py={2}>
+              <CircularProgress size={40} sx={{ color: "white", mb: 1 }} />
               <Typography variant="h6" fontWeight="bold">
-                Analyzing Your Compensation...
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ opacity: 0.9, textAlign: "center", mt: 1 }}>
-                Comparing your salary to others in your field, location, and
-                experience level
+                Loading...
               </Typography>
             </Box>
           </CardContent>

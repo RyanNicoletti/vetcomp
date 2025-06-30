@@ -169,6 +169,10 @@ jobsRouter.get(
   jobApplicationsController.downloadResume
 );
 jobsRouter.get("/applications", jobApplicationsController.getUserApplications);
+jobsRouter.get(
+  "/applications/count",
+  jobApplicationsController.getUserApplicationsCount
+);
 jobsRouter.patch(
   "/applications/:applicationId/status",
   jobApplicationsController.updateApplicationStatus

@@ -34,6 +34,8 @@ export const getUserApplications = async () => {
   return response.json();
 };
 
+// Replace the existing getUserApplicationsCount function in frontend/src/queries/jobApplicationQueries.ts with this:
+
 export const getUserApplicationsCount = async (): Promise<number> => {
   try {
     const response = await fetch(
@@ -48,13 +50,14 @@ export const getUserApplicationsCount = async (): Promise<number> => {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch application count");
+      console.warn("Failed to fetch application count, returning 0");
+      return 0;
     }
 
     const data = await response.json();
-    return data.count;
+    return data.count || 0;
   } catch (error) {
-    console.error("Error fetching application count:", error);
+    console.warn("Error fetching application count, returning 0:", error);
     return 0;
   }
 };

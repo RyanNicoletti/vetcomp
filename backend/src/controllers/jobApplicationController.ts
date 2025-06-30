@@ -248,6 +248,23 @@ const jobApplicationsController = {
       throw new InternalServerError("Error downloading file");
     }
   }),
+
+  getUserApplicationsCount: asyncHandler(
+    async (req: Request, res: Response) => {
+      if (!req.session.userId) {
+        throw new UnauthorizedError(
+          "Must be logged in to view application count"
+        );
+      }
+
+      const count = await jobApplicationsService.getUserApplicationsCount(
+        db,
+        req.session.userId
+      );
+
+      res.json({ count });
+    }
+  ),
 };
 
 export default jobApplicationsController;

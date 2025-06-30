@@ -43,9 +43,12 @@ export const Dashboard = () => {
   const {
     data: _applicationsCount = 0,
     isLoading: isApplicationsCountLoading,
+    isError: isApplicationsCountError,
   } = useQuery({
     queryKey: ["userApplicationsCount"],
     queryFn: getUserApplicationsCount,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -57,8 +60,7 @@ export const Dashboard = () => {
     }
   }, [compensations, jobs]);
 
-  const isLoading =
-    isCompensationsLoading || isJobsLoading || isApplicationsCountLoading;
+  const isLoading = isCompensationsLoading || isJobsLoading;
   const isError = isCompensationsError || isJobsError;
 
   const shouldShowReminder = () => {
