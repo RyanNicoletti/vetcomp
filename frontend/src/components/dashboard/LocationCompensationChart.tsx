@@ -327,7 +327,7 @@ const LocationCompensationChart = ({
                     : [0, "dataMax + 10"]
                 }
               />
-              <ZAxis dataKey="z" range={[60, 100]} />
+              <ZAxis dataKey="z" range={[40, 60]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Scatter
