@@ -72,10 +72,18 @@ const getPaginatedCompensations = asyncHandler(
     if (req.query.specialistsOnly === "true") {
       salaryFilter.specialistsOnly = true;
     }
-    if (typeof req.query.practiceType === "string") {
-      salaryFilter.practiceTypeFilter = req.query.practiceType
+    if (
+      typeof req.query.practiceType === "string" &&
+      req.query.practiceType.trim() !== ""
+    ) {
+      const practiceTypes = req.query.practiceType
         .split(",")
-        .map((type) => type.trim());
+        .map((type) => type.trim())
+        .filter((type) => type !== "");
+
+      if (practiceTypes.length > 0) {
+        salaryFilter.practiceTypeFilter = practiceTypes;
+      }
     }
 
     const compensationsWithPages = await compensationService.getAllPaginated(
