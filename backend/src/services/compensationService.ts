@@ -36,6 +36,7 @@ const salariesService = {
         for (const practiceType of salaryFilter.practiceTypeFilter!) {
           this.orWhereLike("type_of_practice", `%${practiceType}%`);
         }
+        this.orWhere("is_specialist", true);
       });
     }
 
