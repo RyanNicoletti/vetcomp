@@ -24,7 +24,6 @@ const Header = () => {
   const navItems: string[] = [
     "Home",
     "About",
-    "Jobs",
     ...(isAuthenticated ? ["Dashboard"] : ["Sign up", "Log in"]),
     ...(isAdmin ? ["Admin"] : []),
   ];
