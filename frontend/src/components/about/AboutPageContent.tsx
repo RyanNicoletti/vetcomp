@@ -55,14 +55,7 @@ export const AboutPageContent = () => {
               it's legitimate without compromising anonymity.
             </p>
           </div>
-          <div className="feature-item">
-            <h3>No-Nonsense Job Board</h3>
-            <p>
-              Job listings that actually tell you the salary range up front so
-              there's no more wasting time on interviews only to discover the
-              pay is too low.
-            </p>
-          </div>
+        
           <div className="feature-item">
             <h3>Privacy-First Approach</h3>
             <p>
@@ -94,29 +87,7 @@ export const AboutPageContent = () => {
         </p>
       </section>
 
-      <section className="about-section">
-        <h2>Our Job Board: A Better Way</h2>
-        <ul className="benefits-list">
-          <li>
-            <span className="highlight">Mandatory Salary Transparency </span>
-            Details about salary are required in all job posts
-          </li>
-          <li>
-            <span className="highlight">Real Opportunities Only </span>
-            No recruiter spam, misleading postings, or bait-and-switch tactics
-          </li>
-          <li>
-            <span className="highlight">Direct Connections </span>
-            Connect directly with veterinary practices and hospitals without
-            intermediaries
-          </li>
-          <li>
-            <span className="highlight">Simplified Application Process </span>
-            Easy application process designed specifically for veterinary
-            professionals
-          </li>
-        </ul>
-      </section>
+     
 
       <section className="about-section highlight-section">
         <h2>Why Your Contribution Matters</h2>
@@ -142,15 +113,7 @@ export const AboutPageContent = () => {
             className="cta-button">
             Add Your Compensation
           </Button>
-          <Button
-            component={Link}
-            to="/jobs"
-            variant="outlined"
-            color="primary"
-            size="large"
-            className="cta-button">
-            Browse Job Board
-          </Button>
+         
         </div>
       </section>
     </div>
