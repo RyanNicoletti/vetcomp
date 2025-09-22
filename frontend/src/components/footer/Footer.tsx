@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <Box component="footer" className="footer_container">
       <Box className="footer_section left">
-        <Typography>© 2025 VeterinaryComp LLC</Typography>
+        <Typography>© 2025 VeterinaryComp</Typography>
       </Box>
 
       <Box className="footer_section center">
