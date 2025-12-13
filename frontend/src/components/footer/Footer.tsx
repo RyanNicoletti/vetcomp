@@ -11,15 +11,9 @@ const Footer = () => {
       </Box>
 
       <Box className="footer_section center">
-        <Box className="tos_links">
-          <NavLink className="footer_nav_link" to="/privacy-policy">
-            Privacy Policy
-          </NavLink>
-          <p>|</p>
-          <NavLink className="footer_nav_link" to="/terms-of-service">
-            Terms of Service
-          </NavLink>
-        </Box>
+        <NavLink className="footer_nav_link" to="/privacy-policy">
+          Privacy Policy
+        </NavLink>
       </Box>
 
       <Box className="footer_section right">

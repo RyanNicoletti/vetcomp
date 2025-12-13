@@ -13,8 +13,6 @@ import { SnackbarProvider } from "./context/SnackbarContext";
 import AdminPage from "./pages/AdminPage";
 import { ProtectedRoute } from "./components/protectedroute/ProtectedRoute";
 import PolicyPage from "./pages/PolicyPage";
-import TermsOfService from "./components/tos-privacypolicy-cookies/termsofservice/TermsOfService";
-import Cookies from "./components/tos-privacypolicy-cookies/cookies/Cookies";
 import LandingPage from "./pages/LandingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
@@ -58,8 +56,6 @@ function App() {
               <Route path="/addcomp" element={<AddCompForm />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/privacy-policy" element={<PolicyPage />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/cookies" element={<Cookies />} />
               <Route
                 path="/forgot-password"
                 element={<ForgotPasswordEmail />}
