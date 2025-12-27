@@ -2,22 +2,16 @@ import React, { useMemo } from "react";
 import { Box, Paper, Typography, Divider } from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import BusinessIcon from "@mui/icons-material/Business";
-import WorkIcon from "@mui/icons-material/Work";
-import PeopleIcon from "@mui/icons-material/People";
-import { ICompensation, JobRecord } from "../../../../shared-types/types";
+import { ICompensation } from "../../../../shared-types/types";
 import { moneyFormatter } from "../../utils/moneyFormatter";
 import "./DashboardStats.css";
 
 interface DashboardStatsProps {
   compensations: ICompensation[];
-  jobs: JobRecord[];
-  jobApplicationsCount?: number;
 }
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({
-  compensations,
-  jobs,
-  jobApplicationsCount = 0,
+  compensations
 }) => {
   const stats = useMemo(() => {
     let totalCompensation = 0;
@@ -34,15 +28,11 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
 
     const uniqueCompanies = new Set(compensations.map((comp) => comp.company));
 
-    const activeJobs = jobs.filter((job) => job.status === "active").length;
-
     return {
       avgCompensation,
-      companiesCount: uniqueCompanies.size,
-      activeJobs,
-      jobApplicationsCount,
+      companiesCount: uniqueCompanies.size
     };
-  }, [compensations, jobs, jobApplicationsCount]);
+  }, [compensations]);
 
   const StatCard = ({
     icon,
@@ -96,24 +86,6 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
             value={stats.companiesCount}
             label="Companies"
             color="#1976d2"
-          />
-        </div>
-
-        <div className="stat-item">
-          <StatCard
-            icon={<WorkIcon fontSize="large" />}
-            value={stats.activeJobs}
-            label="Active Job Posts"
-            color="#ed6c02"
-          />
-        </div>
-
-        <div className="stat-item">
-          <StatCard
-            icon={<PeopleIcon fontSize="large" />}
-            value={stats.jobApplicationsCount}
-            label="Job Applications"
-            color="#9c27b0"
           />
         </div>
       </div>

@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 import { Typography, Container, Paper, Box, Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersCompensation } from "../../queries/compensationQueries";
-import { getUserJobs } from "../../queries/jobQueries";
-import { getUserApplicationsCount } from "../../queries/jobApplicationQueries";
-import { ICompensation, JobRecord } from "../../../../shared-types/types";
+import { ICompensation } from "../../../../shared-types/types";
 import LocationCompensationChart from "./LocationCompensationChart";
-import UserApplications from "./UserApplications";
 import CompensationCards from "./CompensationCards";
-import JobPostsSection from "./JobPostsSection";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -18,7 +14,6 @@ export const Dashboard = () => {
   const [userCompensations, setUserCompensations] = useState<ICompensation[]>(
     []
   );
-  const [userJobs, setUserJobs] = useState<JobRecord[]>([]);
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
 
@@ -31,37 +26,13 @@ export const Dashboard = () => {
     queryFn: getUsersCompensation,
   });
 
-  const {
-    data: jobs,
-    isLoading: isJobsLoading,
-    isError: isJobsError,
-  } = useQuery({
-    queryKey: ["userJobs"],
-    queryFn: getUserJobs,
-  });
-
-  const {
-    data: _applicationsCount = 0,
-    isLoading: _isApplicationsCountLoading,
-    isError: _isApplicationsCountError,
-  } = useQuery({
-    queryKey: ["userApplicationsCount"],
-    queryFn: getUserApplicationsCount,
-    retry: 1,
-    staleTime: 5 * 60 * 1000,
-  });
-
+ 
   useEffect(() => {
     if (compensations) {
       setUserCompensations(compensations);
     }
-    if (jobs) {
-      setUserJobs(jobs);
-    }
-  }, [compensations, jobs]);
+  }, [compensations]);
 
-  const isLoading = isCompensationsLoading || isJobsLoading;
-  const isError = isCompensationsError || isJobsError;
 
   const shouldShowReminder = () => {
     if (!userCompensations || userCompensations.length === 0) {
@@ -77,7 +48,7 @@ export const Dashboard = () => {
     return allEntriesOld;
   };
 
-  if (isLoading) {
+  if (isCompensationsLoading) {
     return (
       <Container className="dashboard-loading">
         <Typography variant="h6">Loading your dashboard...</Typography>
@@ -85,7 +56,7 @@ export const Dashboard = () => {
     );
   }
 
-  if (isError) {
+  if (isCompensationsError) {
     return (
       <Container className="dashboard-error">
         <Typography variant="h6">
@@ -132,33 +103,6 @@ export const Dashboard = () => {
         )}
       </Paper>
 
-      <Box className="dashboard-two-column">
-        <Paper elevation={2} className="dashboard-section">
-          <Typography variant="h5" className="section-title">
-            Your Job Applications
-          </Typography>
-          <UserApplications />
-        </Paper>
-
-        <Paper elevation={2} className="dashboard-section">
-          {userJobs.length > 0 ? (
-            <JobPostsSection
-              jobs={userJobs}
-              queryClient={queryClient}
-              openSnackbar={openSnackbar}
-            />
-          ) : (
-            <>
-              <Typography variant="h5" className="section-title">
-                Your Job Ads
-              </Typography>
-              <Typography variant="body1" className="empty-message">
-                You haven't posted any jobs yet.
-              </Typography>
-            </>
-          )}
-        </Paper>
-      </Box>
     </Container>
   );
 };

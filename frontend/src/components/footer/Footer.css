@@ -52,16 +52,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.linkedin_link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.linkedin_icon {
-  fill: currentColor;
-}
-
 .contact_info {
   text-align: right;
 }

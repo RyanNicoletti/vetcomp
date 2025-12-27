@@ -13,9 +13,6 @@ import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
 import { errorHandler } from "./middleware/errorHandler";
 import * as Sentry from "@sentry/node";
-import jobsController from "./controllers/jobsController.js";
-import stripeController from "./controllers/stripeController.js";
-import jobApplicationsController from "./controllers/jobApplicationController.js";
 import adminController from "./controllers/adminController.js";
 import salaryComparisonController from "./controllers/salaryComparisonController.js";
 
@@ -26,12 +23,6 @@ const corsOptions = {
   credentials: true,
 };
 
-// stripe middleware
-app.post(
-  "/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  stripeController.handleWebhook
-);
 
 app.use(
   helmet({
@@ -98,8 +89,6 @@ adminRouter.patch(
   compensationController.approveCompensationById
 );
 adminRouter.get("/users", adminController.getUsersWithCompensations);
-adminRouter.get("/jobs", adminController.getAllJobsWithUsers);
-adminRouter.delete("/jobs/:id", adminController.deleteJobById);
 app.use("/admin", adminRouter);
 
 /**
@@ -151,61 +140,6 @@ compensationsRouter.post(
   compensationController.uploadVerificationDocument
 );
 app.use("/compensations", compensationsRouter);
-
-/**
- *
- * JOBS
- *
- */
-const jobsRouter: Router = express.Router();
-// General job routes
-jobsRouter.get("/", jobsController.getAll);
-jobsRouter.get("/profile", jobsController.getUserJobs);
-jobsRouter.post("/", jobsController.createJob);
-
-// Job applications routes (grouped together and before /:id)
-jobsRouter.get(
-  "/applications/resume/:resumeId",
-  jobApplicationsController.downloadResume
-);
-jobsRouter.get("/applications", jobApplicationsController.getUserApplications);
-jobsRouter.get(
-  "/applications/count",
-  jobApplicationsController.getUserApplicationsCount
-);
-jobsRouter.patch(
-  "/applications/:applicationId/status",
-  jobApplicationsController.updateApplicationStatus
-);
-jobsRouter.post("/:jobId/apply", jobApplicationsController.submitApplication);
-jobsRouter.get(
-  "/:jobId/applications",
-  jobApplicationsController.getApplicationsForJob
-);
-jobsRouter.delete(
-  "/applications/:applicationId",
-  jobApplicationsController.deleteApplication
-);
-
-// Individual job routes (come last because of the :id parameter)
-jobsRouter.get("/:id", jobsController.getJobById);
-jobsRouter.delete("/:id/cancel", jobsController.cancelSubscription);
-
-app.use("/jobs", jobsRouter);
-
-/**
- *
- * STRIPE
- *
- */
-const stripeRouter: Router = express.Router();
-stripeRouter.post("/checkout", stripeController.createCheckoutSession);
-stripeRouter.get("/session-status", stripeController.getSession);
-stripeRouter.post(
-  "/customer-portal",
-  stripeController.createCustomerPortalSession
-);
-app.use("/stripe", stripeRouter);
 
 Sentry.setupExpressErrorHandler(app);
 

@@ -5,8 +5,7 @@ const EmptyDashboard: React.FC = () => {
   return (
     <div className="no-data">
       <Typography variant="h6">
-        Your dashboard is empty. Add compensation information or post a job to
-        get started.
+        Your dashboard is empty. Add compensation information to get started.
       </Typography>
       <div className="action-buttons">
         <Button
@@ -16,14 +15,6 @@ const EmptyDashboard: React.FC = () => {
           color="primary"
           className="action-button">
           Add Compensation
-        </Button>
-        <Button
-          component={Link}
-          to="/jobs/post"
-          variant="contained"
-          color="primary"
-          className="action-button">
-          Post a Job
         </Button>
       </div>
     </div>
