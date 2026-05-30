@@ -129,7 +129,7 @@ const AdminUsersTable = () => {
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <Box display="flex" gap={1}>
+                  <Box sx={{ display: "flex", gap: 1 }}>
                     {user.is_verified ? (
                       <Chip label="Verified" color="success" size="small" />
                     ) : (
@@ -164,7 +164,7 @@ const AdminUsersTable = () => {
                       in={expandedRows.has(user.id)}
                       timeout="auto"
                       unmountOnExit>
-                      <Box margin={2}>
+                      <Box sx={{ margin: 2 }}>
                         <Typography variant="h6" gutterBottom component="div">
                           Compensation Data
                         </Typography>
@@ -201,7 +201,7 @@ const AdminUsersTable = () => {
                                     : "N/A"}
                                 </TableCell>
                                 <TableCell>
-                                  <Box display="flex" gap={0.5}>
+                                  <Box sx={{ display: "flex", gap: 0.5 }}>
                                     {comp.is_approved && (
                                       <Chip
                                         label="Approved"

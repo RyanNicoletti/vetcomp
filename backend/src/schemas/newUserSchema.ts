@@ -1,16 +1,19 @@
 import { z } from "zod";
 
+// Shared password policy, reused anywhere a password is set (signup, reset).
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .max(64, "Password must not exceed 64 characters")
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]*$/,
+    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&.,)"
+  );
+
 export const NewUserSchema = z
   .object({
     email: z.string().email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters long")
-      .max(64, "Password must not exceed 64 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,])[A-Za-z\d@$!%*?&.,]*$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&.,)"
-      ),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

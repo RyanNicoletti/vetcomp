@@ -142,7 +142,22 @@ const getAllAdminCompensations = asyncHandler(
   }
 );
 
-const upload = multer().single("verificationDocument");
+const ALLOWED_UPLOAD_EXTENSIONS = [".pdf", ".doc", ".docx"];
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+
+const upload = multer({
+  limits: { fileSize: MAX_UPLOAD_BYTES },
+  fileFilter: (_req, file, cb) => {
+    const dotIndex = file.originalname.lastIndexOf(".");
+    const ext =
+      dotIndex >= 0 ? file.originalname.slice(dotIndex).toLowerCase() : "";
+    if (ALLOWED_UPLOAD_EXTENSIONS.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type"));
+    }
+  },
+}).single("verificationDocument");
 
 const createCompensation = asyncHandler(async (req: Request, res: Response) => {
   await new Promise((resolve, reject) => {
@@ -150,7 +165,7 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
       if (err) {
         reject(
           new BadRequestError(
-            "Invalid file. Please use .pdf, .doc, or .docx file types only"
+            "Invalid file. Please upload a .pdf, .doc, or .docx file no larger than 5MB."
           )
         );
       } else {
@@ -305,7 +320,7 @@ const uploadVerificationDocument = asyncHandler(
         if (err) {
           reject(
             new BadRequestError(
-              "Invalid file. Please use .pdf, .doc, or .docx file types only"
+              "Invalid file. Please upload a .pdf, .doc, or .docx file no larger than 5MB."
             )
           );
         } else {

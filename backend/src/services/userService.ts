@@ -123,7 +123,7 @@ const userService = {
       await db.transaction(async (trx) => {
         await trx("users").where({ id: userId }).update({
           is_verified: true,
-          password_hash: tempUser.hashed_password,
+          password_hash: tempUser.password_hash,
         });
       });
     } else {
@@ -158,14 +158,21 @@ const userService = {
       return null;
     }
 
-    if (user.password_hash) {
-      const isValidPassword: boolean = await argon2.verify(
-        user.password_hash,
-        password
-      );
-      if (!isValidPassword) {
-        return null;
-      }
+    // Accounts created for anonymous compensation submissions have no password
+    // set (password_hash is null). The user claims such an account by signing up
+    // with the same email, which links to this row and sets a password once the
+    // email is verified. Until then there is no hash to check, so reject the
+    // login instead of treating a missing hash as a successful match.
+    if (!user.password_hash) {
+      return null;
+    }
+
+    const isValidPassword: boolean = await argon2.verify(
+      user.password_hash,
+      password
+    );
+    if (!isValidPassword) {
+      return null;
     }
 
     return user;

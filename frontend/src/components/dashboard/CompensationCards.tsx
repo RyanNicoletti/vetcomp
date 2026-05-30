@@ -96,7 +96,7 @@ const SalaryComparisonSection = ({
                 {(error as any)?.message ||
                   "Please ensure you have submitted compensation data with your account to use this feature."}
               </Typography>
-              <Box mt={2}>
+              <Box sx={{ mt: 2 }}>
                 <Button
                   onClick={() => setShowComparison(false)}
                   variant="outlined"
@@ -114,7 +114,7 @@ const SalaryComparisonSection = ({
       return (
         <Box className="salary-comparison-results" sx={{ mb: 3 }}>
           {approvedCompensations.length > 1 && (
-            <Box mb={2}>
+            <Box sx={{ mb: 2 }}>
               <FormControl size="small" sx={{ minWidth: 200 }}>
                 <InputLabel>Select Compensation</InputLabel>
                 <Select
@@ -131,7 +131,7 @@ const SalaryComparisonSection = ({
             </Box>
           )}
           <SalaryComparison embedded compensationId={selectedCompensationId} />
-          <Box mt={2} textAlign="center">
+          <Box sx={{ mt: 2, textAlign: "center" }}>
             <Button
               onClick={handleHideComparison}
               variant="outlined"
@@ -288,10 +288,12 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
             {shouldShowReminder() && (
               <Box
                 className="update-reminder"
-                mt={2}
-                p={2}
-                bgcolor="#fff3cd"
-                borderRadius={1}>
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  bgcolor: "#fff3cd",
+                  borderRadius: 1,
+                }}>
                 <Typography variant="body2" color="#856404">
                   Your compensation data is over a year old. If your details
                   have changed, please consider submitting updated information.
@@ -353,7 +355,7 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
       </div>
 
       {compensations.length === 0 && (
-        <Box textAlign="center" padding={3}>
+        <Box sx={{ textAlign: "center", padding: 3 }}>
           <Paper elevation={2} className="dashboard-section empty-section">
             <Typography variant="h6">
               See how you stack up against others!

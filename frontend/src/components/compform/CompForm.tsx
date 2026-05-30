@@ -196,7 +196,7 @@ export const CompForm = () => {
     <div className="form-wrapper">
       <form onSubmit={handleSubmit(onSubmit)} className="form-container">
         {!isAuthenticated && (
-          <Box className="account-signup-section" mb={3}>
+          <Box className="account-signup-section" sx={{ mb: 3 }}>
             <Typography variant="h6" className="section-title">
               Create Account for Salary Comparison
             </Typography>
@@ -277,16 +277,19 @@ export const CompForm = () => {
                       fieldState.error?.message ||
                       "Format: `City, two letter state/country code`"
                     }
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {locationIsLoading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
+                    slotProps={{
+                      ...params.slotProps,
+                      input: {
+                        ...params.slotProps.input,
+                        endAdornment: (
+                          <>
+                            {locationIsLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.slotProps.input.endAdornment}
+                          </>
+                        ),
+                      },
                     }}
                   />
                 )}

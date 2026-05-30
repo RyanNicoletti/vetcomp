@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 import { NewUserSchema } from "../schemas/newUserSchema";
 import userService from "../services/userService";
 import emailService from "../services/emailService";
 import { loginSchema } from "../schemas/loginSchema";
+import { resetPasswordSchema } from "../schemas/resetPasswordSchema";
 import { randomBytes } from "node:crypto";
 import { redisClient } from "../../config/redisConfig";
 import { db } from "../db/connection";
-import {
-  BadRequestError,
-  NotFoundError,
-  InternalServerError,
-} from "../errors/httpErrors";
+import { BadRequestError, InternalServerError } from "../errors/httpErrors";
 import { asyncHandler } from "../middleware/asyncHandler";
 
 const createUser = asyncHandler(async (req: Request, res: Response) => {
@@ -126,29 +124,42 @@ const login = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
 const forgotPwVerifyEmail = asyncHandler(
   async (req: Request, res: Response) => {
-    const { email } = req.body;
+    const { email } = forgotPasswordSchema.parse(req.body);
     const user = await userService.findByEmail(db, email);
 
-    if (!user) {
-      throw new NotFoundError("User not found");
+    // Respond identically whether or not the account exists so the endpoint
+    // can't be used to enumerate registered emails. The token + email work only
+    // happens when there is a matching user.
+    if (user) {
+      const resetToken = randomBytes(20).toString("hex");
+      const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+
+      await userService.saveResetToken(
+        db,
+        user.id,
+        resetToken,
+        resetTokenExpiry
+      );
+
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      await emailService.sendPasswordResetEmail(email, resetLink);
     }
 
-    const resetToken = randomBytes(20).toString("hex");
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
-
-    await userService.saveResetToken(db, user.id, resetToken, resetTokenExpiry);
-
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    await emailService.sendPasswordResetEmail(email, resetLink);
-
-    res.json({ message: "Password reset email sent" });
+    res.json({
+      message:
+        "If an account exists for that email, a password reset link has been sent.",
+    });
   }
 );
 
 const resetPassword = asyncHandler(async (req: Request, res: Response) => {
-  const { token, password } = req.body;
+  const { token, password } = resetPasswordSchema.parse(req.body);
   const user = await userService.findByResetToken(db, token);
 
   if (

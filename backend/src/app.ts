@@ -1,7 +1,7 @@
 import "./instrument.js";
 import express, { Express, Router } from "express";
 import session from "express-session";
-import RedisStore from "connect-redis";
+import { RedisStore } from "connect-redis";
 import { redisClient } from "../config/redisConfig";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -12,7 +12,10 @@ import usersController from "./controllers/usersController";
 import authController from "./controllers/authController";
 import { isAdmin } from "./middleware/isAdmin";
 import { errorHandler } from "./middleware/errorHandler";
+import { authLimiter, accountCreationLimiter } from "./middleware/rateLimiter";
+import { HttpError } from "./errors/httpErrors";
 import * as Sentry from "@sentry/node";
+import { ZodError } from "zod";
 import adminController from "./controllers/adminController.js";
 import salaryComparisonController from "./controllers/salaryComparisonController.js";
 
@@ -97,14 +100,15 @@ app.use("/admin", adminRouter);
  *
  */
 const usersRouter: Router = express.Router();
-usersRouter.post("/", usersController.createUser);
+usersRouter.post("/", accountCreationLimiter, usersController.createUser);
 usersRouter.post(
   "/forgot-password/verify",
+  authLimiter,
   usersController.forgotPwVerifyEmail
 );
-usersRouter.post("/reset-password", usersController.resetPassword);
-usersRouter.post("/verify-email", usersController.verifyEmail);
-usersRouter.post("/login", usersController.login);
+usersRouter.post("/reset-password", authLimiter, usersController.resetPassword);
+usersRouter.post("/verify-email", authLimiter, usersController.verifyEmail);
+usersRouter.post("/login", authLimiter, usersController.login);
 usersRouter.post("/logout", usersController.logout);
 app.use("/users", usersRouter);
 
@@ -141,7 +145,20 @@ compensationsRouter.post(
 );
 app.use("/compensations", compensationsRouter);
 
-Sentry.setupExpressErrorHandler(app);
+// Only report genuinely unhandled errors to Sentry. This mirrors how
+// `errorHandler` (below) maps errors to responses, so anything that becomes a
+// 4xx client response (validation failures, etc.) is treated as expected and
+// not flagged, while unexpected errors that become 5xx are still reported.
+Sentry.setupExpressErrorHandler(app, {
+  shouldHandleError(error) {
+    // ZodError => errorHandler returns 400 (bad client input), not a server fault.
+    if (error instanceof ZodError) return false;
+    // HttpError carries an explicit status; only report real server errors.
+    if (error instanceof HttpError) return error.statusCode >= 500;
+    // Anything else is unexpected/unhandled => errorHandler returns 500. Report it.
+    return true;
+  },
+});
 
 // error handler middleware
 app.use(errorHandler);

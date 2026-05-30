@@ -49,9 +49,9 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
     return (
       <Card className="metrics-card">
         <CardContent>
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
             {icon}
-            <Typography variant="h6" ml={1}>
+            <Typography variant="h6" sx={{ ml: 1 }}>
               {title}
             </Typography>
           </Box>
@@ -72,9 +72,9 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
     return (
       <Card className="metrics-card">
         <CardContent>
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
             {icon}
-            <Typography variant="h6" ml={1}>
+            <Typography variant="h6" sx={{ ml: 1 }}>
               {title}
             </Typography>
           </Box>
@@ -107,25 +107,25 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
   return (
     <Card className="metrics-card">
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           {icon}
-          <Typography variant="h6" ml={1}>
+          <Typography variant="h6" sx={{ ml: 1 }}>
             {title}
           </Typography>
         </Box>
 
         <Box className="salary-metrics">
-          <Typography variant="body2" color="textSecondary" mb={2}>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
             Your Total Compensation:{" "}
             <strong>{formatValue(metrics.userSalary || 0)}</strong>
           </Typography>
 
-          <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <Box className="metric-item">
               <Typography variant="caption" color="textSecondary">
                 Market Median
               </Typography>
-              <Typography variant="body2" fontWeight="medium">
+              <Typography variant="body2" sx={{ fontWeight: "medium" }}>
                 {formatValue(safeMarketData.median)}
               </Typography>
             </Box>
@@ -133,7 +133,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
               <Typography variant="caption" color="textSecondary">
                 Market Mean
               </Typography>
-              <Typography variant="body2" fontWeight="medium">
+              <Typography variant="body2" sx={{ fontWeight: "medium" }}>
                 {formatValue(safeMarketData.mean)}
               </Typography>
             </Box>
@@ -141,7 +141,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
               <Typography variant="caption" color="textSecondary">
                 25th Percentile
               </Typography>
-              <Typography variant="body2" fontWeight="medium">
+              <Typography variant="body2" sx={{ fontWeight: "medium" }}>
                 {formatValue(safeMarketData.percentile25)}
               </Typography>
             </Box>
@@ -149,7 +149,7 @@ const MetricsCard: React.FC<MetricsCardProps> = ({
               <Typography variant="caption" color="textSecondary">
                 75th Percentile
               </Typography>
-              <Typography variant="body2" fontWeight="medium">
+              <Typography variant="body2" sx={{ fontWeight: "medium" }}>
                 {formatValue(safeMarketData.percentile75)}
               </Typography>
             </Box>
@@ -191,9 +191,11 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
           Analyzing Your Compensation...
         </Typography>
         <Box
-          display="grid"
-          gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-          gap={3}>
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: 3,
+          }}>
           {[1, 2, 3, 4].map((i) => (
             <MetricsCard
               key={i}
@@ -256,16 +258,18 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
       className={
         embedded ? "salary-comparison-embedded" : "salary-comparison-container"
       }>
-      <Box className="comparison-header" mb={4}>
+      <Box className="comparison-header" sx={{ mb: 4 }}>
         <Typography variant={embedded ? "h5" : "h4"} gutterBottom>
           Your Salary Comparison Report
         </Typography>
       </Box>
 
       <Box
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-        gap={3}>
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+          gap: 3,
+        }}>
         <MetricsCard
           title="Overall"
           icon={<BusinessIcon color="primary" />}
@@ -291,7 +295,7 @@ const SalaryComparison: React.FC<SalaryComparisonProps> = ({
         />
       </Box>
 
-      <Box className="disclaimer" mt={3}>
+      <Box className="disclaimer" sx={{ mt: 3 }}>
         <Alert severity="info">
           <Typography variant="body2">
             <strong>Disclaimer:</strong> This comparison is based on anonymous

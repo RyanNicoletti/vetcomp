@@ -56,7 +56,7 @@ export const EmailVerification = () => {
       <Typography variant="h4" gutterBottom>
         Verify Your Email
       </Typography>
-      <Typography paragraph className="verify-instructions">
+      <Typography className="verify-instructions" sx={{ mb: 2 }}>
         We've sent a verification code to{" "}
         <span className="email-address">{email}</span>.{" "}
         <span className="enter-below">Please enter it below.</span>
@@ -79,7 +79,7 @@ export const EmailVerification = () => {
               margin="normal"
               error={!!errors.verificationCode}
               helperText={errors.verificationCode?.message}
-              inputProps={{ maxLength: 6 }}
+              slotProps={{ htmlInput: { maxLength: 6 } }}
             />
           )}
         />
