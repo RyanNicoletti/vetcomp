@@ -30,13 +30,32 @@ import {
   paymentFrequencyOptions,
   specialistOptions,
 } from "./CompFormData";
-import { ICompFormInput } from "../../../../shared-types/types";
-import { createCompensation } from "../../queries/compensationQueries";
+import { ICompFormInput, ICompensation } from "../../../../shared-types/types";
+import {
+  createCompensation,
+  updateCompensation,
+} from "../../queries/compensationQueries";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useAuth } from "../../context/AuthContext";
 
-export const CompForm = () => {
+interface CompFormProps {
+  existingCompensation?: ICompensation;
+}
+
+const formatCurrency = (value: number | null | undefined): string => {
+  if (value == null) return "";
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+const formatPercent = (value: number | null | undefined): string => {
+  if (value == null) return "";
+  return `${value}%`;
+};
+
+export const CompForm = ({ existingCompensation }: CompFormProps) => {
+  const isEditMode = !!existingCompensation;
+
   const {
     control,
     handleSubmit,
@@ -45,42 +64,93 @@ export const CompForm = () => {
     setError,
     formState: { errors },
   } = useForm<ICompFormInput>({
-    defaultValues: {
-      company: "",
-      title: "",
-      typeOfPractice: "",
-      isSpecialist: false,
-      specialization: "",
-      isNewGrad: false,
-      yearsOfExperience: "",
-      location: "",
-      baseSalary: "",
-      hourlyRate: "",
-      paymentFrequency: "",
-      signOnBonus: "",
-      averageAnnualProduction: "",
-      percentProduction: "",
-      gender: "",
-      numberOfVeterinarians: "",
-      verificationDocument: null,
-      verificationDocumentName: "",
-      daysWorkedPerWeek: "",
-      email: "",
-      isPracticeOwner: false,
-      practiceDescription: "",
-      isTraveling: false,
-      travelNotes: "",
-    },
+    defaultValues: existingCompensation
+      ? {
+          company: existingCompensation.company,
+          title: existingCompensation.title,
+          typeOfPractice: existingCompensation.type_of_practice || "",
+          isSpecialist: existingCompensation.is_specialist,
+          specialization: existingCompensation.specialization || "",
+          isNewGrad: existingCompensation.is_new_grad,
+          yearsOfExperience: String(existingCompensation.years_of_experience),
+          location: existingCompensation.location,
+          baseSalary: formatCurrency(existingCompensation.base_salary),
+          hourlyRate: formatCurrency(existingCompensation.hourly_rate),
+          paymentFrequency: (existingCompensation.payment_frequency ===
+          "annually"
+            ? "Annually"
+            : existingCompensation.payment_frequency === "hourly"
+              ? "Hourly"
+              : "") as ICompFormInput["paymentFrequency"],
+          signOnBonus: formatCurrency(existingCompensation.sign_on_bonus),
+          averageAnnualProduction: formatCurrency(
+            existingCompensation.average_annual_production
+          ),
+          percentProduction: formatPercent(
+            existingCompensation.percent_production
+          ),
+          gender: existingCompensation.gender || "",
+          numberOfVeterinarians:
+            existingCompensation.number_of_veterinarians != null
+              ? String(existingCompensation.number_of_veterinarians)
+              : "",
+          verificationDocument: null,
+          verificationDocumentName: "",
+          daysWorkedPerWeek:
+            existingCompensation.days_worked_per_week != null
+              ? String(existingCompensation.days_worked_per_week)
+              : "",
+          email: existingCompensation.email || "",
+          isPracticeOwner: existingCompensation.is_practice_owner,
+          practiceDescription:
+            existingCompensation.practice_description || "",
+          isTraveling: existingCompensation.is_traveling,
+          travelNotes: existingCompensation.travel_notes || "",
+        }
+      : {
+          company: "",
+          title: "",
+          typeOfPractice: "",
+          isSpecialist: false,
+          specialization: "",
+          isNewGrad: false,
+          yearsOfExperience: "",
+          location: "",
+          baseSalary: "",
+          hourlyRate: "",
+          paymentFrequency: "",
+          signOnBonus: "",
+          averageAnnualProduction: "",
+          percentProduction: "",
+          gender: "",
+          numberOfVeterinarians: "",
+          verificationDocument: null,
+          verificationDocumentName: "",
+          daysWorkedPerWeek: "",
+          email: "",
+          isPracticeOwner: false,
+          practiceDescription: "",
+          isTraveling: false,
+          travelNotes: "",
+        },
   });
 
-  const [locationQuery, setLocationQuery] = useState<string>("");
+  const [locationQuery, setLocationQuery] = useState<string>(
+    existingCompensation?.location || ""
+  );
   const [options, setOptions] = useState<string[]>([]);
-  const [showSignOnBonus, setShowSignOnBonus] = useState(false);
-  const [showPercentProduction, setShowPercentProduction] = useState(false);
+  const [showSignOnBonus, setShowSignOnBonus] = useState(
+    existingCompensation?.sign_on_bonus != null
+  );
+  const [showPercentProduction, setShowPercentProduction] = useState(
+    existingCompensation?.percent_production != null
+  );
   const [showAverageAnnualProduction, setShowAverageAnnualProduction] =
-    useState(false);
+    useState(existingCompensation?.average_annual_production != null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [isSpecialist, setIsSpecialist] = useState(false);
+  const [isSpecialist, setIsSpecialist] = useState(
+    existingCompensation?.is_specialist || false
+  );
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { openSnackbar } = useSnackbar();
   const { isAuthenticated } = useAuth();
@@ -97,32 +167,48 @@ export const CompForm = () => {
     enabled: false,
   });
 
+  const mutationErrorHandler = (error: any) => {
+    if (error.error?.details) {
+      error.error.details.forEach(
+        (err: { path: string; message: string }) => {
+          setError(err.path[0] as keyof ICompFormInput, {
+            type: "manual",
+            message: err.message,
+          });
+        }
+      );
+    } else {
+      setError("root.serverError", {
+        type: "manual",
+        message:
+          error.error?.message ||
+          error.message ||
+          "An unexpected error occurred. Please try again later.",
+      });
+    }
+  };
+
   const addCompensationMutation = useMutation({
     mutationFn: createCompensation,
-    onError: (error: any) => {
-      if (error.error?.details) {
-        error.error.details.forEach(
-          (err: { path: string; message: string }) => {
-            setError(err.path[0] as keyof ICompFormInput, {
-              type: "manual",
-              message: err.message,
-            });
-          }
-        );
-      } else {
-        setError("root.serverError", {
-          type: "manual",
-          message:
-            error.message ||
-            "An unexpected error occurred. Please try again later.",
-        });
-      }
-    },
+    onError: mutationErrorHandler,
     onSuccess: async (data) => {
       navigate("/");
       openSnackbar(
         data.message ||
           "Success! Thank you, your compensation details will be reviewed as soon as possible.",
+        "success"
+      );
+    },
+  });
+
+  const updateCompensationMutation = useMutation({
+    mutationFn: updateCompensation,
+    onError: mutationErrorHandler,
+    onSuccess: async (data) => {
+      navigate("/dashboard");
+      openSnackbar(
+        data.message ||
+          "Your compensation has been updated successfully.",
         "success"
       );
     },
@@ -189,13 +275,20 @@ export const CompForm = () => {
   const onSubmit: SubmitHandler<ICompFormInput> = async (
     data: ICompFormInput
   ) => {
-    addCompensationMutation.mutateAsync(data);
+    if (isEditMode && existingCompensation) {
+      updateCompensationMutation.mutateAsync({
+        compId: existingCompensation.id,
+        data,
+      });
+    } else {
+      addCompensationMutation.mutateAsync(data);
+    }
   };
 
   return (
     <div className="form-wrapper">
       <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-        {!isAuthenticated && (
+        {!isAuthenticated && !isEditMode && (
           <Box className="account-signup-section" sx={{ mb: 3 }}>
             <Typography variant="h6" className="section-title">
               Create Account for Salary Comparison
@@ -857,7 +950,7 @@ export const CompForm = () => {
           }}
         />
 
-        {!isAuthenticated && (
+        {!isAuthenticated && !isEditMode && (
           <Controller
             name="email"
             control={control}
@@ -890,7 +983,7 @@ export const CompForm = () => {
             variant="contained"
             color="primary"
             className="submit-button">
-            Submit
+            {isEditMode ? "Save Changes" : "Submit"}
           </Button>
         </div>
         {errors.root?.serverError && (

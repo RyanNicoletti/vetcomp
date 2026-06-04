@@ -11,7 +11,7 @@
     "migrate:up": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:up",
     "migrate:down": "node --env-file=.env --import=tsx ./node_modules/.bin/knex --knexfile ./config/knexfile.ts migrate:down",
     "migrate:prod": "cd dist/backend/config && npx knex migrate:latest",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org veterinarycompcom --project node-express ./dist && sentry-cli sourcemaps upload --org veterinarycompcom --project node-express ./dist"
   },
   "keywords": [],
@@ -54,6 +54,7 @@
     "@tsconfig/node20": "^20.1.4",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.1",
+    "vitest": "^2.1.8"
   }
 }

@@ -253,6 +253,130 @@ const createCompensation = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+const TWO_YEARS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
+
+const getCompensationById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const compId = z.string().uuid().parse(req.params.compId);
+    const userId = req.session?.userId;
+    if (!userId) {
+      throw new UnauthorizedError("Please login to view your compensation.");
+    }
+
+    const comp = await compensationService.getByIdAndUserId(db, compId, userId);
+    if (!comp) {
+      throw new NotFoundError("Compensation not found.");
+    }
+
+    res.status(200).json(comp);
+  }
+);
+
+const updateCompensation = asyncHandler(async (req: Request, res: Response) => {
+  const compId = z.string().uuid().parse(req.params.compId);
+  const userId = req.session?.userId;
+  if (!userId) {
+    throw new UnauthorizedError("Please login to edit your compensation.");
+  }
+
+  const existing = await compensationService.getByIdAndUserId(
+    db,
+    compId,
+    userId
+  );
+  if (!existing) {
+    throw new NotFoundError("Compensation not found.");
+  }
+
+  if (
+    existing.created_at &&
+    Date.now() - new Date(existing.created_at).getTime() > TWO_YEARS_MS
+  ) {
+    throw new BadRequestError(
+      "This compensation entry is over 2 years old. Please create a new post instead of editing this one."
+    );
+  }
+
+  await new Promise((resolve, reject) => {
+    upload(req, res, (err) => {
+      if (err) {
+        reject(
+          new BadRequestError(
+            "Invalid file. Please upload a .pdf, .doc, or .docx file no larger than 5MB."
+          )
+        );
+      } else {
+        resolve(null);
+      }
+    });
+  });
+
+  const parsedData: ICompFormInput = JSON.parse(req.body.updatedCompensation);
+
+  if (req.file) {
+    parsedData.verificationDocument = req.file;
+  }
+
+  const validatedData = CompFormSchema.parse(parsedData);
+
+  let verificationDocument: { key: string; originalName: string } | undefined =
+    undefined;
+  let needsReview = existing.needs_review;
+  if (req.file) {
+    verificationDocument = await b2Service.uploadFileToB2(
+      req.file.buffer,
+      req.file.originalname,
+      "verification",
+      userId
+    );
+    needsReview = true;
+  }
+
+  const compensationData: Partial<ICompensation> = {
+    company: validatedData.company,
+    location: validatedData.location,
+    title: validatedData.title,
+    is_specialist: validatedData.isSpecialist,
+    specialization: validatedData.specialization || null,
+    type_of_practice: validatedData.typeOfPractice || null,
+    is_new_grad: validatedData.isNewGrad,
+    years_of_experience: validatedData.yearsOfExperience,
+    base_salary: validatedData.baseSalary,
+    hourly_rate: validatedData.hourlyRate,
+    payment_frequency: validatedData.paymentFrequency,
+    sign_on_bonus: validatedData.signOnBonus,
+    average_annual_production: validatedData.averageAnnualProduction,
+    percent_production: validatedData.percentProduction,
+    gender: validatedData.gender,
+    number_of_veterinarians: validatedData.numberOfVeterinarians,
+    days_worked_per_week: validatedData.daysWorkedPerWeek,
+    needs_review: needsReview,
+    is_practice_owner: validatedData.isPracticeOwner,
+    practice_description: validatedData.practiceDescription || null,
+    is_traveling: validatedData.isTraveling,
+    travel_notes: validatedData.travelNotes || null,
+  };
+
+  if (verificationDocument) {
+    compensationData.verification_document_name = verificationDocument.key;
+    compensationData.verification_document_original_name =
+      verificationDocument.originalName;
+  }
+
+  const updatedComp = await compensationService.updateById(
+    db,
+    compId,
+    userId,
+    compensationData
+  );
+
+  res.status(200).json({
+    updatedComp,
+    message:
+      "Your compensation has been updated and will be reviewed as soon as possible.",
+  });
+});
+
 const compIdSchema = z.object({ compId: z.string().uuid() });
 
 const approveCompensationById = asyncHandler(
@@ -402,6 +526,8 @@ const getLocationCompensations = asyncHandler(
 export default {
   getPaginatedCompensations,
   createCompensation,
+  getCompensationById,
+  updateCompensation,
   getAllAdminCompensations,
   approveCompensationById,
   verifyCompensationById,

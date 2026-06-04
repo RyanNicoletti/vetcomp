@@ -38,11 +38,11 @@ export const Dashboard = () => {
     if (!userCompensations || userCompensations.length === 0) {
       return false;
     }
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
     const allEntriesOld = userCompensations.every((comp) => {
-      return new Date(comp.created_at!) < oneYearAgo;
+      return new Date(comp.created_at!) < twoYearsAgo;
     });
 
     return allEntriesOld;
@@ -87,7 +87,7 @@ export const Dashboard = () => {
         {shouldShowReminder() && (
           <Box className="general-reminder">
             <Typography variant="body1">
-              Got a new job or has it been over a year since you last posted?
+              Got a new job or has it been over 2 years since you last posted?
               Help keep our data current by adding your updated compensation
               information.
             </Typography>

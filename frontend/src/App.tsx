@@ -17,6 +17,7 @@ import LandingPage from "./pages/LandingPage";
 import ForgotPasswordEmail from "./pages/ForgotPasswordEmail";
 import { PasswordReset } from "./pages/Passwordreset";
 import DashboardPage from "./pages/DashboardPage";
+import EditCompForm from "./pages/EditCompForm";
 import About from "./pages/About";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/addcomp" element={<AddCompForm />} />
+              <Route path="/editcomp/:id" element={<EditCompForm />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/privacy-policy" element={<PolicyPage />} />
               <Route

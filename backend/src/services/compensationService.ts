@@ -132,6 +132,46 @@ const salariesService = {
     return updatedComp || null;
   },
 
+  getByIdAndUserId: async (
+    db: Knex,
+    compId: string,
+    userId: string
+  ): Promise<ICompensation | null> => {
+    const comp = await db<ICompensation>("salaries")
+      .where({ id: compId, user_id: userId })
+      .first();
+    return comp || null;
+  },
+
+  updateById: async (
+    knex: Knex,
+    compId: string,
+    userId: string,
+    updateData: Partial<ICompensation>
+  ): Promise<ICompensation | null> => {
+    let totalCompensation;
+    if (updateData.base_salary && !updateData.average_annual_production) {
+      totalCompensation = updateData.base_salary;
+    }
+    if (updateData.base_salary && updateData.average_annual_production) {
+      totalCompensation =
+        updateData.base_salary + updateData.average_annual_production;
+    }
+
+    const dataWithTotal = {
+      ...updateData,
+      total_compensation: totalCompensation ?? null,
+      is_approved: false,
+    };
+
+    const [updatedComp] = await knex<ICompensation>("salaries")
+      .where({ id: compId, user_id: userId })
+      .update(dataWithTotal)
+      .returning("*");
+
+    return updatedComp || null;
+  },
+
   deleteById: async (knex: Knex, compId: string): Promise<boolean> => {
     const deletedCount = await knex("salaries").where({ id: compId }).del();
 

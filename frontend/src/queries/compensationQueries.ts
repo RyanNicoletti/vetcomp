@@ -183,6 +183,53 @@ export const createCompensation = async (data: ICompFormInput) => {
   return responseData;
 };
 
+export const getCompensationById = async (
+  compId: string
+): Promise<ICompensation> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/${compId}`,
+    { method: "GET", credentials: "include" }
+  );
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to fetch compensation");
+  }
+  return response.json();
+};
+
+export const updateCompensation = async ({
+  compId,
+  data,
+}: {
+  compId: string;
+  data: ICompFormInput;
+}) => {
+  const formData = new FormData();
+  if (data.verificationDocument && data.verificationDocument.length > 0) {
+    formData.append("verificationDocument", data.verificationDocument[0]);
+    data = { ...data, verificationDocument: data.verificationDocument[0] };
+  }
+  formData.append("updatedCompensation", JSON.stringify(data));
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/compensations/${compId}`,
+    {
+      method: "PUT",
+      body: formData,
+      credentials: "include",
+    }
+  );
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw {
+      error: responseData.error,
+    };
+  }
+
+  return responseData;
+};
+
 export const getUsersCompensation = async (): Promise<ICompensation[]> => {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/compensations/profile`,

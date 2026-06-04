@@ -14,7 +14,7 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useMutation, useQuery, QueryClient } from "@tanstack/react-query";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { uploadVerificationDocument } from "../../queries/compensationQueries";
 import { getSalaryComparison } from "../../queries/salaryComparisonQueries";
 import { ICompensation } from "../../../../shared-types/types";
@@ -165,11 +165,19 @@ const SalaryComparisonSection = ({
   );
 };
 
+const TWO_YEARS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
+
+const isOlderThanTwoYears = (createdAt?: Date): boolean => {
+  if (!createdAt) return false;
+  return Date.now() - new Date(createdAt).getTime() > TWO_YEARS_MS;
+};
+
 const CompensationCards: React.FC<CompensationCardsProps> = ({
   compensations,
   queryClient,
   openSnackbar,
 }) => {
+  const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState<
     Record<string, File | null>
   >({});
@@ -212,19 +220,18 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
     (comp) => comp.is_approved
   );
 
-  const shouldShowReminder = () => {
-    if (!compensations || compensations.length === 0) {
-      return false;
-    }
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-    const allEntriesOld = compensations.every((comp) => {
-      return new Date(comp.created_at!) < oneYearAgo;
-    });
-
-    return allEntriesOld;
-  };
+  const mostRecentCompId = compensations.reduce<string | null>(
+    (mostRecentId, comp) => {
+      if (!comp.created_at) return mostRecentId;
+      if (!mostRecentId) return comp.id;
+      const current = compensations.find((c) => c.id === mostRecentId);
+      if (!current?.created_at) return comp.id;
+      return new Date(comp.created_at) > new Date(current.created_at)
+        ? comp.id
+        : mostRecentId;
+    },
+    null
+  );
 
   return (
     <div className="compensation-cards-container">
@@ -285,30 +292,48 @@ const CompensationCards: React.FC<CompensationCardsProps> = ({
               )}
             </div>
 
-            {shouldShowReminder() && (
-              <Box
-                className="update-reminder"
-                sx={{
-                  mt: 2,
-                  p: 2,
-                  bgcolor: "#fff3cd",
-                  borderRadius: 1,
-                }}>
-                <Typography variant="body2" color="#856404">
-                  Your compensation data is over a year old. If your details
-                  have changed, please consider submitting updated information.
-                </Typography>
+            <Box sx={{ mt: 2 }}>
+              {isOlderThanTwoYears(comp.created_at) ? (
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: "#fff3cd",
+                    borderRadius: 1,
+                  }}>
+                  <Typography variant="body2" color="#856404">
+                    This entry is over 2 years old and can no longer be edited.
+                  </Typography>
+                  {comp.id === mostRecentCompId && (
+                    <>
+                      <Typography
+                        variant="body2"
+                        color="#856404"
+                        sx={{ mt: 1 }}>
+                        If you got a new job or your compensation has changed,
+                        please create a new post instead.
+                      </Typography>
+                      <Button
+                        component={RouterLink}
+                        to="/addcomp"
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        sx={{ mt: 1 }}>
+                        Add New Compensation
+                      </Button>
+                    </>
+                  )}
+                </Box>
+              ) : (
                 <Button
-                  component={RouterLink}
-                  to="/addcomp"
                   variant="outlined"
                   color="primary"
                   size="small"
-                  className="add-new-comp-btn">
-                  Add Updated Compensation
+                  onClick={() => navigate(`/editcomp/${comp.id}`)}>
+                  Edit Compensation
                 </Button>
-              </Box>
-            )}
+              )}
+            </Box>
 
             <div className="verification-section">
               {!comp.is_verified && comp.needs_review && (

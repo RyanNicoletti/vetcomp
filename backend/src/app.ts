@@ -138,7 +138,9 @@ compensationsRouter.get(
   "/comparison",
   salaryComparisonController.getSalaryComparison
 );
+compensationsRouter.get("/:compId", compensationController.getCompensationById);
 compensationsRouter.post("/", compensationController.createCompensation);
+compensationsRouter.put("/:compId", compensationController.updateCompensation);
 compensationsRouter.post(
   "/:compId/upload-verification",
   compensationController.uploadVerificationDocument
