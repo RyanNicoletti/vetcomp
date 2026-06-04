@@ -305,6 +305,23 @@ export const CompForm = ({ existingCompensation }: CompFormProps) => {
             </Typography>
           </Box>
         )}
+        {isEditMode && (
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              bgcolor: "#e3f2fd",
+              borderLeft: "4px solid #1976d2",
+              borderRadius: 1,
+            }}>
+            <Typography variant="body2">
+              Editing this entry will send it back for review. If you have
+              started a new job, please{" "}
+              <RouterLink to="/addcomp">add a new compensation</RouterLink>{" "}
+              instead of editing this one!
+            </Typography>
+          </Box>
+        )}
         <Typography className="section-title" variant="h6">
           Company Information
         </Typography>
