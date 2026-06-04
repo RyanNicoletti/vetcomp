@@ -97,7 +97,7 @@ describe("CompForm create vs edit mode", () => {
   it("shows Submit button in create mode (no existingCompensation)", () => {
     renderForm();
     expect(
-      screen.getByRole("button", { name: /^submit$/i })
+      screen.getByRole("button", { name: /submit compensation/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /save changes/i })
@@ -110,7 +110,7 @@ describe("CompForm create vs edit mode", () => {
       screen.getByRole("button", { name: /save changes/i })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /^submit$/i })
+      screen.queryByRole("button", { name: /submit compensation/i })
     ).not.toBeInTheDocument();
 
     // Company input pre-fill: react-hook-form sets defaultValues so the
